@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#262634"/><stop offset="1" stop-color="#08080E"/></linearGradient>
+<radialGradient id="lamp" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#FF8A70"/><stop offset="0.35" stop-color="#FF2A1A"/><stop offset="1" stop-color="#B80E00"/></radialGradient>
+<filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="16" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<pattern id="hatch" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)"><rect width="3" height="36" fill="#fff" opacity="0.035"/></pattern>
+<linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DADAE4"/></linearGradient>
+</defs>
+<g>
+<rect width="1024" height="1024" fill="url(#bg)"/>
+<rect width="1024" height="1024" fill="url(#hatch)"/>
+<rect x="222" y="150" width="580" height="130" rx="30" fill="#050508" stroke="#2C2C3A" stroke-width="4"/>
+<circle cx="292" cy="215" r="38" fill="#2a0706"/><circle cx="402" cy="215" r="38" fill="#2a0706"/><circle cx="512" cy="215" r="38" fill="#2a0706"/><circle cx="622" cy="215" r="38" fill="#2a0706"/><circle cx="732" cy="215" r="38" fill="#2a0706"/><circle cx="292" cy="215" r="38" fill="url(#lamp)" filter="url(#glow)"/><circle cx="402" cy="215" r="38" fill="url(#lamp)" filter="url(#glow)"/><circle cx="512" cy="215" r="38" fill="url(#lamp)" filter="url(#glow)"/><circle cx="622" cy="215" r="38" fill="url(#lamp)" filter="url(#glow)"/><circle cx="732" cy="215" r="38" fill="url(#lamp)" filter="url(#glow)"/>
+<path d="M298 398 L362 398 L242 880 L178 880 Z" fill="#E10600"/><path d="M388 398 L452 398 L332 880 L268 880 Z" fill="#B80500"/><path d="M478 398 L542 398 L422 880 L358 880 Z" fill="#7E0400"/>
+<path d="M853.75 521.6Q853.75 538.4000000000001 852.3499999999999 547.5Q846.75 592.3 826.1 626.5999999999999Q805.45 660.9 772.9000000000001 679.45Q740.35 698.0 701.15 698.0H662.65Q659.15 698.0 659.15 701.5L638.15 869.5Q637.45 874.4 634.3 877.2Q631.15 880.0 626.95 880.0H519.15Q514.95 880.0 512.5 877.2Q510.05 874.4 510.75 869.5L568.15 400.50000000000006Q568.85 395.6 572.0 392.80000000000007Q575.15 390.00000000000006 579.35 390.00000000000006H732.65Q788.65 390.00000000000006 821.2 426.05000000000007Q853.75 462.1 853.75 521.6ZM724.25 550.3Q724.95 546.1 724.95 538.4000000000001Q724.95 520.9000000000001 717.25 511.80000000000007Q709.55 502.70000000000005 696.25 502.70000000000005H686.45Q682.95 502.70000000000005 682.95 506.20000000000005L672.45 593.0Q671.05 596.5 675.25 596.5H684.35Q699.75 596.5 710.6 584.95Q721.45 573.4000000000001 724.25 550.3Z" fill="url(#pg)"/>
+<rect x="0" y="960" width="1024" height="64" fill="#E10600" opacity="0"/>
+</g></svg>
