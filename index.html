@@ -677,6 +677,72 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .trow.out { background: #2A1518; }
 .trow .stc { width: auto !important; padding: 0 10px; font-family: var(--font-d); font-weight: 800; font-size: 15px; background: rgba(225, 6, 0, 0.3); color: #fff !important; }
 
+/* ---------- circuitos ---------- */
+.track { display: block; width: 100%; height: auto; color: var(--text); }
+.cgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ccard { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); text-align: left; }
+.ccard .track { color: var(--text); aspect-ratio: 3 / 2; }
+.ccard.cal { box-shadow: var(--shadow), inset 0 0 0 2px var(--aurelia); }
+.ccard b { display: block; font-size: 15px; }
+.ccard small { color: var(--muted); font-size: 12px; }
+.chero { position: relative; overflow: hidden; isolation: isolate; margin: -14px -14px 14px; padding: 22px 18px 10px; background: radial-gradient(120% 90% at 80% 20%, #23233a, #0c0c14 70%); color: #F4F4F8; border-radius: 0 0 26px 26px; }
+.chero .flag-bg { position: absolute; right: -20px; top: -30px; font-size: 180px; opacity: 0.12; z-index: -1; }
+.chero .kick { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; font-weight: 700; }
+.chero .gp-name { margin: 4px 0 2px; font-family: var(--font-d); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(40px, 12vw, 60px); line-height: 0.93; }
+.chero .gp-sub { margin: 0; opacity: 0.8; }
+.chero .track-hero { color: #F4F4F8; margin: 10px auto 0; max-width: 420px; filter: drop-shadow(0 0 14px rgba(125, 211, 252, 0.35)); }
+.rev-tag { position: absolute; right: 16px; bottom: 14px; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(125, 211, 252, 0.2); color: #7DD3FC; }
+.poster { position: relative; }
+.poster .poster-track { position: absolute; right: -10px; top: 42px; width: 58%; max-width: 260px; color: #fff; opacity: 0.14; z-index: -1; pointer-events: none; }
+.trackcard { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 14px; text-align: left; }
+.trackcard .track { max-width: 380px; margin: 0 auto; aspect-ratio: 3 / 2; }
+.tc-f { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+.tc-f b { color: var(--text); font-size: 15px; }
+.tc-more { display: flex; align-items: center; justify-content: space-between; font-weight: 700; color: var(--aurelia-ink, var(--text)); }
+.tc-more svg { width: 18px; height: 18px; }
+
+/* ---------- calendario ---------- */
+.calrow { display: grid; grid-template-columns: 40px minmax(0, 1fr) 30px; align-items: center; gap: 8px; margin-bottom: 8px; }
+.calrow .rn { font-family: var(--font-d); font-weight: 800; font-size: 18px; color: var(--muted); text-align: center; }
+.stepper { display: flex; align-items: center; gap: 14px; }
+.stepper b { font-family: var(--font-d); font-size: 28px; min-width: 40px; text-align: center; }
+.stepper .btn { min-width: 44px; font-size: 22px; }
+
+/* ---------- historia ---------- */
+.storycard { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; border-radius: 18px; text-align: left; color: #F4F4F8; background: linear-gradient(120deg, #0B2239, #15151E 70%); box-shadow: var(--shadow); }
+.storycard span { flex: 1; min-width: 0; }
+.storycard b { display: block; font-family: var(--font-d); font-weight: 800; font-style: italic; text-transform: uppercase; font-size: 24px; line-height: 1; }
+.storycard small { opacity: 0.75; font-size: 13px; }
+.storycard > svg:last-child { width: 20px; height: 20px; opacity: 0.7; }
+.story-hero { position: relative; overflow: hidden; isolation: isolate; margin: -14px -14px 0; padding: 30px 20px 24px; background: linear-gradient(160deg, #0B2239, #0A0A10 75%); color: #F4F4F8; border-radius: 0 0 26px 26px; }
+.story-hero .flag-bg { position: absolute; right: -30px; bottom: -40px; font-size: 200px; opacity: 0.1; z-index: -1; }
+.story-hero .kick { font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #7DD3FC; font-weight: 700; }
+.story-hero h1 { margin: 6px 0 12px; font-family: var(--font-d); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(48px, 15vw, 76px); line-height: 0.86; }
+.story-hero p { margin: 0; opacity: 0.85; line-height: 1.45; }
+.prologue { margin: 18px 2px 0; padding-left: 14px; border-left: 3px solid var(--red); }
+.prologue p { margin: 0; font-family: var(--font-serif); font-style: italic; font-size: 19px; line-height: 1.45; }
+.miles { list-style: none; margin: 0; padding: 0 0 0 6px; position: relative; }
+.miles::before { content: ""; position: absolute; left: 22px; top: 8px; bottom: 8px; width: 2px; background: var(--line-2); }
+.miles li { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; }
+.miles .mi { position: relative; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); font-size: 17px; }
+.miles b { display: block; font-size: 16px; }
+.miles small { color: var(--muted); font-size: 14px; }
+.chapter { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; padding: 14px; margin-bottom: 10px; border-radius: 18px; background: var(--card); box-shadow: var(--shadow); }
+.chapter.now { box-shadow: var(--shadow), inset 0 0 0 2px var(--aurelia); }
+.chapter .cn { font-family: var(--font-d); font-weight: 900; font-style: italic; font-size: 52px; line-height: 0.9; color: var(--red); }
+.chapter .ck { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.chapter h3 { margin: 2px 0 6px; font-family: var(--font-d); font-weight: 800; text-transform: uppercase; font-size: 22px; line-height: 1; }
+.chapter p { margin: 0; line-height: 1.5; }
+.tbc { text-align: center; font-family: var(--font-serif); font-style: italic; font-size: 20px; color: var(--muted); margin: 24px 0 8px; }
+
+/* ---------- artículo de portada ---------- */
+.fp-article { margin-top: 14px; padding: 16px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); border-top: 4px solid var(--pc); }
+.fpa-k { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.fp-article h3 { margin: 6px 0 8px; font-family: var(--font-d); font-weight: 800; text-transform: uppercase; font-size: 26px; line-height: 1; }
+.fpa-deck { font-weight: 600; }
+.fp-article p { line-height: 1.55; }
+.fpa-by { font-size: 13px; color: var(--muted); font-style: italic; }
+
 </style>
 </head>
 <body>
@@ -841,6 +907,41 @@ const CRESTS = {
   rb:       { shape: "badge",   code: "RB" },
   sauber:   { shape: "diamond", code: "SAU" }
 };
+
+/* Trazados simplificados a partir de bacinger/f1-circuits (licencia MIT, (c) Tomislav Bacinger). */
+const TRACK_PATHS = {"aus":"M135 141.9 112.2 119 111.9 117.4 114.1 110.9 113.1 104.9 111.1 102.1 95.4 86.3 90.3 79.9 80.2 63.6 78.3 58.3 79.8 57 90 55 91.6 54 92.2 51 91.6 33.1 93.1 31 106.6 21.6 120.8 16 127 12.2 129.1 12 134.5 16.5 136.9 17.4 145.4 18.3 150.5 20.4 156.7 26.2 159.9 34.3 162.6 49.4 161.7 55 159.6 58.7 156.9 62 155.6 64.9 152.1 85 153.4 96.2 156.8 104.2 160.2 109.5 173.6 121.7 177.8 123.5 187.6 123.5 190.5 124.5 207 138.4 211.7 144.5 213.2 148 221.1 174.9 221.8 179.3 199.2 188 196.4 187.3 194 185.5 183.5 167.6 181.7 167.7 174 175.8 171 176.5 168.5 175.7Z","chn":"M102.9 169.6 87.8 173.4 81.7 173.7 76.7 171.9 72.1 168.4 70.6 166.4 68.6 161.8 68.6 156.5 69.6 152.3 72.5 148.9 76.2 147.3 79.6 147.3 82.2 148.3 83.3 149.5 84.2 152.6 82.2 160.7 84.5 164 87.1 165.1 90.1 164.5 91.6 163.4 93.6 160 95.1 155.1 94.8 149.7 92.3 145.2 81.1 132.9 74.9 124.7 63.3 111.8 61.2 108.4 49.6 73.3 52.1 71.4 55 72 60.4 76 66.4 82.3 82 108.7 89.2 117.5 95.4 120.3 102.6 121 109.3 119.1 115.8 114.5 118.3 111.6 126.8 94.4 128.7 92.6 134.4 89.7 140.4 89.7 146.6 93.4 154.8 108.2 156.5 110 158.5 110.6 162.2 109.6 169.9 98.7 169.4 95.5 130.9 31.4 127.8 31.3 122.9 36.6 119.4 38.3 117.3 37.9 115.3 36.1 111.7 31.3 110.6 26.4 111.3 21.2 112.1 18.8 116.4 14.2 119.4 12.9 125 12 132 13.1 134.6 14.2 140.9 19.1 144.2 23.7 222.3 143 249.5 183.3 250.4 185.1 250.3 186.8 249.1 188 247.1 187.8 238.3 182.4 211.3 145.6 210.1 144.9 207.9 144.7Z","jpn":"M247.7 105 286.5 152.5 288 157.6 288 160 285.3 169 282.6 172.3 278.9 173.7 274.2 172.8 272 171 257.9 149.5 255.7 147.6 250.9 146.5 244.8 146.4 241.8 145.6 239.6 144 237.2 140.1 234.5 129.7 231.5 124.8 226.7 122 213.7 120.7 209.1 117.9 206.4 112.9 205.9 108.2 210.4 94.8 210.1 90.6 207.8 86.1 198.3 80.7 189 78.1 182 78.1 179.4 78.8 170.6 83 166.7 86.3 150 106.1 127.8 108.2 126.5 107.3 125.9 105.8 122.8 92.7 118.1 64.4 118.7 60 123.9 47.4 123.1 45.5 121 44.5 118.6 45.4 117.6 46.9 107.2 63.8 100.6 69.8 94.4 72.4 88.9 73.2 79.6 73.2 69.8 70.7 60.3 66.8 51.1 59.9 47.9 56.3 43.8 49.8 36.6 31.7 33.5 27.9 28.5 26.3 19.2 27.5 14 30.5 12.6 32.8 12.2 37.8 13.7 42 18.5 46.8 31.3 57.2 42.7 64.6 54.8 70.6 126.5 96.2 131.6 96.9 141.8 93.8 149.9 89.3 170.7 70.5 178.4 65 180 65.3 185.1 69 187.7 67.8 192.7 63.7 195.7 62.5 202.7 62.3 212.9 65.9 220.1 71.7Z","bhr":"M94.4 95.4 95.8 46 97.1 13.7 97.7 12.2 99 12 101.5 13.1 108.1 19.9 110 20.6 123.6 16.7 128.9 16.5 207.6 32 209 33.5 209.4 35.4 208.2 39.1 204.7 42.7 192.9 51.6 183.7 61 177.8 72.6 174.4 74.7 171.6 75 163.3 73.6 158.7 74.1 156.8 75.1 135.9 100.2 133.5 100.6 132.1 99.4 131.5 97.1 138.4 51.1 137.4 46.3 136.1 44.2 129.2 38.2 127.2 38 126.6 39.1 124.1 57.9 120.4 137.8 120.8 141.4 122.2 143.4 127.4 145.2 134.4 144.2 138.4 142.3 145.1 136.5 147.1 133.2 150.8 123.5 154.9 117.1 160.6 113 164.9 111.9 173.1 112.6 189.4 120.7 194 124.5 196.3 128.6 196.3 130.5 195.2 132.5 190.3 136.7 100.3 187.1 96.1 188 91 178.5 90.6 175.1 91.8 133.8Z","sau":"M159.1 147.5 150.1 121.2 149.1 120.7 146.5 121.3 145.4 119.8 147.5 111 144.7 93 140.4 90.1 138.8 86.8 139 83.2 141.4 78.9 141.5 75.7 140.8 72.5 136.7 68.6 136.3 67.1 136.6 59.6 139 57.1 142.2 55.9 143.1 54.5 145.6 44.6 146.3 39.3 145.2 14.9 144.2 13.1 141.8 12 139.5 12.7 137.8 14.8 137.8 20.2 141.1 25.6 142.6 32 142.4 35.8 138.8 43.9 138.5 47.7 137.4 50.6 134.2 51.8 131.9 54.3 131.2 61.1 131.6 64.7 136.4 77.3 136.9 89.1 138.5 93.3 142.3 99.7 144.1 105.1 144.4 112.7 143 120.8 143.9 122.7 147.2 125.7 149 132.2 148.5 135.1 143 146.3 142.1 150.5 142.3 155.8 145.2 166.4 151.1 176.4 159 183.4 164.7 187.3 167.3 187.7 168.8 186.1 168.8 185 164.4 164.6Z","mia":"M148.2 75.7 185.9 99.3 186.6 101 185.2 104.8 177.1 110.8 174.6 113.5 173.8 118.3 174.6 123.5 173.8 129.8 171.9 133.9 164.6 139.7 156.3 142.6 151 143.8 143 144 136.8 142.8 129.5 139.6 87.2 114.2 84.5 113.7 78.2 113.9 74.2 115.1 63.9 122.1 59.2 122.9 55 122.5 50.5 120.3 42.4 112.7 38.1 110.6 33.6 109.7 28.2 110.6 19.1 114.1 16.1 117 13.1 121.5 12 126.4 12.1 130.5 13 133.2 14.5 135.1 17.5 136.7 30.8 135.8 60.3 141.8 110.1 140 128.7 146.3 148.1 152.8 159.7 154.7 171.3 154.9 183.6 152.9 235 134 260.4 121.1 270.2 114.9 272.1 112.2 271.5 110 262.1 103.2 260.4 99.8 260 96.2 261 91.9 263.4 89.4 266.3 88.3 274.7 88.8 278.9 88.2 283.6 84.3 288 76.4 287.7 74.7 283.6 72.4 283.6 69.5 287.1 58.2 286.8 56.3 285.2 55 48.4 45.1 45.5 45.9 44.8 48.2 45.8 51.1 54.8 58.4 60.7 61.5 65.5 62.8 69.7 62.4 86.8 54.9 93.5 53.1 101.8 52.4 110 53.5 117.7 56.7Z","emi":"M187.1 45.3 182.2 45.3 151.7 38.7 140.8 37.6 134.4 37.5 102.6 40.4 86.9 44.1 84 46.5 81.8 54.1 65.4 62.8 63.3 65.2 40 122.8 39.8 126.2 42.3 135.1 41.5 138.3 13.1 163 12 166 13.4 169.7 14.7 170.9 18.5 171.3 67.8 165.2 75.3 165.6 99.6 169.9 103.9 168.5 106.3 166.1 108.8 161.7 112.5 152.4 113.6 143.7 107.5 113.4 108.3 109.9 115.6 98.5 118.4 97.8 127.5 101 191.4 100.5 192.3 100.9 193.7 104.5 195.7 104.9 224.5 92.6 235.1 85.2 261.5 59.7 267.5 56 286.4 47.7 287.8 46.3 287.6 42.4 281.9 30.4 280.6 29.2 277.1 28.7 236.3 44 232 44.9 229.1 45.4Z","mon":"M170.4 46.4 170.5 42.9 172.5 39.1 192.3 12.5 193.9 12 197.3 13.7 198.3 15.5 198.7 20.4 199.5 22.1 203.8 29.3 205.4 30.3 207.3 29.2 207.5 27.9 201.5 20.7 200.9 18.3 201.7 16.5 212.1 12.7 214.6 12.5 216 13.1 216.5 15.2 216 27.2 212.2 47.4 210.1 52.9 206.4 59.3 202.2 64.7 196.1 71.4 187.4 76.8 172.2 84 165.4 86.3 145.6 90.3 144.4 94.2 142.9 94.7 140.9 95 137.4 93.6 98.6 99.2 95.8 103.7 93.2 110.2 92.2 116.6 92.2 125.3 93.7 127.7 97.5 130.7 98.1 132.2 101.8 152.5 101.1 154.5 98.2 156.2 97.9 157.3 99.8 164.2 102.8 170.6 105.4 174.4 108.7 177.7 115.9 181.7 116.3 185.3 106.6 188 102.8 187.7 101.7 186.9 101 186.2 100.2 181.6 93.2 171.5 91.4 166.4 86.1 147.6 83.5 126.2 84.3 110.7 86.7 102.5 86.8 96.8 88.6 95.3 91.7 94.6 108.1 92.5 126.5 87.2 136.7 85.9 153.4 78.6 171.9 74.8 175.2 72.8 178 69.8 179.6 67.3 180.2 62 177.4 53.8 171.3 48.5Z","esp":"M191.4 90.6 136.7 177.7 133.5 180.5 129.1 180.3 122.9 176.7 118.9 176.2 114.9 177.7 104.2 185.7 99.1 187.7 95.5 188 91.5 187.6 87.1 185.8 83.7 182.9 80.9 179.3 78.6 173.5 78.1 168.7 78.6 163 81 154.6 102.5 119.8 105.2 117.8 108.1 117.1 113.1 118.7 116.3 121.7 117.8 124.7 118.5 130.5 117.9 135 115 140.9 101.4 162 101.4 166.2 102.7 168.1 106.1 169.5 107.9 169.1 129 159.6 134.6 155.7 139.4 150.7 147.5 138 148.7 134.7 148.4 132.7 145.8 129.3 140.1 125.5 137.3 121.6 126.4 95.8 125.9 91 127.7 85.3 132.3 80.4 197 47.2 199.2 46 201 43.5 200.7 40.4 197.2 36.8 193.1 35.3 189 34.9 185 35.6 182.1 37 172.7 43.4 168 43.2 164.3 40.7 162.4 37.3 162.1 34.3 163.7 29.7 182.2 14.2 185.9 12.4 190.7 12 194.7 13.2 215.8 26.8 218.8 29.3 220.7 32.4 221.9 36.6 221.5 42.2Z","can":"M169.3 139.4 174 162.4 173 180.5 178.2 183.5 178.6 184.6 178 186.7 175.7 188 168.1 186.4 159.9 182.2 150.2 173.7 149.4 171.7 150.3 167.7 149.7 166 142.8 157.5 137.8 153.7 136.3 151.7 134.7 145.5 134.7 131.3 133.4 129.7 128.8 130 126.2 128.9 123.5 124.3 122.3 119.2 121.4 106.8 122.5 88.4 126.6 71.1 128 69.2 132.2 68 134.1 65.6 138.3 49.5 139.7 41.8 140.4 30.8 137.5 12.9 138.1 12.2 140 12.2 140.7 13.3 142.1 23.5 145.6 30.7 155 55 167.8 116.7 167.2 118.1 165.5 119.1 165.3 120.8Z","aut":"M196 169 129.8 186.8 126.6 187.1 124.4 185.1 120.8 178 96.7 144.7 86.9 128.9 77.9 113.5 59.2 72.9 53 62.9 43.4 51.2 12.9 20.6 12 18.6 12.1 16.5 13.8 15.5 17.6 14.8 29.6 13.4 54.1 13.1 79.6 16.4 121.5 24.5 140.6 27 181.9 28.8 185.2 29.9 187.3 32.2 188.1 34.8 186.8 40 179.4 49.8 173.4 55.1 166.8 58.7 158.8 61.3 150.1 62.7 141.1 62.2 105.9 56.5 101.2 57.1 97.3 58.5 91 63.9 89.2 67.6 88 75.3 89.6 82.4 106.7 112.2 109.6 115.3 114.1 118.2 119.3 119.4 124.3 118.9 129.6 116.7 132.9 114 142.8 102.4 146.8 99.6 151.5 96.8 158.1 94.4 165 92.9 266 90.8 270.4 92.3 273.9 95 276.8 98.6 278.9 103.3 287.5 132.2 288 134.8 286.5 138.3 278.7 143.6 266.5 149.3Z","gbr":"M160 13.7 182.5 12.2 186.9 14.2 190.2 19.3 194.2 34 196.5 65 200.9 74.5 200.4 78.4 197.2 86.9 197 90.4 197.5 92.8 201.9 99.4 202.6 101.5 202.1 106.1 200.2 108.5 191.6 113.8 189.8 115.7 160.1 170.1 150.3 184.9 146.5 187.5 142.4 187.8 138.5 186.6 136.8 185.3 130.7 173.8 113.7 153.9 110.9 153.8 106.6 157.1 104.6 156.6 99 149.3 97.3 142.9 99.6 138.3 127.7 101.8 130.7 99.3 134.7 98.7 149 100.4 154.3 99.4 171.1 86.5 174.5 85.1 176.7 87.1 179.9 97 182.2 97.8 183.5 97.3 184.9 95.1 187.4 87.4 187.9 82.7 187.2 79 138.6 34.3 135.5 32.6 133.3 32.3 131 32.5 128.7 33.7 127.3 36.2 125.8 45.7 122.9 47.8 118.9 47.5 115.7 44 115.9 40.8 123.2 26.1 127 21.8 132 17.9 137.3 15.9Z","bel":"M128.5 30.7 118.8 13.7 119.1 12.3 121 12.3 131.9 17.6 143 25.7 160.5 46.3 167.9 51.8 169.9 55.4 171.5 63.3 184.2 83.9 186.4 88.7 204.2 150.8 204.1 153.3 200.2 156.8 199.2 159 201.1 168.4 200.8 171 199.8 172.4 178.3 187.4 175.7 188 173.2 186.8 172 183.2 173.2 180.8 183.1 174.5 184.8 171.4 179.9 154.7 175.7 131.8 174.2 129.2 169.9 126.4 162.9 125.8 157.1 127.4 152.6 131.7 141.8 157.9 139.7 160.9 135.1 162.3 129 159.5 124.2 159.9 121 163.2 112.8 176.1 109.7 177.7 107.2 177.1 98.3 170.6 96.1 167 95.7 164 96.5 160.6 98.4 155.5 102.4 149.1 111 140.2 114.2 137.8 130.7 129 136.3 124.6 141.1 117.5 146.6 104.9 146.7 98.8 139.8 80.6 138 71.8 137.2 56.9 138.3 56.2 141.7 56.2 142.4 54.9Z","hun":"M111 144.6 73.5 114.7 72.2 112.1 72.9 109.5 76.5 108 85.5 108.2 90 108.9 98.3 111.8 103.9 115.3 127.6 134.1 131 135.3 135.5 134.3 138.3 131.4 139 127 131.3 112.7 130.4 108.9 131.3 105.6 152.7 62.1 162.6 47.8 156.3 22.3 156.3 18.8 157.5 15.6 162 12.3 165.6 12.1 169.8 13.5 178.8 19.9 194.1 36.3 194.8 39.7 192 43.2 196.9 63.1 198.6 66.3 200.2 67.9 212.9 70 216.1 71.6 218 73.9 218.7 78.4 216.1 96.6 216.2 101.3 217.4 105.1 227.5 121.9 227.6 126.4 225.6 130.6 195.9 164.5 189.9 170.5 186.9 170 176.5 158.3 167.6 150.9 163.5 149.4 160.3 150.4 158 154.1 158.7 158.5 176.6 173.7 177.9 176.8 178 180.9 176.6 184.2 173.4 186.9 169 188 164.5 186.9 162.5 185.5Z","ned":"M72 92.4 103.9 15.9 105.9 13.7 108.6 12.4 111.5 12 114.3 12.6 118.6 16.5 119.6 19.3 119.6 22.3 109.8 46.1 107.4 54.4 106.4 63.1 106.9 71.2 106.2 74.5 100.8 79.7 86.2 85.4 83.4 87.5 82.6 93.3 83.7 96.1 85.8 98.1 88.4 99.2 92.3 99.1 112 92.8 121.1 91.1 128.9 90.9 135.9 91.4 154.8 95.6 161.9 96.2 173 93.6 180.2 89.9 188.8 84.3 199.7 80.1 206.5 79.3 211.8 79.5 234.2 80.8 239.3 82 244.1 84.4 247.5 87.3 251.8 94 253.3 102.4 252.9 106.6 251.6 110.9 248.9 115.6 234.9 135.8 226.3 154.3 222.2 155.7 217.1 156.3 206.6 155.1 200.6 153.1 194.3 150 188 145.5 184.1 141.2 183.4 138.6 184 135.8 186.4 132.3 189.9 130.1 194.9 128.2 212 124.7 219.7 121.8 223.9 118.8 225.5 115.2 225.7 111.3 224.3 107.5 220.8 103.9 217.6 102.8 201.1 100.8 184.5 100.9 166.9 103 152 106.8 132.6 113.4 122.9 117.6 112 123.5 109.9 123.1 105.9 116.5 103 114.7 99.4 114.6 95.8 116.3 93.9 118.9 93 121.6 101.9 173.9 102.1 177 101.2 180.2 98.4 184.6 95 186.9 91.4 187.7 72.9 187.8 63.6 185.6 59.8 183.8 54.6 179.8 49 171.4 47.3 166.2 46.7 161.7 47.2 154.2 48.6 148.9Z","ita":"M102.3 123.8 106.6 74.4 107.2 73.5 109.5 73.5 110.3 72.4 107.9 61.8 108.7 47.3 111.5 38.8 115.9 33.2 122.2 28.7 130.2 25.7 166.1 22.8 168.1 19.4 193.6 12 197.1 13.5 199 16.3 201 36.3 200 39.1 176.8 51.9 169.9 56.6 132.2 89.9 131.7 91.3 132 96.3 131.2 99.1 126.8 103.7 126.1 105.9 118.2 180.6 117.7 183.8 115.6 186.5 111.7 188 109.3 187.7 105.7 185.9 102.3 182.3 99.8 175.7 99.1 154.5Z","aze":"M251.1 57.1 268.8 49.5 270.4 46.6 266.5 35.8 255.5 12.7 253.6 12 216.1 26.7 163.7 50.5 162.1 52.2 162.1 54.4 170.1 75 170.1 76.6 168.9 78 147.3 88.8 136.7 95.6 136.3 97.7 138.1 101.5 137.2 103.5 103.4 130.4 101.7 130.3 100.3 128.8 94 110.1 93.2 109.3 90.5 109.1 86.8 107.3 83.9 107.5 82.4 106.9 80.3 101.3 78.7 99.9 77.3 99.8 67.2 103.3 51.1 111.2 40.5 117.6 38.3 119.3 35.2 124.6 29.9 142.4 29.6 144.8 31.8 170.8 33.1 172.3 54.9 183.8 64.4 187.7 68.4 187.6 70.9 185.5 80.8 168.2 99.6 151.2 101.1 149 103.5 135.7 105.6 131.4 134.2 109 145.8 102.5Z","sgp":"M279.9 79 285.8 125.6 285.3 128.2 283.8 130.6 277.1 140.8 274.6 143.1 252.4 142.1 223 138.5 219.2 135.4 217.8 131.8 217.8 126.2 217.1 125.1 136.1 120.7 124.9 118.7 120.2 116.4 92.7 92.4 91.3 91.3 89.4 91 86.9 91.4 83.9 93.8 80.4 104.4 64.5 184.8 63.2 186.7 60.4 188 57.6 187.6 53.1 181.6 51.5 178.1 34.6 163.3 33 161 31.4 155.5 32 151 33.2 148.7 32.6 147.2 26.6 145.2 16 137.4 14.9 135.1 14.2 128.9 50 64.9 53.9 61.4 57.7 60.6 65.3 65.7 82.7 84 84.3 84.8 85.6 84.5 93.7 68.7 102.9 53.1 104.6 50.6 106.2 50 159.8 80.7 167.8 83.7 173.4 84.8 242.5 88.8 245.1 88.3 251.5 84.7 253.3 81.3 253.8 78.1 253.3 70.5 251.3 60.2 242.6 37.1 242 33.5 243 18.7 244.7 14.6 247.2 12.2 249.2 12 251 12.5 257.1 19.3 265.1 22.5 269.7 22.1 272.1 23 273.3 24.7 275.9 50.1Z","usa":"M67.4 150.1 99.2 174.8 106.5 178.9 108.1 179 109.4 177.7 109.6 176.1 101.3 151.1 101.3 147 102.5 142.3 106.8 136.1 133.2 119 135.3 116.2 138.2 108.6 140.5 105.5 151.2 99.8 153.1 97 155.4 85.9 157.4 82.7 160.4 79.7 167.1 75.9 172.2 75.4 190.1 83.2 191.6 83.2 198.9 78.3 205.5 70.4 208.9 68.4 212.3 68.1 216.2 69.6 219.8 74.5 222.1 76.1 250.6 69.8 252.4 68.5 280.7 34.3 285.8 27.8 287.8 24 287.8 22.2 286.4 21.1 284.6 21 236.6 35.5 215.5 40.6 190.2 45.7 159.8 50.4 111.9 56 111.1 57.9 124.3 75.3 128.6 82.3 128.6 84.8 128 85.9 126 86.9 116.2 86.5 114 84.7 110 75.8 104 69.8 96.9 68.8 95.3 69.3 94.4 70.9 94.8 72 108.8 96.8 109 100.9 107.2 107.3 104.6 112.1 92.7 118 89.4 118.5 83.6 117.8 77.8 115.8 73.4 112.9 55.5 88.5 54.6 87.5 52 86.8 44.9 88.7 14.7 101.9 12.3 104.2 12 105.4 13 107.1Z","mex":"M72.6 15.5 152.7 26.4 183.4 29.5 253.9 39.8 264.7 42.3 266 45.2 264.6 57.3 265.1 58.2 271.2 61.4 271.9 62.6 269.5 76.8 264.6 88.2 244 123.1 217.8 164.4 217.9 167.4 226 172.9 226.7 173.6 226.3 175.7 211.3 187.2 208.7 188 205.2 186 204.8 182.9 211 132.3 209.4 129.7 200.6 124.1 196.4 120.1 193.1 112.7 189.6 108.2 184.6 105.6 159.4 101.4 157.1 99.2 153.6 88.8 151.2 85.3 125.9 72.1 118.8 70.4 61.5 61.8 60.3 59.9 59.3 44 57.7 32.8 55.7 31.5 54.2 31.7 49.5 37 46.6 37.4 40.7 35 29.6 33.4 28.2 31.7 28.7 27.8 30.1 24.1 34.5 17.5 37.5 15 41.4 13.1 48.4 12Z","bra":"M105.2 138.3 116.1 180.5 117.1 182.8 120.7 187.3 124.2 188 127.1 187.1 133.1 180.9 135.9 179.5 139.7 180.1 148.2 184.6 153.7 185.7 162.1 184.8 168.5 181.9 173.9 176.9 178.5 168.7 183.2 153.3 205.6 65.6 204.9 62.4 202 59.5 187.2 56.1 183.5 55.7 178.4 56.3 175.7 57 171.2 59.7 163.9 67.6 133.7 109.1 130.5 111.8 128.2 112.6 121.7 112.8 117 111.8 112 109.2 108.4 104.4 105.8 94.1 104.6 81.7 105.3 79.6 107.1 78.1 109.4 77.6 112.1 78.5 117.5 82.4 122.4 83.1 126.3 80.7 127.5 78.9 128.2 75.4 128 73.4 125.6 69.5 118.9 62.9 114.3 57.1 111.9 48.8 111.2 43.5 111.4 41.4 112.8 39.2 114.8 38.6 117.3 39.3 129.2 52.8 132.3 55 137.7 56.6 144.8 56.4 147.3 55.6 152.6 51.9 170.3 23.5 169.4 19.9 165.4 17.3 153.2 12.7 149.5 12 145.4 12.4 133.8 14.8 123.4 19 114.8 24 110.5 27.8 107.3 32.2 104.8 38.5 101 53.5 99.8 61.3 94.9 80.4 94.4 87.9 95.2 96.8Z","las":"M193.9 168.3 200.7 160.2 200.9 158.7 199.3 156.5 195.6 155.5 192.3 156.1 188.7 158.2 184.2 162.3 180 162.8 174.5 160 172.2 156.9 171.3 154.3 170.7 77 172.1 75.2 192.8 75.5 195.3 74.9 199.1 71.3 202.1 65.9 202.8 61.1 202.7 59.6 198.7 58.2 197.7 55.5 201.4 47.6 201.1 45.7 199.3 44.5 195.9 44.2 170.6 43.5 161.3 42.2 158.2 40.7 154.8 37.2 147.4 20.8 144.5 17.8 141.6 15.7 128.4 12 127 12.7 120.3 26.7 110 45.2 106.7 52.7 101.7 69.5 99.2 85.7 97.2 181.5 98.4 182.5 101.3 182.9 106.5 187.1 109.7 187.7 164.4 187.8 176.7 185.7 179.7 184.2Z","qat":"M101.6 118.5 75.9 71.7 75.8 66.7 78.1 63.2 80.4 61.9 82.9 61.5 85.3 62 103.7 73.1 107.8 73.7 110.5 72.9 113.9 68.7 113.7 50.4 115.5 44.6 144.5 12.8 148.9 12 152.8 13.6 160.6 21 161.9 24.8 161.3 28.5 160.1 30.1 143.1 48.9 142.3 51.7 143.5 54 144.7 54.8 147.6 54.7 179 42 180.9 41.8 185.4 43.1 187.9 46.7 188.3 48.7 187.7 52.1 185.4 55 180.5 59.9 176.6 66 173.4 76.8 171.4 80.3 168.2 82.1 151.3 86.2 148.7 88.1 147.7 91.4 148 93.9 153 99.5 157.9 103.2 163 106.1 168.2 107.9 178.4 109.4 209.2 106.1 211.5 106.6 216.3 109.4 224.1 123 224.5 126.6 223.1 130.6 212.8 146.5 209.3 147.8 207 147.7 177.9 141.8 173.7 142.4 170.8 145.1 150.5 184.5 147 187.6 142.3 187.8 138.3 185.2Z","abu":"M149 110.6 173.5 107.3 175.7 105.8 176.5 103.1 171.6 83.1 169.1 80.5 160.9 77.7 156.9 75.4 153.3 71.4 152.2 68.9 151.8 64.8 154.7 53.1 155.4 44.7 151.7 15.2 149.5 12.4 147 12.1 144.5 14.8 141.6 25.9 119.9 90.5 108.7 126.8 109.3 127.9 115.1 127.5 115.8 128.3 119.9 141.8 123.9 148.3 127 151.9 154.4 173.6 161.8 178.2 183.1 188 186.8 187.6 188.6 186.6 190.1 184.8 191.3 181.1 190.7 177.7 189.4 175.1 185.3 172.3 162.4 170.1 152 163.9 150.4 162.3 147.7 149.5 156.8 147.6 158.9 146.3 159.7 143.7 159.7 136.6 158.4 134.6 154.6 133.7 151.3 133.8 133.5 136.4 128.8 135.6 127.2 134 119.9 121 119.4 116.8 120.3 115.1Z"};
+
+/* Historia y datos de cada circuito. */
+const CIRCUIT_INFO = {
+  aus: { first: 1996, corner: "La rápida sección junto al lago, entre las curvas 9 y 10", history: "Sede del GP de Australia desde 1996, cuando tomó el relevo de Adelaida. Es un circuito semipermanente que rodea el lago de Albert Park, en pleno Melbourne, y durante muchos años ha sido el encargado de abrir la temporada." },
+  chn: { first: 2004, corner: "La curva 1, un caracol que se cierra sobre sí mismo", history: "Diseñado por Hermann Tilke, su trazado recuerda al carácter chino «shang», que significa «por encima». Debutó en 2004 y volvió al calendario en 2024 tras varios años de ausencia." },
+  jpn: { first: 1987, corner: "Las eses del primer sector y la mítica 130R", history: "Construido por Honda como pista de pruebas y diseñado por John Hugenholtz, es el gran trazado en forma de ocho del calendario. Ha decidido varios Mundiales, entre ellos los famosos duelos entre Senna y Prost de 1989 y 1990." },
+  bhr: { first: 2004, corner: "La frenada de la curva 1, al final de la recta", history: "En 2004 se convirtió en la primera carrera de F1 en Oriente Medio, levantada en pleno desierto de Sakhir. Desde 2014 se disputa de noche, bajo focos." },
+  sau: { first: 2021, corner: "Las curvas enlazadas del primer sector, a fondo entre muros", history: "El callejero de la Corniche de Yeda, a orillas del mar Rojo, debutó en 2021 como uno de los urbanos más rápidos jamás construidos, con 27 curvas y velocidades medias altísimas." },
+  mia: { first: 2022, corner: "La chicane lenta de las curvas 14 y 15", history: "Trazado alrededor del Hard Rock Stadium, en Miami Gardens. Llegó al calendario en 2022 como segunda cita de la F1 en Estados Unidos, con todo el espectáculo de Florida." },
+  emi: { first: 1980, corner: "Tamburello, Acque Minerali y Rivazza", history: "Acogió el GP de Italia en 1980 y el de San Marino entre 1981 y 2006. Volvió en 2020 como GP de Emilia-Romaña. Lleva el nombre de Enzo Ferrari y de su hijo Dino, y está a menos de 100 km de Maranello." },
+  mon: { first: 1950, corner: "La horquilla del Fairmont, la curva más lenta del Mundial, y el túnel", history: "Presente en la primera temporada del Mundial, en 1950, y en el calendario de forma casi ininterrumpida desde 1955. Es la carrera más lenta y la más prestigiosa del año. Ayrton Senna es el piloto con más victorias en el Principado, seis." },
+  esp: { first: 1991, corner: "La curva 3, larguísima y a fondo", history: "Inaugurado en 1991 en Montmeló, a las afueras de Barcelona, ha acogido desde entonces el GP de España y durante años fue el gran banco de pruebas de la pretemporada." },
+  can: { first: 1978, corner: "El Muro de los Campeones, a la salida de la última chicane", history: "Construido en la isla artificial de Notre-Dame, en el río San Lorenzo, lleva el nombre de Gilles Villeneuve, que ganó allí la primera carrera en 1978." },
+  aut: { first: 1970, corner: "La subida hasta la curva 3", history: "Nació como Österreichring en 1970, se acortó y pasó a llamarse A1-Ring en 1997 y volvió al calendario en 2014 como Red Bull Ring, entre las colinas de Estiria." },
+  gbr: { first: 1950, corner: "Maggotts, Becketts y Chapel, y la rapidísima Copse", history: "Antiguo aeródromo de la Segunda Guerra Mundial, acogió la primera carrera de la historia del Mundial de F1, el 13 de mayo de 1950. Es la casa de buena parte de los equipos de la parrilla." },
+  bel: { first: 1950, corner: "Eau Rouge y Raidillon", history: "El trazado actual, de 7 km, es una versión reducida del legendario circuito de 14 km por las carreteras de las Ardenas. Su clima es famoso por cambiar de una curva a otra." },
+  hun: { first: 1986, corner: "La curva 1, tras una recta en bajada", history: "En 1986 fue el primer Gran Premio celebrado al otro lado del Telón de Acero. Estrecho, lento y caluroso, se le conoce como el Mónaco sin muros." },
+  ned: { first: 1952, corner: "Los peraltes de la Hugenholtz y de la última curva", history: "Entre las dunas del mar del Norte, fue sede del GP de los Países Bajos hasta 1985 y volvió en 2021 con dos curvas peraltadas que lo hacen único." },
+  ita: { first: 1950, corner: "La Parabolica, hoy curva Alboreto", history: "El Templo de la Velocidad, construido en 1922 en el parque real de Monza. Ha acogido el GP de Italia en todas las temporadas del Mundial salvo 1980, cuando la carrera se fue a Imola." },
+  aze: { first: 2016, corner: "El paso del castillo, en la ciudad vieja", history: "Debutó en 2016 como GP de Europa y desde 2017 es el GP de Azerbaiyán. Mezcla una recta de más de dos kilómetros junto al Caspio con un paso estrechísimo entre las murallas de la ciudad vieja." },
+  sgp: { first: 2008, corner: "El tramo que bordea la bahía, entre rascacielos iluminados", history: "En 2008 estrenó la primera carrera nocturna de la historia de la F1, con miles de focos iluminando las calles de Marina Bay. Calor, humedad y muros: la carrera más exigente del año." },
+  usa: { first: 2012, corner: "La empinada subida hasta la curva 1", history: "El Circuito de las Américas, en Austin (Texas), fue el primer circuito construido expresamente para la F1 en Estados Unidos. Se inauguró en 2012." },
+  mex: { first: 1963, corner: "El paso por el estadio en la última parte de la vuelta", history: "Lleva el nombre de los hermanos Ricardo y Pedro Rodríguez. Volvió en 2015 y, a más de 2.200 metros de altitud, el aire fino deja a los coches con muy poca carga." },
+  bra: { first: 1973, corner: "La S do Senna, justo después de la salida", history: "Interlagos, en São Paulo, acoge el GP de Brasil desde 1973, salvo los años en que se corrió en Río de Janeiro. Lleva el nombre de José Carlos Pace y es uno de los pocos trazados antihorarios." },
+  las: { first: 2023, corner: "La larguísima recta del Strip", history: "Las Vegas ya tuvo F1 en 1981 y 1982, en el aparcamiento del Caesars Palace. En 2023 volvió por todo lo alto con un trazado nocturno sobre el Strip." },
+  qat: { first: 2021, corner: "La cadena de curvas rápidas del último sector", history: "El circuito de Lusail, construido para las motos, debutó en la F1 en 2021 y regresó en 2023 bajo los focos, con curvas rápidas que castigan cuellos y neumáticos." },
+  abu: { first: 2009, corner: "El paso bajo el hotel que cruza sobre la pista", history: "Estrenado en 2009 como la primera carrera que empieza de día y termina de noche. Con el puerto deportivo y el hotel sobre la pista, suele cerrar la temporada." }
+};
+["gbr", "aut", "ned"].forEach((k) => {
+  TRACK_PATHS[k + "_r"] = TRACK_PATHS[k];
+  CIRCUIT_INFO[k + "_r"] = Object.assign({}, CIRCUIT_INFO[k], { reverse: true, history: CIRCUIT_INFO[k].history + " En F1 25 se puede correr en sentido inverso, con todas las referencias cambiadas." });
+});
 
 /* ============================================================
    LÓGICA DEL UNIVERSO
@@ -1168,6 +1269,7 @@ function closeSeason(core) {
   };
   const history = (core.history || []).concat([entry]);
   const next = blankCore(core.season + 1, { roster: clone(core.roster || {}), narrative: clone(core.narrative || {}), history });
+  if (core.distance) next.distance = core.distance;
   return { seasonDoc, next, entry };
 }
 
@@ -1805,6 +1907,752 @@ function templateArticle(core, round, kind) {
 }
 
 /* ============================================================
+   REDACCIÓN AUTOMÁTICA (sin IA)
+   Todo lo deportivo sale de los datos anotados. Solo se inventa
+   lo narrativo: declaraciones, rumores, opiniones y redes.
+   ============================================================ */
+function newsRng(seed) {
+  let h = 1779033703 ^ seed.length;
+  for (let i = 0; i < seed.length; i++) { h = Math.imul(h ^ seed.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+const GP_TAG = { aus: "AusGP", chn: "ChineseGP", jpn: "JapaneseGP", bhr: "BahrainGP", sau: "SaudiArabianGP", mia: "MiamiGP", emi: "ImolaGP", mon: "MonacoGP", esp: "SpanishGP", can: "CanadianGP", aut: "AustrianGP", gbr: "BritishGP", bel: "BelgianGP", hun: "HungarianGP", ned: "DutchGP", ita: "ItalianGP", aze: "AzerbaijanGP", sgp: "SingaporeGP", usa: "USGP", mex: "MexicoGP", bra: "BrazilGP", las: "LasVegasGP", qat: "QatarGP", abu: "AbuDhabiGP", gbr_r: "BritishGP", aut_r: "AustrianGP", ned_r: "DutchGP" };
+const NAT_OUTLET = { "España": "cronometro", "Italia": "rettilineo", "Reino Unido": "pitwall", "Brasil": "folha", "Francia": "chicane", "Países Bajos": "circuit" };
+const HOME_GP = { esp: ["España"], ita: ["Italia"], emi: ["Italia"], gbr: ["Reino Unido"], gbr_r: ["Reino Unido"], bra: ["Brasil"], ned: ["Países Bajos"], ned_r: ["Países Bajos"], mon: ["Mónaco"], jpn: ["Japón"], aus: ["Australia"], can: ["Canadá"], mex: ["México"], usa: ["Estados Unidos"], mia: ["Estados Unidos"], las: ["Estados Unidos"] };
+const ROOKIES = ["arevalo", "antonelli", "bearman", "hadjar", "bortoleto", "lawson", "colapinto"];
+const BIG_TEAMS = ["redbull", "ferrari", "mercedes", "mclaren"];
+const ES_DRIVERS = ["arevalo", "alonso", "sainz", "senna", "colapinto"];
+const AURELIA_BOSS = "Marco Valenti";
+
+/* ---------- utilidades ---------- */
+function NG(core, round, kind, salt) {
+  const R = newsRng(`${core.season}|${round ? round.r : 0}|${kind}|${salt || ""}`);
+  const g = {
+    R,
+    pick: (a) => a[Math.floor(R() * a.length)],
+    int: (a, b) => Math.round(a + R() * (b - a)),
+    shuffle: (a) => { const x = a.slice(); for (let i = x.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [x[i], x[j]] = [x[j], x[i]]; } return x; },
+    fill: (s, v) => String(s).replace(/\{(\w+)\}/g, (_, k) => (v[k] != null ? v[k] : ""))
+  };
+  return g;
+}
+const LN = (id) => (DRIVERS[id] ? DRIVERS[id].last : id);
+const UP = (s) => String(s).toUpperCase();
+const TNAME = (core, id) => team(teamOf(core, id)).name;
+function outcome(x) {
+  if (!x) return "unknown";
+  if (!finished(x)) return x.st === "dsq" ? "dsq" : "dnf";
+  if (x.pos === 1) return "win";
+  if (x.pos <= 3) return "podium";
+  if (x.pos <= 10) return "points";
+  return "nopoints";
+}
+function raceCtx(core, round, kind) {
+  const src = kind === "sprint" ? round.sprint : round.race;
+  const res = (src && src.res) || {};
+  const fin = Object.entries(res).filter(([, x]) => finished(x)).map(([id, x]) => Object.assign({ id }, x)).sort((a, b) => a.pos - b.pos);
+  const at = (p) => (fin.find((f) => f.pos === p) || {}).id || null;
+  const c = circuit(round.gp);
+  const table = driverTable(core);
+  const mate = teammatesOf(core, ME)[0] || null;
+  const left = core.rounds.filter((x) => !x.race).length;
+  return {
+    src, res, fin, at, c,
+    place: c ? c.place : "la ronda " + round.r,
+    gpName: c ? c.gp : "Gran Premio",
+    tag: GP_TAG[round.gp] || "F1",
+    winner: at(1), podium: [at(1), at(2), at(3)].filter(Boolean),
+    me: res[ME] || null, mate, mateRes: mate ? res[mate] || null : null,
+    fl: Object.keys(res).find((d) => res[d].fl === true) || null,
+    outs: Object.keys(res).filter((d) => !finished(res[d])),
+    table, leader: table[0], second: table[1], myRow: table.find((r) => r.id === ME),
+    left, maxLeft: left * 25, full: !!(src && src.full), stale: !!core.stale
+  };
+}
+function bestOf(ctx, ids) {
+  return ids.map((id) => [id, ctx.res[id]]).filter(([, x]) => x).sort((a, b) => (finished(b[1]) ? 1 : 0) - (finished(a[1]) ? 1 : 0) || ((a[1].pos || 99) - (b[1].pos || 99)))[0] || null;
+}
+function rivalryHeat(core, a, b) {
+  const r = (core.narrative.rivalries || []).find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
+  return r ? r.heat : 0;
+}
+
+/* ---------- declaraciones ---------- */
+const Q = {
+  win: ["Qué carrera. El coche ha ido perfecto de principio a fin y el equipo ha hecho un trabajo enorme.", "Ganar aquí es especial. Hemos cuidado los neumáticos y no hemos cometido ni un error.", "No tengo palabras. Esto es para toda la gente que trabaja en la fábrica día y noche.", "Ha sido muy exigente, pero teníamos ritmo para controlar la carrera desde delante."],
+  podium: ["Un podio siempre es buena noticia. Hoy no teníamos para más, pero sumamos mucho.", "Contento con el resultado. Hemos exprimido el coche y el podio es justo.", "Estamos cerca. Si seguimos así, la victoria llegará pronto."],
+  points: ["Hemos sumado, que es lo importante. Toca trabajar para dar el siguiente paso.", "No es el resultado que queríamos, pero los puntos cuentan al final del año.", "Carrera complicada. Nos llevamos puntos y muchas cosas que analizar."],
+  nopoints: ["Un día para olvidar. No hemos tenido ritmo y hay que entender por qué.", "Frustrante. Hemos peleado, pero hoy no había más.", "No podemos estar contentos. Toca analizarlo todo con calma."],
+  dnf: ["Una pena no ver la bandera a cuadros. Pasamos página y a pensar en la siguiente.", "Duele, porque podíamos haber sumado. Lo analizaremos con el equipo.", "Son cosas de las carreras. Toca levantarse y volver más fuertes."],
+  dsq: ["Es una decisión que tenemos que aceptar. Aprenderemos de ello.", "Duro final de fin de semana. Lo hablaremos todo por dentro."]
+};
+const QQ = {
+  win: ["¿Cómo se vive una victoria así desde dentro del coche?", "¿En qué momento supiste que la carrera era tuya?", "¿Esperabais este ritmo?"],
+  podium: ["¿Qué ha faltado para pelear por la victoria?", "¿Te vas satisfecho con el podio?"],
+  points: ["¿Es un resultado que da para estar contento?", "¿Dónde se os ha escapado el podio?"],
+  nopoints: ["¿Qué ha pasado hoy?", "¿Cómo se explica este fin de semana?"],
+  dnf: ["¿Cómo te sientes tras el abandono?", "¿Qué te llevas de este fin de semana?"],
+  dsq: ["¿Cómo encajas la descalificación?"]
+};
+function driverQuote(g, id, ctx, core) {
+  const x = ctx.res[id];
+  const o = outcome(x);
+  if (o === "unknown") return null;
+  let a = g.pick(Q[o]);
+  if (id === ME) {
+    const lead = ctx.myRow && ctx.myRow.pos === 1;
+    if (o === "win" && lead) a += g.pick([" El Mundial es largo, así que carrera a carrera.", " No miro la clasificación: miro la siguiente curva.", " Seguimos con los pies en el suelo."]);
+    else if (!lead && ctx.myRow) a += g.pick([" Queda mucho campeonato y vamos a por todas.", " No vamos a rendirnos: aún quedan muchos puntos en juego."]);
+    if (ctx.mateRes && finished(ctx.mateRes) && finished(x) && ctx.mateRes.pos < x.pos) a = "Ayrton ha estado mejor hoy y hay que reconocerlo. " + a;
+  }
+  if (id === ctx.mate) {
+    const m = ctx.me;
+    if (finished(x) && (!finished(m) || x.pos < m.pos)) a = g.pick(["Hoy la pista ha hablado. ", "Sigo aquí, y hoy se ha visto. ", "Algunos se olvidaron de mí demasiado pronto. "]) + a;
+    else if (finished(m) && (!finished(x) || m.pos < x.pos)) a = g.pick(["No voy a hablar de mi compañero. Hablo de mi coche. ", "Andrés ha hecho su carrera; yo me centro en la mía. ", "El campeonato no se decide en una tarde. "]) + a;
+  }
+  return { speaker: fullName(id), team: teamOf(core, id), q: g.pick(QQ[o]), a };
+}
+function bossQuote(g, ctx) {
+  const m = outcome(ctx.me), s = outcome(ctx.mateRes);
+  let a;
+  if (m === "win") a = g.pick(["Andrés ha estado impecable. Estamos construyendo algo muy especial en Aurelia.", "Otro día para enmarcar. El equipo merece cada segundo de esta celebración."]);
+  else if (m === "dnf" || m === "dsq") a = g.pick(["Hoy no ha salido. Lo analizaremos con calma y volveremos más fuertes.", "Es parte del deporte. Nuestro trabajo es que no se repita."]);
+  else a = g.pick(["Sumamos y aprendemos. Todavía tenemos margen en el coche.", "No era nuestro mejor fin de semana, pero hemos minimizado daños."]);
+  if (s !== "unknown") a += g.pick([" Tenemos a dos grandes pilotos y los dos tendrán las mismas oportunidades.", " Aquí no hay número uno ni número dos: hay un equipo.", " Lo que pasa dentro del garaje se queda dentro del garaje."]);
+  return { speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", q: g.pick(["¿Hay tensión entre sus dos pilotos?", "¿Cómo valora el fin de semana del equipo?"]), a };
+}
+
+/* ---------- portadas ---------- */
+const FP = {
+  es: { win: "¡{L} REINA EN {P}!", streak: "¡OTRA VEZ {L}!", podium: "{L}, EN EL PODIO DE {P}", points: "{L} SUMA EN {P}", nopoints: "DÍA GRIS PARA {L}", dnf: "{L}, KO EN {P}", pole: "¡POLE DE {L}!", qual: "{L} SALDRÁ {N}.º" },
+  it: { win: "{L} TRIONFA A {P}", podium: "{L} SUL PODIO", points: "{L} A PUNTI, MA NON BASTA", nopoints: "NOTTE FONDA PER {L}", dnf: "{L} KO: CHE DELUSIONE", pole: "POLE DI {L}!", qual: "{L} PARTIRÀ {N}°", rival: "IL ROOKIE NON SI FERMA PIÙ" },
+  en: { win: "{L} WINS IN {P}!", podium: "{L} ON THE PODIUM", points: "{L} BATTLES TO P{N}", nopoints: "TOUGH DAY FOR {L}", dnf: "NIGHTMARE FOR {L}", pole: "POLE FOR {L}!", qual: "{L} STARTS P{N}", rival: "WHO CAN STOP ARÉVALO?" },
+  pt: { win: "{L} VENCE EM {P}!", podium: "{L} NO PÓDIO", points: "{L} TERMINA EM {N}º", nopoints: "DIA DIFÍCIL PARA {L}", dnf: "ABANDONO AMARGO PARA {L}", pole: "POLE DE {L}!", qual: "{L} LARGA EM {N}º", rival: "O NOVATO SUPERA AYRTON DE NOVO" },
+  fr: { win: "{L} S'IMPOSE À {P}", podium: "{L} SUR LE PODIUM", points: "{L} DANS LES POINTS", nopoints: "JOURNÉE DIFFICILE POUR {L}", dnf: "ABANDON POUR {L}", pole: "POLE POUR {L} !", qual: "{L} PARTIRA {N}E", rival: "ARÉVALO, ENCORE LUI" },
+  nl: { win: "{L} WINT IN {P}", podium: "{L} OP HET PODIUM", points: "{L} PAKT PUNTEN", nopoints: "LASTIGE DAG VOOR {L}", dnf: "UITVALBEURT VOOR {L}", pole: "POLE VOOR {L}!", qual: "{L} START ALS {N}E", rival: "ARÉVALO BLIJFT WINNEN" }
+};
+const FP_ES = { win: "{L} GANA EN {P}", streak: "OTRA VEZ {L}", podium: "{L}, EN EL PODIO", points: "{L} SUMA PUNTOS", nopoints: "DÍA DIFÍCIL PARA {L}", dnf: "ABANDONO PARA {L}", pole: "POLE PARA {L}", qual: "{L} SALDRÁ {N}.º", rival: "NADIE PARA A ARÉVALO" };
+const DECK = {
+  es: { win: "Victoria de autoridad en {P}.", podium: "Termina {N}.º y suma puntos importantes.", points: "Acaba {N}.º en {P}.", nopoints: "Termina {N}.º, fuera de los puntos.", dnf: "No ve la bandera a cuadros en {P}.", pole: "Primera posición en la parrilla de {P}.", qual: "Arrancará desde la {N}.ª posición." },
+  it: { win: "Vittoria netta a {P}.", podium: "Chiude {N}° e porta a casa punti preziosi.", points: "Chiude {N}° a {P}.", nopoints: "Solo {N}°, fuori dai punti.", dnf: "Niente bandiera a scacchi a {P}.", pole: "Prima fila, primo posto.", qual: "Partirà dalla {N}ª posizione." },
+  en: { win: "Dominant victory in {P}.", podium: "P{N} and a big haul of points.", points: "P{N} in {P}.", nopoints: "P{N}, out of the points.", dnf: "No chequered flag in {P}.", pole: "Top of the timesheets on Saturday.", qual: "Lines up P{N} on the grid." },
+  pt: { win: "Vitória com autoridade em {P}.", podium: "Termina em {N}º e soma pontos importantes.", points: "Termina em {N}º em {P}.", nopoints: "Fica fora dos pontos, em {N}º.", dnf: "Sem bandeira quadriculada em {P}.", pole: "Primeiro lugar no grid.", qual: "Larga da {N}ª posição." },
+  fr: { win: "Victoire nette à {P}.", podium: "{N}e et de gros points.", points: "{N}e à {P}.", nopoints: "{N}e, hors des points.", dnf: "Pas de drapeau à damier à {P}.", pole: "En tête de la grille.", qual: "Partira de la {N}e place." },
+  nl: { win: "Overtuigende zege in {P}.", podium: "P{N} en veel punten.", points: "P{N} in {P}.", nopoints: "P{N}, buiten de punten.", dnf: "Geen finishvlag in {P}.", pole: "Vooraan op de grid.", qual: "Start vanaf P{N}." }
+};
+DECK.es.rival = "Arévalo vuelve a imponerse en {P}."; DECK.it.rival = "Il pilota di Aurelia colpisce ancora a {P}.";
+DECK.en.rival = "Aurelia's rookie strikes again in {P}."; DECK.pt.rival = "Arévalo termina à frente de Senna em {P}.";
+DECK.fr.rival = "Le rookie d'Aurelia frappe encore à {P}."; DECK.nl.rival = "De rookie van Aurelia slaat weer toe in {P}.";
+const OUTLET_FOCUS = {
+  cronometro: () => [ME],
+  rettilineo: (core) => DRIVER_IDS.filter((d) => teamOf(core, d) === "ferrari" || DRIVERS[d].nat === "Italia"),
+  pitwall: () => DRIVER_IDS.filter((d) => DRIVERS[d].nat === "Reino Unido"),
+  folha: () => DRIVER_IDS.filter((d) => DRIVERS[d].nat === "Brasil"),
+  chicane: () => DRIVER_IDS.filter((d) => DRIVERS[d].nat === "Francia"),
+  circuit: () => DRIVER_IDS.filter((d) => DRIVERS[d].nat === "Países Bajos")
+};
+function fpBody(g, core, ctx, outlet, focus, o, kind) {
+  const m = MEDIA[outlet];
+  const p1 = [];
+  const x = kind === "quali" ? null : ctx.res[focus];
+  if (kind === "quali") {
+    const q = ctx.qres[focus];
+    p1.push(`${fullName(focus)} (${TNAME(core, focus)}) ${q === 1 ? "firmó la pole position" : `clasificó ${q}.º`} en ${ctx.place}.${ctx.pole && ctx.pole !== focus ? ` La pole fue para ${fullName(ctx.pole)}.` : ""}`);
+  } else if (finished(x)) {
+    p1.push(`${fullName(focus)} (${TNAME(core, focus)}) ${x.pos === 1 ? "ganó" : `terminó ${x.pos}.º en`} el ${ctx.gpName}${x.pts ? ` y sumó ${fmt(x.pts)} puntos` : ""}.${ctx.winner && ctx.winner !== focus ? ` La victoria fue para ${fullName(ctx.winner)}.` : ""}`);
+  } else if (x) {
+    p1.push(`${fullName(focus)} no terminó el ${ctx.gpName}.${ctx.winner ? ` La victoria fue para ${fullName(ctx.winner)}.` : ""}`);
+  }
+  const row = ctx.table.find((r) => r.id === focus);
+  if (row && kind !== "quali") p1.push(`En el Mundial es ${row.pos}.º con ${fmt(row.pts)} puntos${row.pos === 1 ? "" : `, a ${fmt(ctx.leader.pts - row.pts)} del líder`}${ctx.stale ? " (a falta de sumar al resto de la parrilla)" : ""}.`);
+  const angle = {
+    cronometro: ["El paddock ya no discute su talento: ahora discute hasta dónde puede llegar.", "España vuelve a tener un piloto que manda en la Fórmula 1, y en la redacción no ocultamos la emoción.", "Cada fin de semana confirma lo mismo: Aurelia tiene entre manos algo muy grande."],
+    rettilineo: ["A Maranello nadie se conforma. La afición exige un coche capaz de pelear por todo, y cada domingo sin victoria pesa.", "La Scuderia necesita reaccionar si quiere que el sueño del Mundial siga vivo.", "Los tifosi esperan más, y el tiempo corre."],
+    pitwall: ["Gran Bretaña quiere un campeón y no piensa esperar sentada.", "Los aficionados británicos lo tienen claro: esto no ha hecho más que empezar.", "En Silverstone ya hay quien sueña con una temporada para recordar."],
+    folha: ["En Brasil, cada vuelta de Ayrton se vive como una final. Su orgullo no admite papeles secundarios.", "El país entero está pendiente de él, y él lo sabe.", "Senna no ha venido a acompañar a nadie; ha venido a ganar."],
+    chicane: ["El análisis es claro: la regularidad será la clave de la temporada.", "Francia sigue la trayectoria de sus pilotos con atención y exigencia.", "Más allá del resultado, la gestión de carrera merece un aplauso."],
+    circuit: ["La marea naranja no pierde la fe: el campeón sabe cómo remontar.", "En los Países Bajos nadie da el Mundial por perdido mientras Max esté en pista.", "El análisis frío dice que aún hay margen para reaccionar."],
+    confidencial: ["Fuentes del paddock aseguran que el ambiente en el motorhome de Aurelia es cada vez más frío. Oficialmente, todo va bien.", "Nos cuentan que hubo más de una reunión a puerta cerrada tras la carrera. Nadie ha querido dar detalles.", "Las miradas en el pit lane dicen más que cualquier comunicado oficial."]
+  }[outlet];
+  const p2 = g.pick(angle || ["El paddock ya espera la siguiente cita."]);
+  return `${p1.join(" ")}\n\n${p2}${m.lang !== "es" ? "\n\n(Artículo traducido del original.)" : ""}`;
+}
+function makeFrontPages(g, core, ctx, kind) {
+  const out = [];
+  const lang = (k) => MEDIA[k].lang;
+  const L = (id) => UP(LN(id));
+  const P = UP(ctx.place);
+  const add = (outlet, focus, key, N) => {
+    if (out.some((f) => f.outlet === outlet)) return;
+    const lg = lang(outlet);
+    const tpl = (FP[lg] || FP.es)[key] || FP.es[key];
+    const v = { L: L(focus), P, N };
+    const headline = g.fill(tpl, v);
+    const es = lg === "es" ? "" : g.fill(FP_ES[key] || FP_ES.points, v);
+    const dk = g.fill((DECK[lg] || DECK.es)[key === "streak" ? "win" : key] || "", v);
+    out.push({ outlet, headline, es, deck: dk, focus, body: fpBody(g, core, ctx, outlet, focus, key, kind) });
+  };
+  if (kind === "quali") {
+    const qm = ctx.qres[ME];
+    if (qm) add("cronometro", ME, qm === 1 ? "pole" : "qual", qm);
+    if (ctx.pole && ctx.pole !== ME) {
+      const ol = NAT_OUTLET[DRIVERS[ctx.pole].nat] || (teamOf(core, ctx.pole) === "ferrari" ? "rettilineo" : null);
+      if (ol && ol !== "cronometro") add(ol, ctx.pole, "pole", 1);
+    }
+    if (ctx.mate && ctx.qres[ctx.mate] && out.length < 3) add("folha", ctx.mate, ctx.qres[ctx.mate] === 1 ? "pole" : "qual", ctx.qres[ctx.mate]);
+    return out;
+  }
+  const me = ctx.me;
+  const cs = careerStats(core, S.seasons, ME);
+  if (me) add("cronometro", ME, finished(me) && me.pos === 1 && cs.winStreak.cur >= 2 ? "streak" : outcome(me), finished(me) ? me.pos : null);
+  ["rettilineo", "pitwall", "folha", "chicane", "circuit"].forEach((ol) => {
+    const b = bestOf(ctx, OUTLET_FOCUS[ol](core));
+    if (!b) return;
+    const [id, x] = b;
+    let key = outcome(x);
+    if (ol === "rettilineo" && finished(me) && me.pos === 1 && key !== "win" && g.R() < 0.4) key = "rival";
+    if (ol === "folha" && id === ctx.mate && finished(me) && (!finished(x) || me.pos < x.pos) && g.R() < 0.5) key = "rival";
+    if (ol === "pitwall" && finished(me) && me.pos === 1 && key !== "win" && key !== "podium" && g.R() < 0.5) key = "rival";
+    add(ol, key === "rival" && ol !== "folha" ? ME : id, key, finished(x) ? x.pos : null);
+  });
+  if (ctx.mateRes && me && g.R() < 0.7) {
+    const f = { outlet: "confidencial", focus: ctx.mate, headline: g.pick(["¿GUERRA FRÍA EN AURELIA?", "SONRISAS FORZADAS EN EL MOTORHOME", "PUERTAS CERRADAS EN AURELIA", "¿QUIÉN MANDA EN AURELIA?"]), es: "", deck: g.pick(["Lo que no se cuenta del garaje azul.", "Nuestro Topo lo ha visto todo.", "Los detalles que Aurelia no quiere que sepas."]) };
+    f.body = fpBody(g, core, ctx, "confidencial", ctx.mate, "points", kind);
+    out.push(f);
+  }
+  return out.slice(0, 6);
+}
+
+/* ---------- redes ---------- */
+const FANS = [
+  { name: "Lucía 🏁", handle: "lucia_boxbox", lang: "es", fav: ME },
+  { name: "Aurelia Ultras", handle: "aurelia_ultras", lang: "es", fav: ME },
+  { name: "Pepe Box Box", handle: "boxbox_pepe", lang: "es", skeptic: true },
+  { name: "Tifosi Rossi", handle: "tifosi_rossi", lang: "it", fav: "leclerc" },
+  { name: "Fã do Ayrton", handle: "fa_do_ayrton", lang: "pt", fav: "senna" },
+  { name: "Oranje Army", handle: "oranje_army", lang: "nl", fav: "verstappen" },
+  { name: "Papaya Rules", handle: "papaya_rules", lang: "en", fav: "norris" },
+  { name: "Grid Nerd 📊", handle: "gridnerd_stats", lang: "es", stats: true },
+  { name: "Silver Arrows Fan", handle: "silverarrows_sam", lang: "en", fav: "russell" },
+  { name: "Fernandista", handle: "nano_33_forever", lang: "es", fav: "alonso" }
+];
+const FAN_T = {
+  win: { es: ["¡¡¡{N}!!! 😭🏆", "{N} GANADOR, no me lo creo 🔥"], it: ["{N} campione! 🔴🏆"], pt: ["É DO {N}! 🇧🇷🏆"], en: ["{N} YOU BEAUTY 🏆"], nl: ["Wat een coureur is {N}! 🧡🏆"] },
+  podium: { es: ["Podio para {N}, así sí 👏"], it: ["Podio per {N}. Ci siamo 🔴"], pt: ["{N} no pódio! 🇧🇷"], en: ["P{P} for {N}. We take those 🙌"], nl: ["Podium voor {N} 👏"] },
+  points: { es: ["P{P} para {N}. Algo es algo 🤷"], it: ["{N} P{P}. Serve di più 😤"], pt: ["{N} em {P}º. Dá para mais 😤"], en: ["P{P} for {N}. Solid, not spectacular"], nl: ["P{P} voor {N}. Volgende keer beter"] },
+  nopoints: { es: ["Hoy no ha sido el día de {N} 😔"], it: ["Giornata storta per {N}... 😩"], pt: ["Dia difícil para {N} 😔"], en: ["Tough one for {N} today 😬"], nl: ["Lastige dag voor {N} 😬"] },
+  dnf: { es: ["NO, {N} NO 😭"], it: ["Ritiro per {N}. Che delusione 💔"], pt: ["Abandono do {N}... dói 💔"], en: ["Gutted for {N} 💔"], nl: ["Balen voor {N} 💔"] }
+};
+const DRV_T = {
+  es: { win: ["P1 en {P}. ¡Qué día! Gracias, equipo 🏆 #{T}", "¡VICTORIA! {P}, no te olvidaré nunca 💙 #{T}"], podium: ["P{N} hoy. Buenos puntos, seguimos empujando 💪 #{T}"], points: ["P{N}. Puntos en el bolsillo y mucho que aprender 📈"], nopoints: ["Hoy no ha sido nuestro día. Volveremos 👊"], dnf: ["Final de carrera decepcionante. Cabeza alta, a por la siguiente 🙏"], dsq: ["Día duro. Aprendemos y seguimos."] },
+  en: { win: ["P1 in {P}! What a day. Thank you team 🏆 #{T}", "WE WON IN {PU}! 🏆 #{T}"], podium: ["P{N} today. Good points, we keep pushing 💪 #{T}"], points: ["P{N}. Points on the board, lots to learn 📈"], nopoints: ["Not our day. We go again 👊"], dnf: ["Disappointing end to the race. Heads up, next one 🙏"], dsq: ["Tough day. We learn and move on."] }
+};
+function socialFor(g, core, ctx, kind) {
+  const posts = [];
+  const add = (p) => posts.push(Object.assign({ likes: 0, reposts: 0, replies: 0 }, p));
+  const big = (a, b) => g.int(a, b);
+  const done = new Set();
+  const drvPost = (id) => {
+    if (!id || done.has(id)) return;
+    done.add(id);
+    const x = ctx.res[id];
+    const o = outcome(x);
+    if (o === "unknown") return;
+    const lg = ES_DRIVERS.includes(id) ? "es" : "en";
+    let text = g.fill(g.pick(DRV_T[lg][o] || DRV_T.en.points), { P: ctx.place, PU: UP(ctx.place), N: finished(x) ? x.pos : "", T: ctx.tag });
+    if (id === ctx.mate && finished(x) && (!finished(ctx.me) || x.pos < ctx.me.pos)) text = g.pick(["Hoy he hablado en la pista. 🇧🇷", "Sigo aquí. 🇧🇷 #" + ctx.tag]);
+    if (id === ctx.mate && o !== "win" && finished(ctx.me) && (!finished(x) || ctx.me.pos < x.pos)) text = g.pick(["Seguimos. 🇧🇷", "El campeonato es largo. 🇧🇷", "Trabajo, trabajo y trabajo. 🇧🇷"]);
+    const scale = id === ME ? 1.2 : ["verstappen", "hamilton", "leclerc", "senna", "norris", "alonso"].includes(id) ? 1.5 : 0.7;
+    add({ who: "driver", id, text, likes: Math.round(big(90000, 420000) * scale), reposts: Math.round(big(6000, 40000) * scale), replies: Math.round(big(2000, 15000) * scale) });
+  };
+  if (kind === "quali") {
+    [ME, ctx.pole, ctx.mate].filter((v, i, a) => v && a.indexOf(v) === i).forEach((id) => {
+      const q = ctx.qres[id];
+      if (!q) return;
+      const lg = ES_DRIVERS.includes(id) ? "es" : "en";
+      const text = q === 1 ? (lg === "es" ? `POLE en ${ctx.place} ⏱️💜 ¡Mañana, a por todas! #${ctx.tag}` : `POLE in ${ctx.place} ⏱️💜 Let's go tomorrow! #${ctx.tag}`)
+        : (lg === "es" ? `P${q} en la parrilla. Mañana hay carrera 💪 #${ctx.tag}` : `P${q} on the grid. Race day tomorrow 💪 #${ctx.tag}`);
+      add({ who: "driver", id, text, likes: big(60000, 260000), reposts: big(3000, 20000), replies: big(1000, 8000) });
+    });
+    add({ who: "journalist", id: "cronometro", text: ctx.qres[ME] === 1 ? `Pole de Arévalo en ${ctx.place}. ${ctx.polesMe > 1 ? `Ya van ${ctx.polesMe} esta temporada.` : "Primera fila asegurada."}` : `Arévalo saldrá ${ctx.qres[ME]}.º en ${ctx.place}. Mañana, a remontar.`, likes: big(2000, 16000), reposts: big(300, 3000), replies: big(100, 900) });
+    const f = g.pick(FANS.filter((x) => x.fav === ME));
+    add({ who: "fan", name: f.name, handle: f.handle, text: ctx.qres[ME] === 1 ? g.pick(["POLE 😭💙 este chaval es otra cosa", "Sábado perfecto. Mañana, a rematar 💙"]) : g.pick(["Mañana se remonta, confío 💙", "Queda la carrera, tranquilidad 🙏"]), likes: big(200, 6000), reposts: big(10, 500), replies: big(5, 200) });
+    return posts;
+  }
+  drvPost(ME);
+  if (ctx.winner && ctx.winner !== ME) drvPost(ctx.winner);
+  if (ctx.mate) drvPost(ctx.mate);
+  ctx.podium.filter((d) => d !== ME && d !== ctx.winner && d !== ctx.mate).slice(0, 1).forEach(drvPost);
+  const tAur = ctx.me ? `${finished(ctx.me) ? `P${ctx.me.pos}` : String(ctx.me.st).toUpperCase()} para Andrés${ctx.mateRes ? ` y ${finished(ctx.mateRes) ? `P${ctx.mateRes.pos}` : String(ctx.mateRes.st).toUpperCase()} para Ayrton` : ""} en ${ctx.place}. 💙 #AureliaRacing` : "";
+  if (tAur) add({ who: "team", id: "aurelia", text: tAur, likes: big(60000, 200000), reposts: big(4000, 15000), replies: big(1000, 6000) });
+  if (ctx.winner && teamOf(core, ctx.winner) !== "aurelia") add({ who: "team", id: teamOf(core, ctx.winner), text: `🏆 ${UP(fullName(ctx.winner))} WINS THE ${UP(ctx.tag.replace("GP", " GP"))}!`, likes: big(150000, 500000), reposts: big(10000, 40000), replies: big(3000, 12000) });
+  const facts = [];
+  if (ctx.myRow) facts.push(ctx.myRow.pos === 1 ? `Arévalo lidera el Mundial con ${fmt(ctx.myRow.pts)} puntos, ${fmt(ctx.myRow.pts - ctx.second.pts)} más que ${LN(ctx.second.id)}.` : `Arévalo es ${ctx.myRow.pos}.º del Mundial, a ${fmt(ctx.leader.pts - ctx.myRow.pts)} puntos de ${LN(ctx.leader.id)}.`);
+  const cs = careerStats(core, S.seasons, ME);
+  if (cs.winStreak.cur >= 2) facts.push(`${cs.winStreak.cur} victorias seguidas para Arévalo.`);
+  if (cs.wins) facts.push(`Arévalo suma ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"} en ${cs.races} carreras en la F1.`);
+  if (facts.length) add({ who: "journalist", id: "cronometro", text: "Dato: " + g.pick(facts), likes: big(3000, 20000), reposts: big(500, 4000), replies: big(100, 1200) });
+  const brit = bestOf(ctx, OUTLET_FOCUS.pitwall());
+  if (brit) add({ who: "journalist", id: "pitwall", text: finished(brit[1]) ? `${fullName(brit[0])} P${brit[1].pos} in ${ctx.place}. ${brit[1].pos <= 3 ? "Britain has a contender." : "Needs more than that."}` : `DNF for ${fullName(brit[0])}. Not what the fans wanted.`, likes: big(1500, 12000), reposts: big(200, 2000), replies: big(100, 900) });
+  if (ctx.mateRes) add({ who: "journalist", id: "folha", text: finished(ctx.mateRes) ? `Ayrton terminou em ${ctx.mateRes.pos}º em ${ctx.place}. ${finished(ctx.me) && ctx.me.pos < ctx.mateRes.pos ? "O novato segue à frente." : "Hoje foi dele."}` : `Abandono do Ayrton em ${ctx.place}. Um golpe duro.`, likes: big(5000, 30000), reposts: big(800, 6000), replies: big(300, 2500) });
+  if (ctx.mateRes && ctx.me) add({ who: "journalist", id: "confidencial", text: g.pick(["Me cuentan que en el motorhome de Aurelia no ha habido abrazos esta noche. 🤫", "Dos pilotos, dos caminos distintos para salir del circuito. Casualidad, seguro. 👀", "¿Cena de equipo en Aurelia? Dicen que faltaba alguien en la mesa. 🍽️👀"]), likes: big(10000, 40000), reposts: big(2000, 9000), replies: big(1000, 5000) });
+  g.shuffle(FANS).forEach((f) => {
+    if (posts.filter((p) => p.who === "fan").length >= 4) return;
+    let text = null;
+    if (f.skeptic && ctx.me) text = finished(ctx.me) && ctx.me.pos === 1 ? "Vale, vale... igual el chaval es bueno de verdad 🙄" : "¿Veis? Ya os dije que no era para tanto 🙄";
+    else if (f.stats && facts.length) text = "📊 " + g.pick(facts);
+    else if (f.fav && ctx.res[f.fav]) {
+      const x = ctx.res[f.fav];
+      const o = outcome(x) === "dsq" ? "dnf" : outcome(x);
+      text = g.fill(g.pick(FAN_T[o][f.lang] || FAN_T[o].es), { N: f.fav === ME ? "ARÉVALO" : UP(LN(f.fav)), P: finished(x) ? x.pos : "" });
+    }
+    if (text) add({ who: "fan", name: f.name, handle: f.handle, text, likes: big(20, 9000), reposts: big(2, 900), replies: big(1, 300) });
+  });
+  return posts.slice(0, 13);
+}
+function trendsFor(g, core, ctx, kind) {
+  const t = [{ tag: "#" + ctx.tag, posts: g.int(60000, 180000) }];
+  if (ctx.me) t.push({ tag: "#Arévalo", posts: g.int(30000, 140000) });
+  if (ctx.winner && ctx.winner !== ME) t.push({ tag: "#" + LN(ctx.winner).replace(/\s/g, ""), posts: g.int(20000, 90000) });
+  if (kind === "quali" && ctx.pole && ctx.pole !== ME) t.push({ tag: "#" + LN(ctx.pole).replace(/\s/g, ""), posts: g.int(15000, 60000) });
+  if (ctx.mateRes || (ctx.qres && ctx.mate && ctx.qres[ctx.mate])) t.push({ tag: "#GuerraFríaAurelia", posts: g.int(10000, 50000) });
+  if (ctx.outs && ctx.outs.length) t.push({ tag: "#" + LN(ctx.outs[0]).replace(/\s/g, "") + "DNF", posts: g.int(5000, 30000) });
+  return t.sort((a, b) => b.posts - a.posts).slice(0, 5);
+}
+
+/* ---------- rivalidades vivas ---------- */
+function updateRivalries(core, round) {
+  const ctx = raceCtx(core, round, "race");
+  const list = core.narrative.rivalries = (core.narrative.rivalries || []).slice();
+  const bump = (other, delta, note) => {
+    if (!DRIVERS[other] || other === ME) return;
+    let r = list.find((x) => (x.a === ME && x.b === other) || (x.b === ME && x.a === other));
+    if (!r) { if (delta < 4) return; r = { a: ME, b: other, heat: 20, note: note || "" }; list.push(r); }
+    r.heat = Math.max(5, Math.min(100, Math.round(r.heat + delta)));
+    if (note) r.note = note;
+  };
+  const me = ctx.me;
+  if (ctx.mate && ctx.mateRes && me) {
+    const mateAhead = finished(ctx.mateRes) && (!finished(me) || ctx.mateRes.pos < me.pos);
+    bump(ctx.mate, mateAhead ? 7 : 3, mateAhead ? `Senna se impuso en ${ctx.place} y el garaje de Aurelia está más dividido que nunca.` : null);
+  }
+  if (ctx.winner && ctx.winner !== ME && finished(me)) bump(ctx.winner, me.pos <= 3 ? 6 : 3, `${fullName(ctx.winner)} le ganó la partida en ${ctx.place}.`);
+  if (finished(me)) ctx.fin.filter((f) => f.id !== ME && f.id !== ctx.mate && Math.abs(f.pos - me.pos) === 1).forEach((f) => bump(f.id, 2));
+  if (ctx.second && ctx.myRow && ctx.myRow.pos === 1) bump(ctx.second.id, 2, ctx.second.id === ctx.mate ? null : `${fullName(ctx.second.id)} es su perseguidor más directo en el Mundial.`);
+  list.forEach((r) => { if (r.b !== ctx.mate && r.a !== ctx.mate && !ctx.res[r.a === ME ? r.b : r.a]) r.heat = Math.max(5, r.heat - 1); });
+  core.narrative.rivalries = list.sort((a, b) => b.heat - a.heat).slice(0, 6);
+}
+
+/* ---------- piezas entre carreras ---------- */
+function xArticle(core, round, key, t, o) {
+  return makeArticle(core, round, "flash", null, Object.assign({ id: `s${core.season}-r${round.r}-${key}-auto`, t, auto: true, interviews: [], headlines: [], radio: [], stats: null }, o));
+}
+function extraPieces(core, round, t0) {
+  const g = NG(core, round, "extras");
+  const ctx = raceCtx(core, round, "race");
+  const cand = [];
+  const cs = careerStats(core, S.seasons, ME);
+  const h = ctx.mate ? headToHead(core.rounds, ME, ctx.mate) : null;
+  const tt = teamTable(core);
+  const tiny = (p) => Object.assign({ likes: g.int(500, 20000), reposts: g.int(50, 3000), replies: g.int(20, 1200) }, p);
+
+  /* campeón matemático */
+  if (!ctx.stale && ctx.leader && ctx.second && ctx.leader.pts - ctx.second.pts > ctx.maxLeft) {
+    const champ = ctx.leader.id;
+    cand.push({ w: 100, key: "champ", o: {
+      kicker: "¡Campeón del mundo!", color: "#F2C14E",
+      title: champ === ME ? "¡ANDRÉS ARÉVALO, CAMPEÓN DEL MUNDO!" : `${UP(fullName(champ))}, CAMPEÓN DEL MUNDO`,
+      subtitle: `Con ${fmt(ctx.leader.pts)} puntos y ${ctx.left ? `${ctx.left} ${ctx.left === 1 ? "carrera" : "carreras"} por delante` : "la temporada terminada"}, ya nadie puede alcanzarle.`,
+      sections: [{ heading: "🏆 Matemáticamente campeón", body: `${fullName(champ)} tiene ${fmt(ctx.leader.pts - ctx.second.pts)} puntos de ventaja sobre ${fullName(ctx.second.id)} y solo quedan ${fmt(ctx.maxLeft)} en juego. El título de la temporada ${core.season} ya tiene dueño.` },
+        { heading: "📜 Para la historia", body: champ === ME ? `El debutante de Aurelia Racing culmina una temporada histórica: ${cs.wins} victorias, ${cs.poles} poles y ${cs.podiums} podios en su carrera hasta hoy.` : `Arévalo es ${ctx.myRow.pos}.º con ${fmt(ctx.myRow.pts)} puntos.` }],
+      social: [tiny({ who: "team", id: teamOf(core, champ), text: champ === ME ? "CAMPEONES DEL MUNDO. 💙🏆 #AureliaRacing" : "WORLD CHAMPION! 🏆", likes: 900000 }), tiny({ who: "journalist", id: "cronometro", text: "Histórico. Sin más palabras. 🏆" })]
+    } });
+  }
+
+  /* guerra fría en Aurelia */
+  if (ctx.mate && h && (ctx.mateRes || ctx.me)) {
+    const heat = rivalryHeat(core, ME, ctx.mate);
+    const mateAhead = ctx.mateRes && finished(ctx.mateRes) && (!finished(ctx.me) || ctx.mateRes.pos < ctx.me.pos);
+    cand.push({ w: mateAhead ? 40 : 18 + heat / 5, key: "aurelia", o: {
+      kicker: "Aurelia, por dentro", color: "#7DD3FC",
+      title: mateAhead ? g.pick(["SENNA ENSEÑA LOS DIENTES", "EL TRICAMPEÓN CONTRAATACA", "SENNA RECUERDA QUIÉN ES"]) : g.pick(["LA GUERRA FRÍA DE AURELIA", "DOS GALLOS, UN CORRAL", "¿HAY SITIO PARA DOS EN AURELIA?"]),
+      subtitle: `El cara a cara de la temporada: Arévalo ${h.r.a}, Senna ${h.r.b} en carrera; ${h.q.a}-${h.q.b} en clasificación.`,
+      sections: [
+        { heading: "📊 Los números", body: `En carrera, Arévalo ha terminado por delante en ${h.r.a} ocasiones y Senna en ${h.r.b}. Los sábados, ${h.q.a} a ${h.q.b}. En el Mundial, ${fmt(core.standings[ME])} puntos contra ${fmt(core.standings[ctx.mate])}.` },
+        { heading: "🔥 El ambiente", body: g.pick(["Nadie en Aurelia lo admite en público, pero los dos lados del garaje ya no comparten tanta información como al principio del año.", "Las ruedas de prensa son correctas y frías. Los dos pilotos se saludan, pero apenas se miran.", "En el equipo insisten en que hay igualdad de trato. En el paddock, pocos se lo creen."]) + (heat > 60 ? " La tensión está en su punto más alto de la temporada." : "") }
+      ],
+      interviews: [{ speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", by: "cronometro", q: "¿Tiene un problema entre sus pilotos?", a: g.pick(["Tengo un problema bonito: dos pilotos que quieren ganar. Mientras respeten al equipo, que peleen.", "No hay órdenes de equipo. Hay reglas, y las conocen los dos."]) }],
+      social: [tiny({ who: "journalist", id: "confidencial", text: "Nuevo capítulo de la guerra fría de Aurelia. Palomitas preparadas. 🍿" }), tiny({ who: "fan", name: "Fã do Ayrton", handle: "fa_do_ayrton", text: "Ayrton não é segundo piloto de ninguém. 🇧🇷" })]
+    } });
+  }
+
+  /* el hombre en forma */
+  if (ctx.winner && ctx.winner !== ME) {
+    const w = ctx.winner;
+    const row = ctx.table.find((r) => r.id === w);
+    cand.push({ w: 30, key: "form", o: {
+      kicker: "Entrevista", color: tcolor(teamOf(core, w)),
+      title: g.pick([`${UP(LN(w))}: «ESTO NO HA HECHO MÁS QUE EMPEZAR»`, `${UP(LN(w))} AVISA AL LÍDER`, `${UP(LN(w))}, EL HOMBRE DEL MOMENTO`]),
+      subtitle: `Ganador en ${ctx.place}, es ${row.pos}.º del Mundial con ${fmt(row.pts)} puntos.`,
+      sections: [{ heading: "🏁 El momento", body: `${fullName(w)} (${TNAME(core, w)}) se llevó la victoria en ${ctx.place}. En el Mundial es ${row.pos}.º, a ${fmt(ctx.leader.pts - row.pts)} puntos del líder${row.pos === 1 ? " (es él)" : ""}.` }],
+      interviews: [
+        { speaker: fullName(w), team: teamOf(core, w), by: NAT_OUTLET[DRIVERS[w].nat] || "chicane", q: "¿Puedes pelear por el Mundial?", a: g.pick(["¿Por qué no? Si seguimos así, vamos a estar ahí hasta el final.", "No pienso en el Mundial. Pienso en ganar la siguiente.", "Hemos demostrado que podemos ganar a cualquiera, también a Aurelia."]) },
+        { speaker: fullName(w), team: teamOf(core, w), by: "cronometro", q: "¿Qué opinas de Arévalo?", a: g.pick(["Es rapidísimo, no hay duda. Pero en esta parrilla nadie te regala nada.", "Tiene talento, pero la temporada es larga y la presión se nota al final.", "Me gusta pelear contra los mejores. Él ahora mismo es la referencia."]) }
+      ],
+      social: [tiny({ who: "driver", id: w, text: g.pick(["Enjoying this one. Next! 🏆", "What a weekend. Thank you all! 🙏"]), likes: g.int(100000, 400000) })]
+    } });
+  }
+
+  /* crisis de un grande */
+  const crisis = tt.filter((r) => BIG_TEAMS.includes(r.id) && r.pos >= 5);
+  const zero = ctx.full ? tt.filter((r) => teamDrivers(core, r.id).every((d) => !ctx.res[d] || !ctx.res[d].pts) && BIG_TEAMS.includes(r.id)) : [];
+  const ct = zero[0] || (crisis.length ? g.pick(crisis) : null);
+  if (ct) {
+    const tn = team(ct.id).name;
+    cand.push({ w: 26, key: "crisis", o: {
+      kicker: "Análisis", color: team(ct.id).color,
+      title: g.pick([`ALARMA EN ${UP(tn)}`, `${UP(tn)}, EN CRISIS`, `¿QUÉ LE PASA A ${UP(tn)}?`]),
+      subtitle: `${ct.pos}.º en el Mundial de Constructores con ${fmt(ct.pts)} puntos.`,
+      sections: [
+        { heading: "📉 La situación", body: `${tn} es ${ct.pos}.º en constructores con ${fmt(ct.pts)} puntos, ${fmt(tt[0].pts - ct.pts)} menos que ${team(tt[0].id).name}.${zero[0] ? ` En ${ctx.place} no sumó ni un punto.` : ""} Para un equipo de su historia, no es suficiente.` },
+        { heading: "🔧 Lo que se dice", body: g.pick(["En la fábrica se habla de un paquete de mejoras para las próximas carreras. Nadie se atreve a poner fecha.", "Hay quien apunta a la dirección técnica. Otros, a la falta de ritmo en carrera. Lo único seguro es que la presión aprieta.", "Los pilotos piden calma, pero la paciencia de los directivos tiene un límite."]) }
+      ],
+      interviews: [{ speaker: fullName(teamDrivers(core, ct.id)[0]), team: ct.id, by: "chicane", q: "¿Estáis en crisis?", a: g.pick(["Crisis es una palabra muy grande. Nos falta rendimiento y lo sabemos.", "Estamos trabajando más que nunca. Las cosas van a cambiar.", "No es el nivel que queremos. Punto."]) }],
+      social: [tiny({ who: "fan", name: "Silver Arrows Fan", handle: "silverarrows_sam", text: `Something has to change at ${tn}. This is not acceptable. 😤` })]
+    } });
+  }
+
+  /* mercado */
+  if (round.r >= 3) {
+    const table = ctx.table;
+    const risers = table.filter((r) => r.pos <= 12 && !BIG_TEAMS.includes(teamOf(core, r.id)) && teamOf(core, r.id) !== "aurelia" && r.id !== ME);
+    const riser = risers.length ? g.pick(risers.slice(0, 4)) : null;
+    const target = g.pick(BIG_TEAMS.filter((t) => riser && teamOf(core, riser.id) !== t));
+    if (riser && target) {
+      cand.push({ w: 16 + g.R() * 10, key: "market", o: {
+        kicker: "Mercado", color: "#FF3EA5",
+        title: g.pick([`${UP(team(target).name)} PREGUNTA POR ${UP(LN(riser.id))}`, `RUMOR: ${UP(LN(riser.id))}, EN LA AGENDA DE ${UP(team(target).name)}`]),
+        subtitle: "Nadie lo confirma, nadie lo desmiente. Así se mueve el mercado.",
+        sections: [
+          { heading: "🕵️ El rumor", body: `Según ha podido saber Paddock Confidencial, ${team(target).name} habría preguntado por la situación contractual de ${fullName(riser.id)}, ${riser.pos}.º del Mundial con ${fmt(riser.pts)} puntos con ${TNAME(core, riser.id)}.` },
+          { heading: "🤐 Las reacciones", body: g.pick(["Desde el entorno del piloto se limitan a decir que está centrado en su equipo actual.", "El equipo del piloto lo niega todo y recuerda que tiene contrato en vigor.", "Nadie quiere hablar, que en este paddock suele querer decir mucho."]) + " De momento, es solo un rumor." }
+        ],
+        social: [tiny({ who: "journalist", id: "confidencial", text: `👀 ${team(target).name} + ${LN(riser.id)}. No digo nada. Lo digo todo.` })]
+      } });
+    }
+  }
+
+  /* los números de Arévalo */
+  if (cs.wins >= 1) {
+    const less = DRIVER_IDS.filter((d) => d !== ME && d !== "senna" && DRIVERS[d].real && DRIVERS[d].real.wins < cs.wins).map((d) => LN(d));
+    const s = seasonStats(core, ME);
+    cand.push({ w: 14, key: "stats", o: {
+      kicker: "Los números", color: "#8B3DFF",
+      title: g.pick(["ARÉVALO, EN CIFRAS", "LOS NÚMEROS NO MIENTEN", "LA TEMPORADA DE ARÉVALO, DATO A DATO"]),
+      subtitle: `${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.`,
+      sections: [
+        { heading: "📊 Temporada " + core.season, body: `Carreras: ${s.races}. Victorias: ${s.wins}. Poles: ${s.poles}. Podios: ${s.podiums}. Abandonos: ${s.dnf}. Puntos: ${fmt(s.pts)}.` },
+        { heading: "🔥 Rachas", body: `Victorias seguidas ahora mismo: ${cs.winStreak.cur} (récord: ${cs.winStreak.best}). Poles seguidas: ${cs.poleStreak.cur} (récord: ${cs.poleStreak.best}). Podios seguidos: ${cs.podiumStreak.cur}.` }
+      ].concat(less.length ? [{ heading: "🤯 Para ponerlo en contexto", body: `Con ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, Arévalo ya ha ganado más carreras que ${less.slice(0, 6).join(", ")} en toda su trayectoria real en la Fórmula 1.` }] : []),
+      social: [tiny({ who: "fan", name: "Grid Nerd 📊", handle: "gridnerd_stats", text: `📊 Arévalo: ${cs.wins}V, ${cs.poles}P, ${cs.podiums} podios en ${cs.races} carreras. Tasa de victorias: ${Math.round((cs.wins / Math.max(1, cs.races)) * 100)}%.` })]
+    } });
+  }
+
+  /* novatos */
+  const rookies = ctx.table.filter((r) => ROOKIES.includes(r.id));
+  if (rookies.length >= 3 && round.r % 3 === 0) {
+    cand.push({ w: 12, key: "rookies", o: {
+      kicker: "Novatos", color: "#0E9F6E",
+      title: "LA BATALLA DE LOS NOVATOS",
+      subtitle: `${LN(rookies[0].id)} manda entre los debutantes.`,
+      sections: [{ heading: "🌱 La clasificación de los novatos", body: rookies.map((r, i) => `${i + 1}. ${fullName(r.id)} (${TNAME(core, r.id)}): ${fmt(r.pts)} puntos`).join("\n") }],
+      social: [tiny({ who: "journalist", id: "chicane", text: "Les rookies de cette saison ont un niveau impressionnant." })]
+    } });
+  }
+
+  /* power ranking (opinión) */
+  if (ctx.full || ctx.fin.length >= 5) {
+    const score = (id) => {
+      const x = ctx.res[id];
+      const lastPts = x && x.pts ? x.pts : 0;
+      const row = ctx.table.find((r) => r.id === id);
+      return lastPts * 2 + (row ? row.pts / Math.max(1, ctx.leader.pts) * 25 : 0);
+    };
+    const top = DRIVER_IDS.slice().sort((a, b) => score(b) - score(a)).slice(0, 5);
+    cand.push({ w: 15, key: "power", o: {
+      kicker: "Opinión", color: "#D4001A",
+      title: "POWER RANKING: LOS CINCO MEJORES AHORA MISMO",
+      subtitle: "La opinión de The Pit Wall Post tras la carrera de " + ctx.place + ".",
+      sections: [{ heading: "🏅 El top 5", body: top.map((id, i) => { const x = ctx.res[id]; return `${i + 1}. ${fullName(id)}: ${finished(x) ? `P${x.pos} en ${ctx.place}` : x ? "sin puntos esta vez" : "regular"}, ${fmt(core.standings[id])} puntos en el Mundial.`; }).join("\n") },
+        { heading: "✍️ El criterio", body: "Pesa sobre todo la última carrera y, después, la temporada. Es una clasificación de opinión, no oficial." }],
+      social: [tiny({ who: "journalist", id: "pitwall", text: `Power ranking is out. ${LN(top[0])} on top. Agree? 👀` })]
+    } });
+  }
+
+  /* Mundial */
+  if (ctx.leader && ctx.second && !ctx.stale && ctx.left > 0) {
+    const gap = ctx.leader.pts - ctx.second.pts;
+    cand.push({ w: ctx.left <= 5 ? 30 : 10, key: "title", o: {
+      kicker: "El Mundial", color: "#F2C14E",
+      title: ctx.leader.id === ME ? g.pick([`ARÉVALO, ${fmt(gap)} PUNTOS POR DELANTE`, "EL LÍDER NO AFLOJA"]) : `${UP(LN(ctx.leader.id))} MANDA, ARÉVALO PERSIGUE`,
+      subtitle: `Quedan ${ctx.left} ${ctx.left === 1 ? "carrera" : "carreras"} y ${fmt(ctx.maxLeft)} puntos en juego.`,
+      sections: [{ heading: "🧮 Las cuentas", body: `${fullName(ctx.leader.id)} lidera con ${fmt(ctx.leader.pts)} puntos. ${fullName(ctx.second.id)} es segundo con ${fmt(ctx.second.pts)}. Con ${ctx.left} ${ctx.left === 1 ? "carrera" : "carreras"} por delante quedan ${fmt(ctx.maxLeft)} puntos en juego (sin contar sprints).` + (gap > ctx.maxLeft - 25 && gap <= ctx.maxLeft ? `\n\n⚠️ Si mantiene la ventaja, ${LN(ctx.leader.id)} podría cerrar el título en la próxima carrera.` : "") }],
+      social: [tiny({ who: "fan", name: "Grid Nerd 📊", handle: "gridnerd_stats", text: `📊 Quedan ${fmt(ctx.maxLeft)} puntos en juego. Ventaja del líder: ${fmt(gap)}.` })]
+    } });
+  }
+
+  /* chismes */
+  cand.push({ w: 9 + g.R() * 8, key: "gossip", o: {
+    kicker: "Paddock Confidencial", color: "#FF3EA5",
+    title: g.pick(["LO QUE NO SALIÓ POR TELEVISIÓN", "EL TOPO LO HA VISTO TODO", "SECRETOS DEL PADDOCK"]),
+    subtitle: "Rumores, miradas y cenas a puerta cerrada. Nada confirmado, todo interesante.",
+    sections: [{ heading: "🤫 Esta semana", body: g.shuffle([
+      `Vista una larga conversación entre ${fullName(g.pick(DRIVER_IDS.filter((d) => d !== ME)))} y un alto cargo de ${team(g.pick(BIG_TEAMS)).name}. Dicen que hablaban de golf.`,
+      `En Aurelia se ha reforzado la seguridad en el garaje. Oficialmente, por los aficionados.`,
+      `${fullName(g.pick(DRIVER_IDS.filter((d) => d !== ME && d !== "senna")))} habría pedido cambios en su equipo de ingenieros.`,
+      `Arévalo firmó autógrafos durante más de una hora. Su compañero salió por la puerta de atrás.`,
+      `Un patrocinador millonario estaría estudiando entrar en la F1 de la mano de ${team(g.pick(TEAM_IDS.filter((t) => t !== "aurelia"))).name}.`
+    ]).slice(0, 3).map((x) => "• " + x).join("\n") }],
+    social: [tiny({ who: "journalist", id: "confidencial", text: "Nueva entrega de secretos del paddock. Leed antes de que la borren. 🤫" })]
+  } });
+
+  const recent = new Set(S.news.filter((a) => a.auto && a.kind === "flash" && a.season === core.season && a.r < round.r && a.r >= round.r - 2).map((a) => a.id.replace(/^s\d+-r\d+-x/, "").replace(/-auto$/, "")));
+  cand.forEach((c) => { if (recent.has(c.key) && c.key !== "champ") c.w *= 0.35; c.w += g.R() * 6; });
+  const chosen = cand.sort((a, b) => b.w - a.w).slice(0, 4);
+  return chosen.map((c, i) => xArticle(core, round, "x" + c.key, t0 - (i + 1), c.o));
+}
+
+/* ---------- previa automática ---------- */
+function autoPrevia(core, round, t) {
+  const g = NG(core, round, "previa");
+  const c = circuit(round.gp);
+  if (!c) return null;
+  const info = (typeof CIRCUIT_INFO !== "undefined" && CIRCUIT_INFO[round.gp]) || {};
+  const table = driverTable(core);
+  const leader = table[0], second = table[1];
+  const me = table.find((r) => r.id === ME);
+  const left = core.rounds.filter((x) => !x.race).length;
+  const cs = careerStats(core, S.seasons, ME);
+  const here = cs.byCircuit.find((b) => b.gp === round.gp);
+  const homes = DRIVER_IDS.filter((d) => (HOME_GP[round.gp] || []).includes(DRIVERS[d].nat));
+  const laps = distLaps(core, c);
+  const sections = [
+    { heading: "📍 El circuito", body: `${c.track} (${c.place}). ${fmt(c.km)} km por vuelta, ${c.turns} curvas y ${laps} vueltas con tu distancia de carrera.${info.first ? ` En el Mundial desde ${info.first}.` : ""}\n\n${info.history || c.note}${info.corner ? `\n\nEl punto clave: ${info.corner}.` : ""}` },
+    { heading: "🏁 Así llega el Mundial", body: me ? `${me.pos === 1 ? `Arévalo llega como líder con ${fmt(me.pts)} puntos, ${fmt(me.pts - second.pts)} más que ${fullName(second.id)}.` : `Arévalo es ${me.pos}.º con ${fmt(me.pts)} puntos, a ${fmt(leader.pts - me.pts)} de ${fullName(leader.id)}.`} Quedan ${left} ${left === 1 ? "carrera" : "carreras"}.${core.stale ? " (El Mundial del resto de la parrilla está pendiente de actualizar.)" : ""}` : "" },
+    { heading: `🎯 Arévalo en ${c.place}`, body: here && here.starts ? `Ha corrido aquí ${here.starts} ${here.starts === 1 ? "vez" : "veces"}: ${here.wins} ${here.wins === 1 ? "victoria" : "victorias"}, ${here.podiums} podios y ${here.poles} poles. Su mejor resultado: ${here.best ? "P" + here.best : "sin terminar"}.` : `Será su primera vez en ${c.place} en la Fórmula 1. Terreno nuevo para el piloto de Aurelia.` }
+  ];
+  if (homes.length) sections.push({ heading: "🏠 En casa", body: homes.map((d) => `${fullName(d)} corre ante su público.`).join(" ") + " La presión y el apoyo, a partes iguales." });
+  const riv = (core.narrative.rivalries || []).slice(0, 3);
+  if (riv.length) sections.push({ heading: "🔥 Rivalidades", body: riv.map((r) => `• ${LN(r.a)} contra ${LN(r.b)}: ${r.note}`).join("\n") });
+  const mate = teammatesOf(core, ME)[0];
+  const interviews = [
+    { speaker: fullName(ME), team: "aurelia", by: "cronometro", q: `¿Cómo afrontas ${c.gp}?`, a: g.pick(["Con muchas ganas. Es un circuito que exige mucho y quiero sacar lo mejor del coche.", "Carrera a carrera. Hay que estar fino desde los libres.", "Lo importante es el sábado. Si clasificamos bien, tendremos opciones."]) }
+  ];
+  if (mate) interviews.push({ speaker: fullName(mate), team: "aurelia", by: "folha", q: "¿Qué esperas de este fin de semana?", a: g.pick(["Espero lo de siempre: ganar.", "Estoy preparado. El resto lo dirá la pista.", "No me preocupan los demás. Me preocupa mi vuelta."]) });
+  if (homes[0] && homes[0] !== ME) interviews.push({ speaker: fullName(homes[0]), team: teamOf(core, homes[0]), by: NAT_OUTLET[DRIVERS[homes[0]].nat] || "pitwall", q: "¿Qué significa correr en casa?", a: g.pick(["Es especial. Ver a tanta gente animando te da una energía extra.", "Aquí quiero dar lo mejor de mí. Es la carrera que todos queremos ganar."]) });
+  else if (leader.id !== ME) interviews.push({ speaker: fullName(leader.id), team: teamOf(core, leader.id), by: "pitwall", q: "¿Cómo se lleva ser el líder?", a: g.pick(["Bien. Pero sé que detrás vienen apretando.", "No miro atrás. Miro hacia delante."]) });
+  const tag = GP_TAG[round.gp] || "F1";
+  const fps = [{ outlet: "cronometro", focus: ME, headline: me && me.pos === 1 ? g.pick([`${UP(c.name)}: TODOS CONTRA ARÉVALO`, `EL LÍDER LLEGA A ${UP(c.place)}`]) : `ARÉVALO, AL ATAQUE EN ${UP(c.place)}`, es: "", deck: `Previa de la ronda ${round.r}.`, body: sections[1].body + "\n\n" + sections[2].body }];
+  if (homes[0] && homes[0] !== ME && NAT_OUTLET[DRIVERS[homes[0]].nat]) {
+    const ol = NAT_OUTLET[DRIVERS[homes[0]].nat];
+    const home = { it: "{L} CORRE IN CASA", en: "{L} ON HOME SOIL", pt: "{L} CORRE EM CASA", fr: "{L} À LA MAISON", nl: "{L} THUIS", es: "{L} CORRE EN CASA" }[MEDIA[ol].lang];
+    fps.push({ outlet: ol, focus: homes[0], headline: home.replace("{L}", UP(LN(homes[0]))), es: MEDIA[ol].lang === "es" ? "" : `${UP(LN(homes[0]))} CORRE EN CASA`, deck: c.gp, body: `${fullName(homes[0])} corre ante su público en ${c.place}. ${info.history || ""}` });
+  }
+  const social = [
+    { who: "team", id: "aurelia", text: `Rumbo a ${c.place}. 💙 #${tag} #AureliaRacing`, likes: g.int(40000, 120000), reposts: g.int(2000, 8000), replies: g.int(500, 3000) },
+    { who: "driver", id: ME, text: g.pick([`${c.place}, allá vamos 🏁💙`, `Semana de carrera. ${c.flag} ¡Vamos!`]), likes: g.int(80000, 250000), reposts: g.int(4000, 15000), replies: g.int(1000, 6000) },
+    { who: "fan", name: "Lucía 🏁", handle: "lucia_boxbox", text: `Semana de ${c.name} 😍 ¿Pole de Arévalo? Yo digo que sí 💙`, likes: g.int(100, 4000), reposts: g.int(5, 300), replies: g.int(5, 200) }
+  ];
+  if (homes[0] && homes[0] !== ME) social.push({ who: "driver", id: homes[0], text: `Home race! Can't wait to see you all ${c.flag}`, likes: g.int(100000, 400000), reposts: g.int(5000, 20000), replies: g.int(2000, 8000) });
+  return makeArticle(core, round, "previa", null, {
+    id: `s${core.season}-r${round.r}-previa-auto`, t, auto: true,
+    kicker: "Previa", title: fps[0].headline, subtitle: `Ronda ${round.r} de ${core.totalRounds}: ${c.gp}, en ${c.track}.`,
+    sections, interviews, headlines: [], radio: [], frontPages: fps, social,
+    trending: [{ tag: "#" + tag, posts: g.int(40000, 120000) }, { tag: "#Arévalo", posts: g.int(20000, 80000) }]
+  });
+}
+function distLaps(core, c) { const p = (core && core.distance) || 50; return Math.max(1, Math.round((c.laps * p) / 100)); }
+
+/* ---------- crónicas ---------- */
+function autoChronicle(core, round, kind) {
+  const base = templateArticle(core, round, kind);
+  const g = NG(core, round, kind);
+  base.id = `s${core.season}-r${round.r}-${kind}-auto`;
+  if (kind === "quali") {
+    const res = (round.quali && round.quali.res) || {};
+    const pole = Object.keys(res).find((d) => res[d] === 1) || null;
+    const ctx = { qres: res, pole, place: circuit(round.gp) ? circuit(round.gp).place : "", tag: GP_TAG[round.gp] || "F1", mate: teammatesOf(core, ME)[0], polesMe: seasonStats(core, ME).poles, table: driverTable(core), res: {} };
+    const iv = [];
+    const qa = (id, q, a, by) => iv.push({ speaker: fullName(id), team: teamOf(core, id), by, q, a });
+    if (res[ME]) qa(ME, res[ME] === 1 ? "¿Cómo ha sido la vuelta de la pole?" : "¿Qué ha faltado hoy?", res[ME] === 1 ? g.pick(["Una vuelta muy limpia. Mañana es lo que cuenta, pero salir delante ayuda muchísimo.", "He sacado todo lo que tenía el coche. Estoy muy orgulloso del equipo."]) : g.pick(["Nos ha faltado un poco en el último sector. Mañana hay carrera.", "No es donde queríamos estar, pero la carrera es larga."]), "cronometro");
+    if (pole && pole !== ME) qa(pole, "¿Te esperabas la pole?", g.pick(["Hemos trabajado mucho para esto. Mañana, a convertirla en victoria.", "Qué vuelta. El coche iba sobre raíles."]), NAT_OUTLET[DRIVERS[pole].nat] || "pitwall");
+    if (ctx.mate && res[ctx.mate]) qa(ctx.mate, "¿Cómo ves la carrera de mañana?", res[ctx.mate] < (res[ME] || 99) ? g.pick(["Mañana saldré por delante de mi compañero. Eso ya dice algo.", "Hoy he sido más rápido. Mañana, más."]) : g.pick(["La carrera no se gana el sábado.", "Tenemos ritmo para remontar."]), "folha");
+    base.interviews = iv;
+    base.frontPages = makeFrontPages(g, core, ctx, "quali");
+    base.social = socialFor(g, core, ctx, "quali");
+    base.trending = trendsFor(g, core, Object.assign({ me: res[ME] ? {} : null }, ctx), "quali");
+    return base;
+  }
+  const ctx = raceCtx(core, round, kind);
+  const iv = [];
+  const q1 = driverQuote(g, ME, ctx, core);
+  if (q1) iv.push(Object.assign(q1, { by: "cronometro" }));
+  if (ctx.winner && ctx.winner !== ME) { const q = driverQuote(g, ctx.winner, ctx, core); if (q) iv.push(Object.assign(q, { by: NAT_OUTLET[DRIVERS[ctx.winner].nat] || "pitwall" })); }
+  if (ctx.mate && ctx.mate !== ctx.winner) { const q = driverQuote(g, ctx.mate, ctx, core); if (q) iv.push(Object.assign(q, { by: "folha" })); }
+  if (kind === "race") {
+    const other = ctx.podium.find((d) => d !== ME && d !== ctx.winner && d !== ctx.mate) || ctx.outs.find((d) => d !== ME && d !== ctx.mate);
+    if (other) { const q = driverQuote(g, other, ctx, core); if (q) iv.push(Object.assign(q, { by: NAT_OUTLET[DRIVERS[other].nat] || "chicane" })); }
+    iv.push(Object.assign(bossQuote(g, ctx), { by: "rettilineo" }));
+  }
+  base.interviews = iv.slice(0, 5);
+  if (kind === "race") {
+    base.frontPages = makeFrontPages(g, core, ctx, "race");
+    base.social = socialFor(g, core, ctx, "race");
+    base.trending = trendsFor(g, core, ctx, "race");
+    const colOutlet = g.pick(["cronometro", "rettilineo", "pitwall", "folha"]);
+    const m = MEDIA[colOutlet];
+    const lead = ctx.leader;
+    base.column = {
+      outlet: colOutlet,
+      title: g.pick(ctx.me && finished(ctx.me) && ctx.me.pos === 1 ? ["El problema de los demás se llama Arévalo", "Cuando ganar parece fácil", "La normalidad de lo extraordinario"] : ["La temporada ya no tiene dueño", "Lecciones de un domingo movido", "El Mundial se aprieta"]),
+      body: `${ctx.winner ? `${fullName(ctx.winner)} ganó en ${ctx.place}` : `Se disputó el ${ctx.gpName}`}${ctx.me ? ` y Arévalo ${finished(ctx.me) ? `terminó ${ctx.me.pos}.º` : "no terminó"}` : ""}. ${lead ? `${fullName(lead.id)} lidera el Mundial con ${fmt(lead.pts)} puntos.` : ""}\n\n` +
+        g.pick([
+          "Lo que más impresiona no es la velocidad, sino la calma. En una parrilla donde todos cometen errores bajo presión, hay pilotos que parecen inmunes a ella. Esa es la diferencia entre ganar carreras y ganar campeonatos.",
+          "La Fórmula 1 tiene memoria corta: un fin de semana te encumbra y el siguiente te devuelve al suelo. Por eso la regularidad vale oro, y por eso las rachas acaban pesando más que las victorias sueltas.",
+          "Aurelia vive una paradoja: tiene el coche y los pilotos para ganarlo todo, pero también la bomba de relojería más peligrosa del paddock en su propio garaje. Gestionar a dos gallos es un arte que pocos equipos dominan."
+        ]) + (m.lang !== "es" ? "\n\n(Columna traducida del original.)" : "")
+    };
+  } else {
+    base.social = socialFor(g, core, ctx, "race").slice(0, 4);
+  }
+  return base;
+}
+
+/* Genera y guarda todo lo automático de una sesión. Devuelve el id principal. */
+async function publishAutoNews(session, r, edit) {
+  const core = clone(S.core);
+  const round = roundOf(core, r);
+  const now = Date.now();
+  const keep = (id) => { const a = S.news.find((x) => x.id === id); return !a || a.auto; };
+  const writes = [];
+  const main = autoChronicle(core, round, session);
+  const legacy = findArticle(core.season, r, session);
+  if (legacy && legacy.auto && legacy.id !== main.id) await Store.deleteArticle(legacy.id).catch(() => null);
+  if (legacy && !legacy.auto) {
+    /* Hay una crónica escrita a mano o por la IA: no se toca. */
+  } else {
+    const prev = S.news.find((x) => x.id === main.id);
+    main.t = edit && prev ? prev.t : now;
+    writes.push(main);
+  }
+  if (session === "race") {
+    updateRivalries(core, round);
+    core.narrative.storyline = storyline(core);
+    S.core = core;
+    await Store.saveCore().catch(() => null);
+    const old = S.news.filter((a) => a.auto && a.season === core.season && a.r === r && a.kind === "flash");
+    for (const a of old) await Store.deleteArticle(a.id).catch(() => null);
+    const base = edit && S.news.find((x) => x.id === main.id) ? S.news.find((x) => x.id === main.id).t : now;
+    extraPieces(core, round, base).forEach((a) => writes.push(a));
+    const nx = core.rounds.find((x) => x.r > r && !x.race);
+    if (nx && nx.gp) {
+      const pv = autoPrevia(core, nx, base - 10);
+      const existing = findArticle(core.season, nx.r, "previa");
+      if (pv && (!existing || existing.auto)) {
+        if (existing && existing.id !== pv.id) await Store.deleteArticle(existing.id).catch(() => null);
+        writes.push(pv);
+      }
+    }
+  }
+  for (const a of writes) if (keep(a.id)) await Store.saveArticle(a).catch(() => null);
+  return writes.length ? writes[0].id : legacy ? legacy.id : null;
+}
+
+/* ---------- mi historia ---------- */
+function storyline(core) {
+  const cs = careerStats(core, S.seasons, ME);
+  const t = driverTable(core);
+  const me = t.find((r) => r.id === ME);
+  return `Temporada ${core.season}. Andrés Arévalo, piloto de Aurelia Racing junto a Ayrton Senna, suma ${cs.wins} victorias, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras. Es ${me.pos}.º del Mundial con ${fmt(me.pts)} puntos.`;
+}
+function storyChapters(core) {
+  const seasons = seasonsSorted(S.seasons);
+  const allRounds = seasons.map((s) => ({ season: s.season, rounds: s.rounds || [], entry: s.entry || (core.history || []).find((h) => h.season === s.season) })).concat([{ season: core.season, rounds: core.rounds, entry: null, current: true }]);
+  const tl = timeline(core, S.seasons, ME);
+  const races = tl.filter((e) => e.round.race && e.x);
+  const miles = [];
+  const nameOf = (e) => (circuit(e.round.gp) ? circuit(e.round.gp).name : "ronda " + e.round.r);
+  if (races[0]) miles.push({ icon: "🏁", title: "Debut en la Fórmula 1", text: `${nameOf(races[0])}, temporada ${races[0].season}: ${finished(races[0].x) ? (races[0].x.pos === 1 ? "¡victoria en su primera carrera!" : `terminó ${races[0].x.pos}.º.`) : "no pudo terminar."}` });
+  const fw = races.find((e) => finished(e.x) && e.x.pos === 1);
+  if (fw && fw !== races[0]) miles.push({ icon: "🏆", title: "Primera victoria", text: `${nameOf(fw)}, temporada ${fw.season}.` });
+  const fp = tl.find((e) => e.q === 1);
+  if (fp) miles.push({ icon: "⏱️", title: "Primera pole", text: `${nameOf(fp)}, temporada ${fp.season}.` });
+  const fd = races.find((e) => !finished(e.x));
+  if (fd) miles.push({ icon: "💥", title: "Primer abandono", text: `${nameOf(fd)}, temporada ${fd.season}.` });
+  let wins = 0, pods = 0;
+  races.forEach((e) => {
+    if (finished(e.x) && e.x.pos === 1) { wins++; if ([5, 10, 25, 50, 75, 100].includes(wins)) miles.push({ icon: "🥇", title: `Victoria número ${wins}`, text: `${nameOf(e)}, temporada ${e.season}.` }); }
+    if (finished(e.x) && e.x.pos <= 3) { pods++; if ([10, 25, 50, 100].includes(pods)) miles.push({ icon: "🍾", title: `Podio número ${pods}`, text: `${nameOf(e)}, temporada ${e.season}.` }); }
+  });
+  const cs = careerStats(core, S.seasons, ME);
+  if (cs.winStreak.best >= 3) miles.push({ icon: "🔥", title: `Racha de ${cs.winStreak.best} victorias seguidas`, text: "Su mejor racha hasta hoy." });
+  (core.history || []).forEach((h) => { if (h.champion === ME) miles.push({ icon: "👑", title: `Campeón del mundo ${h.season}`, text: `Con ${fmt(h.pts)} puntos y ${h.wins} victorias.` }); });
+  const chapters = allRounds.map((s) => {
+    const done = s.rounds.filter((r) => r.race);
+    const my = done.map((r) => ({ r, x: resOf(r, ME), q: qOf(r, ME) }));
+    const w = my.filter((e) => finished(e.x) && e.x.pos === 1);
+    const p = my.filter((e) => finished(e.x) && e.x.pos <= 3);
+    const poles = s.rounds.filter((r) => qOf(r, ME) === 1).length;
+    const dnf = my.filter((e) => e.x && !finished(e.x)).length;
+    const winsAt = w.map((e) => circuit(e.r.gp) ? circuit(e.r.gp).name : "R" + e.r.r);
+    let text = "";
+    if (!done.length) text = s.current ? "La temporada está a punto de empezar. Todo está por escribir." : "Sin carreras registradas.";
+    else {
+      text = `${done.length} ${done.length === 1 ? "carrera" : "carreras"} ${s.current ? "disputadas hasta ahora" : "disputadas"}: ${w.length} ${w.length === 1 ? "victoria" : "victorias"}, ${poles} poles, ${p.length} podios y ${dnf} ${dnf === 1 ? "abandono" : "abandonos"}.`;
+      if (winsAt.length) text += ` Ganó en ${winsAt.join(", ")}.`;
+      if (s.entry) text += ` Terminó ${s.entry.pos}.º del Mundial con ${fmt(s.entry.pts)} puntos${s.entry.champion === ME ? ": ¡campeón del mundo!" : `. El título fue para ${fullName(s.entry.champion)}.`}`;
+      else if (s.current) { const me = driverTable(core).find((r) => r.id === ME); text += ` Ahora mismo es ${me.pos}.º del Mundial con ${fmt(me.pts)} puntos.`; }
+      const mate = s.entry ? s.entry.teammate : teammatesOf(core, ME)[0];
+      const h = mate ? headToHead(s.rounds, ME, mate) : null;
+      if (h && h.r.a + h.r.b) text += ` Contra ${LN(mate)}: ${h.r.a}-${h.r.b} en carrera y ${h.q.a}-${h.q.b} en clasificación.`;
+    }
+    const title = !done.length ? "Todo por escribir" : s.entry && s.entry.champion === ME ? "La temporada del título" : w.length >= done.length / 2 ? "La temporada del dominio" : w.length ? "La temporada de las victorias" : p.length ? "La temporada del aprendizaje" : "La temporada más dura";
+    return { season: s.season, title, text, current: !!s.current };
+  });
+  return { miles, chapters, rivalries: (core.narrative.rivalries || []).slice(0, 4) };
+}
+
+/* ---------- clasificación histórica ---------- */
+function allTimeTable(core) {
+  const seasons = seasonsSorted(S.seasons);
+  const rows = {};
+  DRIVER_IDS.forEach((d) => { rows[d] = { id: d, pts: 0, wins: 0, podiums: 0, poles: 0, titles: 0, seasons: 0, races: 0 }; });
+  const add = (standings, rounds) => {
+    DRIVER_IDS.forEach((d) => { rows[d].pts = r1(rows[d].pts + Number((standings || {})[d] || 0)); });
+    (rounds || []).forEach((round) => {
+      DRIVER_IDS.forEach((d) => {
+        if (qOf(round, d) === 1) rows[d].poles++;
+        const x = resOf(round, d);
+        if (x) rows[d].races++;
+        if (finished(x)) { if (x.pos === 1) rows[d].wins++; if (x.pos <= 3) rows[d].podiums++; }
+      });
+    });
+  };
+  seasons.forEach((s) => add(s.standings, s.rounds));
+  add(core.standings, core.rounds);
+  (core.history || []).forEach((h) => { if (rows[h.champion]) rows[h.champion].titles++; });
+  return Object.values(rows);
+}
+function champions(core) {
+  return (core.history || []).map((h) => ({ season: h.season, driver: h.champion, team: h.constructorsChampion, me: h.pos }));
+}
+
+/* ============================================================
    UI: utilidades, iconos, componentes y navegación
    ============================================================ */
 const $ = (sel, el) => (el || document).querySelector(sel);
@@ -1873,14 +2721,14 @@ function findArticle(season, r, kind) { return S.news.find((a) => a.season === s
 
 function coverCard(a) {
   const c = circuit(a.gp);
-  return `<button class="cover" style="--kc:${KIND_COLOR[a.kind] || "#E10600"}" data-act="push" data-arg="article:${esc(a.id)}">
+  return `<button class="cover" style="--kc:${a.color || KIND_COLOR[a.kind] || "#E10600"}" data-act="push" data-arg="article:${esc(a.id)}">
 <span class="flag-bg">${c ? c.flag : "🏁"}</span><span class="kicker">${esc(a.kicker)}</span>
 <span class="ttl">${esc(a.title)}</span>${a.subtitle ? `<span class="sub">${esc(a.subtitle)}</span>` : ""}
 <span class="meta">${esc(articleMeta(a))}</span></button>`;
 }
 function newsRow(a) {
   const c = circuit(a.gp);
-  return `<button class="nrow" style="--kc:${KIND_COLOR[a.kind] || "#E10600"}" data-act="push" data-arg="article:${esc(a.id)}">
+  return `<button class="nrow" style="--kc:${a.color || KIND_COLOR[a.kind] || "#E10600"}" data-act="push" data-arg="article:${esc(a.id)}">
 <span class="thumb"><span>${c ? c.flag : a.kind === "season" ? "🏆" : "🏁"}</span></span>
 <span class="txt"><span class="k">${esc(a.kicker)}</span><span class="ttl">${esc(a.title)}</span><small>${esc(articleMeta(a))}</small></span></button>`;
 }
@@ -2186,8 +3034,8 @@ ${S.canWrite ? `<div class="cta" style="margin-top:16px"><button class="btn btn-
 <p class="gp-sub">${c ? esc(c.track + ", " + c.place) : "Elige el circuito de esta ronda para empezar el fin de semana."}</p>
 ${c ? `<div class="sessions"><span class="sess${q ? " done" : ""}"><span class="ring"></span>${q ? (qMe ? `Clasificación: P${qMe}` : "Clasificación hecha") : "Clasificación"}</span><span class="sess"><span class="ring"></span>Carrera</span></div>` : ""}
 ${cta.length ? `<div class="cta"${c ? "" : ' style="margin-top:16px"'}>${cta.join("")}</div>` : ""}
-${c ? `<div class="facts"><div><b>${fmt(c.km)}</b><span>km por vuelta</span></div><div><b>${c.laps}</b><span>vueltas</span></div><div><b>${c.turns}</b><span>curvas</span></div></div>` : ""}
-</section>`;
+${c ? `<div class="facts"><div><b>${fmt(c.km)}</b><span>km por vuelta</span></div><div><b>${distLaps(core, c)}</b><span>vueltas</span></div><div><b>${c.turns}</b><span>curvas</span></div></div>` : ""}
+${c ? trackSvg(nx.gp, { cls: "poster-track" }) : ""}</section>`;
 }
 
 function leaderCard(core) {
@@ -2270,6 +3118,7 @@ function homeScreen() {
   if (chips) out.push(sec("Rachas de Arévalo", `<div class="chips">${chips}</div>`));
   const riv = rivalryList(core);
   if (riv) out.push(sec("Rivalidades", riv));
+  out.push(`<div class="sec"><button class="storycard" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>Tu carrera contada capítulo a capítulo</small></span>${ICON.chev}</button></div>`);
   const sz = S.news.find((a) => (a.social || []).length);
   if (sz) {
     const top = sz.social.map((p, i) => [p.likes, i]).sort((x, y) => y[0] - x[0]).slice(0, 3).map(([, i]) => socialPost(sz, i));
@@ -2346,9 +3195,9 @@ function newsScreen() {
   if (seg === "media") return { html: newsSegBar() + mediaBody() };
   const core = S.core;
   const f = S.ui.newsFilter;
-  const kinds = { all: null, previa: ["previa"], quali: ["quali"], race: ["race", "sprint"], season: ["season"] };
+  const kinds = { all: null, flash: ["flash"], previa: ["previa"], quali: ["quali"], race: ["race", "sprint"], season: ["season"] };
   const list = S.news.filter((a) => !kinds[f] || kinds[f].includes(a.kind));
-  const filters = [["all", "Todo"], ["previa", "Previas"], ["quali", "Clasificación"], ["race", "Carreras"], ["season", "Temporadas"]];
+  const filters = [["all", "Todo"], ["flash", "Paddock"], ["race", "Carreras"], ["quali", "Clasificación"], ["previa", "Previas"], ["season", "Temporadas"]];
   const nx = nextRound(core);
   const c = nx && circuit(nx.gp);
   const cta = c && !findArticle(core.season, nx.r, "previa") && S.canWrite && aiReady()
@@ -2393,7 +3242,7 @@ function articleScreen(id) {
   if (!a) return notFound("Noticia");
   const c = circuit(a.gp);
   const parts = [];
-  parts.push(`<header class="cover art-cover" style="--kc:${KIND_COLOR[a.kind] || "#E10600"}"><span class="flag-bg">${c ? c.flag : a.kind === "season" ? "🏆" : "🏁"}</span>
+  parts.push(`<header class="cover art-cover" style="--kc:${a.color || KIND_COLOR[a.kind] || "#E10600"}"><span class="flag-bg">${c ? c.flag : a.kind === "season" ? "🏆" : "🏁"}</span>
 <span class="kicker">${esc(a.kicker)}</span><h1>${esc(a.title)}</h1>${a.subtitle ? `<p class="sub">${esc(a.subtitle)}</p>` : ""}<span class="meta">${esc(articleMeta(a))}</span></header>`);
   const body = [];
   (a.sections || []).forEach((s) => { body.push(`${s.heading ? `<h2>${esc(s.heading)}</h2>` : ""}${paras(s.body)}`); });
@@ -2440,8 +3289,12 @@ function raceRow(core, round, who) {
 function racesScreen() {
   const core = S.core;
   const done = doneRounds(core).length;
+  const seg = S.ui.racesSeg || "cal";
+  const bar = `<div class="seg" role="tablist"><button data-act="seg" data-arg="racesSeg:cal" aria-pressed="${seg === "cal"}">Calendario</button><button data-act="seg" data-arg="racesSeg:circuits" aria-pressed="${seg === "circuits"}">Circuitos</button></div>`;
+  if (seg === "circuits") return { html: bar + circuitsBody(core) };
   return {
-    html: `<div class="sec-h" style="margin-top:4px"><h2>Temporada ${core.season}</h2><span class="muted">${done} de ${core.totalRounds} carreras</span></div>
+    html: `${bar}<div class="sec-h" style="margin-top:4px"><h2>Temporada ${core.season}</h2>${S.canWrite ? `<button class="link" data-act="cal-open">Editar calendario</button>` : `<span class="muted">${done} de ${core.totalRounds}</span>`}</div>
+<p class="note" style="margin:-4px 0 8px">${done} de ${core.totalRounds} carreras disputadas, al ${core.distance || 50}% de distancia.</p>
 <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${core.totalRounds}" aria-valuenow="${done}"><i style="width:${(done / core.totalRounds) * 100}%"></i></div>
 <div class="group">${core.rounds.map((rd) => raceRow(core, rd)).join("")}</div>`
   };
@@ -2473,7 +3326,7 @@ function raceScreen(arg) {
   const c = circuit(round.gp);
   const st = roundStatus(core, round);
   const out = [];
-  const facts = c ? `<div class="facts"><div><b>${fmt(c.km)}</b><span>km por vuelta</span></div><div><b>${c.laps}</b><span>vueltas</span></div><div><b>${c.turns}</b><span>curvas</span></div></div>` : "";
+  const facts = c ? `<div class="facts"><div><b>${fmt(c.km)}</b><span>km por vuelta</span></div><div><b>${distLaps(core, c)}</b><span>vueltas</span></div><div><b>${c.turns}</b><span>curvas</span></div></div>` : "";
   out.push(`<section class="poster" style="--tc:${st === "done" ? "#E10600" : "#7DD3FC"}"><span class="flag-bg">${c ? c.flag : "🏁"}</span>
 <div class="kick">${st === "next" ? '<span class="dot"></span>' : ""}Ronda ${round.r} de ${core.totalRounds}${st === "done" ? ", disputada" : st === "next" ? ", la próxima" : ""}</div>
 <h1 class="gp-name">${esc(c ? c.name : "Por anunciar")}</h1><p class="gp-sub">${c ? esc(c.track + ", " + c.place) : "Aún no se ha elegido el circuito."}</p>${facts}</section>`);
@@ -2490,8 +3343,10 @@ function raceScreen(arg) {
         if (!findArticle(core.season, round.r, "previa") && aiReady()) btns.push(`<button class="btn btn-ghost" data-act="gen-previa" data-arg="${round.r}">${ICON.spark}Escribir la previa</button>`);
       }
     }
+    if (c) btns.push(`<button class="btn btn-ghost" data-act="pick-circuit" data-arg="${round.r}">${ICON.map}Cambiar circuito</button>`);
     if (btns.length) out.push(`<div class="row-btns" style="margin-top:14px">${btns.join("")}</div>`);
   }
+  if (c && TRACK_PATHS[round.gp]) out.push(sec("El circuito", `<button class="group trackcard" data-act="push" data-arg="circuit:${round.gp}">${trackSvg(round.gp, { car: true })}<span class="tc-f"><span><b>${fmt(c.km)} km</b> por vuelta</span><span><b>${distLaps(core, c)}</b> vueltas (${core.distance || 50}%)</span><span><b>${c.turns}</b> curvas</span></span><span class="tc-more">Historia y datos del circuito ${ICON.chev}</span></button>`));
 
   if (round.race || round.quali) {
     const x = resOf(round, ME), q = qOf(round, ME), g = gridOf(round, ME);
@@ -2525,7 +3380,6 @@ function raceScreen(arg) {
     if (c) fix.push(round.sprint
       ? `<button class="btn btn-ghost btn-sm" data-act="edit-session" data-arg="sprint:${round.r}">${ICON.edit}Corregir sprint</button>`
       : `<button class="btn btn-ghost btn-sm" data-act="upload" data-arg="sprint:${round.r}">${ICON.plus}Añadir sprint</button>`);
-    if (!round.race) fix.push(`<button class="btn btn-ghost btn-sm" data-act="pick-circuit" data-arg="${round.r}">${ICON.map}Cambiar circuito</button>`);
     out.push(`<div class="row-btns sec">${fix.join("")}</div>`);
   }
   const arts = S.news.filter((a) => a.season === core.season && a.r === round.r);
@@ -2561,7 +3415,7 @@ function dcard(core, id, row) {
 function paddockScreen() {
   const core = S.core;
   const seg = S.ui.paddockSeg;
-  const out = [`<div class="seg" role="tablist">${[["drivers", "Pilotos"], ["teams", "Escuderías"], ["palmares", "Palmarés"]].map(([k, l]) => `<button data-act="seg" data-arg="paddockSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`];
+  const out = [`<div class="seg" role="tablist">${[["drivers", "Pilotos"], ["teams", "Escuderías"], ["palmares", "Palmarés"], ["history", "Historia"]].map(([k, l]) => `<button data-act="seg" data-arg="paddockSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`];
   if (seg === "drivers") {
     const t = driverTable(core);
     out.push(`<div class="dgrid">${t.map((r) => dcard(core, r.id, r)).join("")}</div>`);
@@ -2572,7 +3426,8 @@ function paddockScreen() {
       return `<button class="tcard" data-act="push" data-arg="team:${r.id}"><span class="tpos num">${r.pos}</span>${crest(r.id, 44)}
 <span class="txt"><b>${esc(tm.name)}</b><small>${esc(teamDrivers(core, r.id).map((d) => DRIVERS[d].last).join(" y "))}</small></span><span class="val num">${fmt(r.pts)}</span></button>`;
     }).join("")}</div>`);
-  } else out.push(palmaresBody(core));
+  } else if (seg === "history") out.push(historyBody(core));
+  else out.push(palmaresBody(core));
   return { html: out.join("") };
 }
 
@@ -2670,8 +3525,9 @@ function teamScreen(id) {
 function palmaresBody(core) {
   const c = careerStats(core, S.seasons, ME);
   const out = [];
+  out.push(`<button class="storycard" style="margin-bottom:14px" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>Capítulos, hitos y rivalidades de tu carrera</small></span>${ICON.chev}</button>`);
   out.push(`<section class="poster" style="--tc:#F2C14E"><span class="flag-bg">🏆</span><div class="kick">Andrés Arévalo, archivo histórico</div>
-<h1 class="gp-name" style="font-size:clamp(40px,12vw,58px)">${c.titles ? `${c.titles} ${c.titles === 1 ? "Mundial" : "Mundiales"}` : "Palmarés"}</h1>
+<h1 class="gp-name" style="font-size:clamp(40px,12vw,58px)">${c.titles} ${c.titles === 1 ? "Mundial" : "Mundiales"}</h1>
 <p class="gp-sub">${plural(c.seasons, "temporada", "temporadas")} en la F1, ${plural(c.races, "carrera", "carreras")} disputadas.</p>
 <div class="facts"><div><b>${c.wins}</b><span>victorias</span></div><div><b>${c.poles}</b><span>poles</span></div><div><b>${c.podiums}</b><span>podios</span></div><div><b>${fmt(c.pts)}</b><span>puntos</span></div></div></section>`);
   out.push(sec("En cifras", tiles([
@@ -3101,11 +3957,10 @@ async function commitUpload(mode, rowsOverride) {
   st.saved = true;
   const existing = findArticle(core.season, st.r, st.session);
   if (mode === "ai" && aiReady()) { await writeChronicle(st, existing && st.edit ? existing : null); return; }
-  if (!aiReady() && !existing) {
-    const art = templateArticle(S.core, roundOf(S.core, st.r), st.session);
-    await Store.saveArticle(art).catch(() => null);
+  if (!existing || existing.auto) {
+    const id = await publishAutoNews(st.session, st.r, st.edit);
     closeSheet();
-    openArticle(art.id);
+    if (id) openArticle(id);
     return;
   }
   closeSheet();
@@ -3201,6 +4056,8 @@ function settingsSheet() {
     title: "Ajustes",
     body: `${core ? `<div class="group">
 <button class="list-btn" data-act="driver-edit" data-arg="${ME}">${ICON.edit}<span class="t">Tu dorsal y escudería<small>${me.num != null ? "#" + me.num : "Sin dorsal"} en ${esc(team(me.team).name)}</small></span>${ICON.chev}</button>
+${S.canWrite ? `<button class="list-btn" data-act="cal-open">${ICON.flag}<span class="t">Calendario de la temporada<small>${core.totalRounds} carreras. Cambia circuitos o su número</small></span>${ICON.chev}</button>
+<button class="list-btn" data-act="dist-open">${ICON.timer}<span class="t">Distancia de carrera<small>${core.distance || 50}% de la distancia real</small></span>${ICON.chev}</button>` : ""}
 ${S.canWrite ? `<button class="list-btn" data-act="close-season">${ICON.trophy}<span class="t">Cerrar la temporada ${core.season}<small>Guarda la ficha histórica y empieza la siguiente</small></span>${ICON.chev}</button>` : ""}</div>` : ""}
 <div class="group" style="margin-top:14px">
 ${S.downloads && core ? `<button class="list-btn" data-act="export">${ICON.download}<span class="t">Descargar copia de seguridad<small>Un archivo con todo tu universo</small></span></button>` : ""}
@@ -3290,7 +4147,8 @@ function fpSheet(st) {
   return {
     title: m.name,
     body: `<div class="fp-wrap">${frontPage(a, st.i, true)}</div>
-${f.es ? `<div class="tip" style="margin-top:14px"><b>Traducción:</b> ${esc(f.es)}</div>` : ""}
+<div class="fp-article" style="--pc:${m.accent}"><span class="fpa-k">${m.country} ${esc(m.name)}${m.lang !== "es" ? ", traducido" : ""}</span><h3>${esc(f.es || f.headline)}</h3>${f.deck && m.lang === "es" ? `<p class="fpa-deck">${esc(f.deck)}</p>` : ""}
+${paras(f.body || [a.subtitle].concat((a.sections || []).slice(0, 1).map((s) => s.body)).filter(Boolean).join("\n\n"))}<p class="fpa-by">Por ${esc(m.journalist)}</p></div>
 <div class="group" style="margin-top:14px"><button class="list-btn" data-act="sheet-push" data-arg="media:${f.outlet}">${jAvatar(m, 36)}<span class="t">${esc(m.name)}<small>${m.country} ${esc(m.kind)}, con ${esc(m.journalist)}</small></span>${ICON.chev}</button>
 <button class="list-btn" data-act="sheet-push" data-arg="article:${esc(a.id)}">🗞️<span class="t">${esc(a.title)}<small>${esc(articleLabel(a))}</small></span>${ICON.chev}</button></div>`
   };
@@ -3555,18 +4413,141 @@ async function commitEntry(mode) {
     await writeChronicle(st, existing && st.edit ? existing : null);
     return;
   }
-  if (!existing || existing.auto) {
-    const art = templateArticle(S.core, roundOf(S.core, st.r), st.session);
-    if (existing) { art.id = existing.id; art.t = existing.t; }
-    await Store.saveArticle(art).catch(() => null);
-    closeSheet();
-    openArticle(art.id);
-    toast(st.edit ? "Corrección guardada" : "Resultados guardados");
-    return;
-  }
+  const id = await publishAutoNews(st.session, st.r, st.edit);
   closeSheet();
-  toast(st.edit ? "Corrección guardada" : "Resultados guardados");
+  if (id) openArticle(id);
+  toast(st.edit ? "Corrección guardada: noticias actualizadas" : st.session === "race" ? "Resultados guardados: hay noticias nuevas en el paddock" : "Resultados guardados");
 }
+
+/* ============================================================
+   CIRCUITOS, CALENDARIO, HISTORIA Y RÉCORDS
+   ============================================================ */
+function reducedMotion() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+function trackSvg(gp, opts) {
+  opts = opts || {};
+  const d = typeof TRACK_PATHS !== "undefined" ? TRACK_PATHS[gp] : null;
+  const c = circuit(gp);
+  if (!d || !c) return "";
+  const rev = CIRCUIT_INFO[gp] && CIRCUIT_INFO[gp].reverse;
+  const id = "tk" + (++crestSeq);
+  const car = opts.car && !reducedMotion();
+  return `<svg class="track${opts.cls ? " " + opts.cls : ""}" viewBox="0 0 300 200" role="img" aria-label="Trazado de ${esc(c.track)}">
+<path d="${d}" fill="none" stroke="currentColor" stroke-opacity=".16" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<path id="${id}" d="${d}" fill="none" stroke="currentColor" stroke-width="${opts.thin ? 5 : 4}" stroke-linejoin="round" stroke-linecap="round"/>
+${car ? `<circle r="6.5" fill="#E10600" stroke="#fff" stroke-width="2.5"><animateMotion dur="${opts.dur || 10}s" repeatCount="indefinite"${rev ? ' keyPoints="1;0" keyTimes="0;1" calcMode="linear"' : ""}><mpath href="#${id}"/></animateMotion></circle>` : ""}</svg>`;
+}
+
+/* ---------- circuitos ---------- */
+function circuitsBody(core) {
+  const inCal = new Set(core.rounds.map((r) => r.gp).filter(Boolean));
+  return `<p class="lede" style="margin:0 0 12px">Todos los circuitos de F1 25. Toca uno para ver su trazado, su historia y tus números allí.</p>
+<div class="cgrid">${CIRCUIT_IDS.map((k) => {
+    const c = CIRCUITS[k];
+    return `<button class="ccard${inCal.has(k) ? " cal" : ""}" data-act="push" data-arg="circuit:${k}">${trackSvg(k, { thin: true })}
+<span class="cc-t"><b>${c.flag} ${esc(c.name)}</b><small>${esc(c.place)}${inCal.has(k) ? ", en tu calendario" : ""}</small></span></button>`;
+  }).join("")}</div>`;
+}
+function circuitWinners(core, gp) {
+  const out = [];
+  seasonsSorted(S.seasons).forEach((s) => (s.rounds || []).forEach((r) => {
+    if (r.gp !== gp || !r.race) return;
+    const w = Object.keys(r.race.res).find((d) => finished(r.race.res[d]) && r.race.res[d].pos === 1);
+    out.push({ season: s.season, r: r.r, w });
+  }));
+  core.rounds.forEach((r) => {
+    if (r.gp !== gp || !r.race) return;
+    const w = Object.keys(r.race.res).find((d) => finished(r.race.res[d]) && r.race.res[d].pos === 1);
+    out.push({ season: core.season, r: r.r, w });
+  });
+  return out;
+}
+function circuitScreen(gp) {
+  const c = circuit(gp);
+  if (!c) return notFound("Circuito");
+  const core = S.core;
+  const info = CIRCUIT_INFO[gp] || {};
+  const laps = distLaps(core, c);
+  const cs = careerStats(core, S.seasons, ME);
+  const here = cs.byCircuit.find((b) => b.gp === gp);
+  const winners = circuitWinners(core, gp);
+  const cal = core.rounds.filter((r) => r.gp === gp);
+  const out = [];
+  out.push(`<header class="chero"><span class="flag-bg">${c.flag}</span><div class="kick">${esc(c.gp)}</div><h1 class="gp-name">${esc(c.name)}</h1><p class="gp-sub">${esc(c.track)}, ${esc(c.place)}</p>
+${trackSvg(gp, { car: true, cls: "track-hero" })}${info.reverse ? `<span class="rev-tag">Sentido inverso</span>` : ""}</header>`);
+  out.push(tiles([
+    { k: "km por vuelta", v: fmt(c.km) }, { k: "curvas", v: c.turns }, { k: `vueltas (${core.distance || 50}%)`, v: laps, cls: "hl" },
+    { k: "km de carrera", v: fmt(Math.round(laps * c.km)) }, { k: "vueltas al 100%", v: c.laps }, { k: "en la F1 desde", v: info.first || "—" }
+  ]));
+  if (info.history) out.push(sec("Historia", `<div class="group" style="padding:14px 16px"><p style="margin:0 0 10px;line-height:1.55">${esc(info.history)}</p>${info.corner ? `<p style="margin:0"><b>El punto clave:</b> ${esc(info.corner)}.</p>` : ""}<p class="note" style="margin:10px 0 0">${esc(c.note)}</p></div>`));
+  out.push(sec("Tus números aquí", here && here.starts
+    ? tiles([{ k: "carreras", v: here.starts }, { k: "victorias", v: here.wins, cls: "gold" }, { k: "podios", v: here.podiums }, { k: "poles", v: here.poles }, { k: "mejor resultado", v: here.best ? "P" + here.best : "—" }, { k: "abandonos", v: here.dnf }])
+    : `<div class="group" style="padding:14px 16px">Todavía no has corrido aquí.</div>`));
+  if (winners.length) out.push(sec("Ganadores en tu universo", `<div class="group">${winners.map((w) => `<div class="srow" style="cursor:default"><span class="pos num">T${w.season}</span><span class="bar" style="background:${w.w ? tcolor(teamOf(core, w.w)) : "#888"}"></span><span class="who">${w.w ? dname(w.w) : "Ganador sin anotar"}<small>Ronda ${w.r}</small></span></div>`).join("")}</div>`));
+  if (cal.length) out.push(sec(`En la temporada ${core.season}`, `<div class="group">${cal.map((r) => raceRow(core, r)).join("")}</div>`));
+  out.push(`<p class="note">Trazado simplificado a partir de datos abiertos (bacinger/f1-circuits, licencia MIT).</p>`);
+  return { title: c.name, html: out.join("") };
+}
+
+/* ---------- calendario ---------- */
+function calendarSheet(st) {
+  const core = S.core;
+  const minN = Math.max(1, ...core.rounds.filter((r) => r.race || r.quali || r.sprint).map((r) => r.r), 1);
+  const rows = st.gps.map((gp, i) => {
+    const rd = core.rounds[i];
+    const played = rd && (rd.race || rd.quali);
+    return `<div class="calrow"><span class="rn num">R${i + 1}</span><select class="sel" data-bind="gps.${i}" aria-label="Circuito de la ronda ${i + 1}">${circuitOptions(gp || "")}</select>${played ? `<span class="badge q" title="Ya tiene resultados">✓</span>` : `<span></span>`}</div>`;
+  }).join("");
+  return {
+    title: "Calendario de la temporada",
+    body: `<div class="field"><span class="lbl">Número de carreras</span><div class="stepper"><button class="btn btn-ghost btn-sm" data-act="cal-n" data-arg="-1" ${st.gps.length <= minN ? "disabled" : ""}>−</button><b class="num">${st.gps.length}</b><button class="btn btn-ghost btn-sm" data-act="cal-n" data-arg="1" ${st.gps.length >= 24 ? "disabled" : ""}>+</button></div><small>Las rondas con resultados no se pueden quitar.</small></div>
+<p class="note">Cambia el circuito de cualquier ronda, también de las ya disputadas: sus resultados se mantienen.</p>${rows}`,
+    foot: `<button class="btn btn-red btn-block" data-act="cal-save">Guardar calendario</button>`
+  };
+}
+function distanceSheet() {
+  const cur = (S.core && S.core.distance) || 50;
+  return {
+    title: "Distancia de carrera", short: true,
+    body: `<p class="lede" style="margin:0 0 12px">La que usas en F1 25. Sirve para calcular las vueltas de cada circuito.</p><div class="group">${[25, 35, 50, 100].map((p) => `<button class="list-btn" data-act="dist-set" data-arg="${p}" aria-pressed="${cur === p}"><span class="t">${p}%${cur === p ? " ✓" : ""}<small>${p === 100 ? "Distancia real" : `Por ejemplo, Mónaco a ${Math.round((78 * p) / 100)} vueltas`}</small></span></button>`).join("")}</div>`
+  };
+}
+SHEETS.calendar = calendarSheet;
+SHEETS.distance = distanceSheet;
+
+/* ---------- historia ---------- */
+function historyBody(core) {
+  const out = [];
+  out.push(`<button class="storycard" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>De tu debut a hoy: capítulos, hitos y rivalidades</small></span>${ICON.chev}</button>`);
+  const sort = S.ui.allTimeSort || "pts";
+  const rows = allTimeTable(core).sort((a, b) => (b[sort] - a[sort]) || (b.pts - a.pts));
+  const labels = [["pts", "Puntos"], ["wins", "Victorias"], ["podiums", "Podios"], ["poles", "Poles"], ["titles", "Mundiales"]];
+  const unit = { pts: "pts", wins: "V", podiums: "podios", poles: "poles", titles: "títulos" };
+  out.push(sec("Clasificación histórica", `<div class="filters" role="toolbar" aria-label="Ordenar">${labels.map(([k, l]) => `<button data-act="seg" data-arg="allTimeSort:${k}" aria-pressed="${sort === k}">${l}</button>`).join("")}</div>
+<div class="group">${rows.map((r, i) => `<button class="srow${r.id === ME ? " me" : ""}" data-act="push" data-arg="driver:${r.id}"><span class="pos num">${i + 1}</span><span class="bar" style="background:${tcolor(teamOf(core, r.id))}"></span>
+<span class="who">${dname(r.id)}<small>${r.wins} V, ${r.podiums} podios, ${r.poles} poles${r.titles ? `, ${r.titles} 🏆` : ""}</small></span><span class="val"><b class="num">${fmt(r[sort])}</b><small>${unit[sort]}</small></span></button>`).join("")}</div>
+<p class="note">Todas las temporadas de tu universo. Victorias, podios y poles cuentan los resultados anotados; los puntos, el Mundial oficial.</p>`));
+  const ch = champions(core);
+  out.push(sec("Campeones", ch.length ? `<div class="group">${ch.map((c) => `<div class="srow" style="cursor:default"><span class="pos num">T${c.season}</span><span class="bar" style="background:${tcolor(teamOf(core, c.driver))}"></span><span class="who">${dname(c.driver)}<small>Constructores: ${esc(team(c.team).name)}</small></span><span class="val">🏆</span></div>`).join("")}</div>`
+    : `<div class="group" style="padding:14px 16px">Aún no hay campeones: se coronan al cerrar cada temporada.</div>`));
+  return out.join("");
+}
+function storyScreen() {
+  const core = S.core;
+  const st = storyChapters(core);
+  const cs = careerStats(core, S.seasons, ME);
+  const out = [];
+  out.push(`<header class="story-hero"><span class="flag-bg">🇪🇸</span><div class="kick">La historia de</div><h1>Andrés<br>Arévalo</h1>
+<p>Piloto de Aurelia Racing. ${cs.titles} ${cs.titles === 1 ? "Mundial" : "Mundiales"}, ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.</p></header>`);
+  out.push(`<div class="prologue"><p>Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.</p></div>`);
+  if (st.miles.length) out.push(sec("Hitos", `<ol class="miles">${st.miles.map((m) => `<li><span class="mi">${m.icon}</span><div><b>${esc(m.title)}</b><small>${esc(m.text)}</small></div></li>`).join("")}</ol>`));
+  out.push(sec("Capítulos", st.chapters.map((c) => `<article class="chapter${c.current ? " now" : ""}"><span class="cn num">${c.season}</span><div><span class="ck">Temporada ${c.season}${c.current ? ", en curso" : ""}</span><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p></div></article>`).join("")));
+  const riv = rivalryList(core, ME);
+  if (riv) out.push(sec("Sus rivales", riv));
+  out.push(`<p class="tbc">Continuará…</p>`);
+  return { title: "Mi historia", html: out.join("") };
+}
+SCREENS.circuit = circuitScreen;
+SCREENS.story = storyScreen;
 
 /* ============================================================
    ACCIONES Y ARRANQUE
@@ -3612,6 +4593,26 @@ const ACTIONS = {
   "news-filter": (a) => { S.ui.newsFilter = a; render(); },
   "open-settings": () => openSheet({ type: "settings" }),
   "load-initial": () => loadInitialData(),
+  "cal-open": () => openSheet({ type: "calendar", gps: S.core.rounds.map((r) => r.gp || "") }),
+  "cal-n": (a) => {
+    const st = S.sheet;
+    const minN = Math.max(1, ...S.core.rounds.filter((r) => r.race || r.quali || r.sprint).map((r) => r.r), 1);
+    const n = Math.max(minN, Math.min(24, st.gps.length + Number(a)));
+    while (st.gps.length < n) st.gps.push("");
+    st.gps.length = n;
+    renderSheet();
+  },
+  "cal-save": async () => {
+    const gps = S.sheet.gps.slice();
+    closeSheet();
+    await mutateCore((core) => {
+      core.totalRounds = gps.length;
+      core.rounds = Array.from({ length: gps.length }, (_, i) => Object.assign({ r: i + 1 }, core.rounds[i] || {}, { gp: gps[i] || null }));
+    }).catch(() => null);
+    toast("Calendario guardado");
+  },
+  "dist-open": () => openSheet({ type: "distance" }),
+  "dist-set": async (a) => { closeSheet(); await mutateCore((core) => { core.distance = Number(a); }).catch(() => null); toast(`Distancia de carrera: ${a}%`); },
   "open-fp": (a) => { const k = a.lastIndexOf("|"); openSheet({ type: "fp", id: a.slice(0, k), i: Number(a.slice(k + 1)) }); },
   "sheet-push": (a) => { closeSheet(); const i = a.indexOf(":"); push(a.slice(0, i), a.slice(i + 1)); },
   "goto-news": (a) => { S.ui.newsSeg = a; S.nav.tab = "news"; S.nav.stacks.news = []; S.anim = "fade"; render(); window.scrollTo(0, 0); },
