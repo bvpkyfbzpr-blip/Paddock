@@ -925,8 +925,33 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
+const APP_VERSION = "6";
+const APP_DATE = "25 de septiembre de 2026";
+let swReg = null;
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => null); });
+  /* Si llega una versión nueva, la app se recarga sola una vez para mostrarla. */
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloaded) return;
+    reloaded = true;
+    try { if (sessionStorage.getItem("paddock.reloaded") === APP_VERSION) return; sessionStorage.setItem("paddock.reloaded", APP_VERSION); } catch (e) { /* sin almacenamiento */ }
+    location.reload();
+  });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).then((reg) => { swReg = reg; reg.update().catch(() => null); }).catch(() => null);
+  });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && swReg) swReg.update().catch(() => null); });
+}
+async function checkForUpdate() {
+  toast("Buscando la última versión…");
+  try {
+    if (swReg) await swReg.update();
+    const res = await fetch("./index.html", { cache: "no-store" });
+    const txt = await res.text();
+    const m = /const APP_VERSION = "(\d+)"/.exec(txt);
+    if (m && m[1] !== APP_VERSION) { toast(`Hay una versión nueva (${m[1]}). Actualizando…`); setTimeout(() => location.reload(), 900); }
+    else toast("Ya tienes la última versión");
+  } catch (e) { toast("No se ha podido comprobar: ¿tienes conexión?"); }
 }
 
 /* ============================================================
@@ -4884,7 +4909,8 @@ ${S.canWrite ? `<button class="list-btn" data-act="open-restore">${ICON.upload}<
 ${S.canWrite && core ? `<button class="list-btn danger" data-act="reset-all">${ICON.reset}<span class="t">Empezar de cero<small>Borra temporadas, resultados y noticias</small></span></button>` : ""}</div>
 <div class="tip" style="margin-top:14px"><b>Guardado:</b> ${S.mode === "db" ? "en tu cuenta de Claude, disponible en todos tus dispositivos." : S.mode === "local" ? (window.PADDOCK_STANDALONE ? "en este iPhone. Descarga una copia de seguridad de vez en cuando." : "solo en este dispositivo.") : "conectando…"}<br>
 ${window.PADDOCK_STANDALONE ? "" : `<b>IA:</b> ${aiReady() ? (S.aiImages ? "activa, con lectura de fotos." : "activa, sin lectura de fotos en esta vista.") : "no disponible en esta vista."}<br>`}
-<b>Datos reales:</b> ${esc(REAL_STATS_SOURCE)}, según Wikipedia.</div>`
+<b>Datos reales:</b> ${esc(REAL_STATS_SOURCE)}, según Wikipedia.</div>
+${window.PADDOCK_STANDALONE ? `<div class="group" style="margin-top:14px"><button class="list-btn" data-act="check-update">${ICON.reset}<span class="t">Buscar actualización<small>Versión ${APP_VERSION}, del ${APP_DATE}</small></span>${ICON.chev}</button></div>` : ""}`
   };
 }
 
@@ -6101,6 +6127,7 @@ const ACTIONS = {
   "news-filter": (a) => { S.ui.newsFilter = a; render(); },
   "open-settings": () => openSheet({ type: "settings" }),
   "load-initial": () => loadInitialData(),
+  "check-update": () => checkForUpdate(),
   "cal-open": () => openSheet({ type: "calendar", gps: S.core.rounds.map((r) => r.gp || "") }),
   "cal-n": (a) => {
     const st = S.sheet;
