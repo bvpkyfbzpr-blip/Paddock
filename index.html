@@ -485,7 +485,8 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .empty { text-align: center; padding: 40px 16px; color: var(--muted); }
 .empty b { display: block; color: var(--text); font-family: var(--font-d); font-size: 26px; margin-bottom: 6px; }
 .empty .btn { margin-top: 16px; }
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabbar-h) + 86px + env(safe-area-inset-bottom, 0px)); z-index: 90; background: #15151E; color: #fff; padding: 10px 16px; border-radius: 14px; font-weight: 600; font-size: 15px; max-width: min(92vw, 480px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); animation: up 0.25s ease-out; }
+#toast { position: fixed; left: 0; right: 0; bottom: calc(var(--tabbar-h) + 86px + env(safe-area-inset-bottom, 0px)); z-index: 90; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; }
+.toast { background: #15151E; color: #fff; padding: 10px 16px; border-radius: 14px; font-weight: 600; font-size: 15px; max-width: min(92vw, 480px); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.35); animation: up 0.25s ease-out; }
 .banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: color-mix(in srgb, #F2C14E 16%, var(--card)); border: 1px solid color-mix(in srgb, #F2C14E 50%, var(--line)); font-size: 14px; margin-bottom: 14px; }
 .banner .btn { flex: none; }
 .banner > svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--gold); }
@@ -742,6 +743,139 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .fpa-deck { font-weight: 600; }
 .fp-article p { line-height: 1.55; }
 .fpa-by { font-size: 13px; color: var(--muted); font-style: italic; }
+
+/* ---------- mi carrera ---------- */
+.mailbtn { position: relative; }
+.dotbadge { position: absolute; top: 2px; right: 0; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; line-height: 1; }
+.mehero { position: relative; overflow: hidden; isolation: isolate; margin: -14px -14px 14px; padding: 22px 18px 18px; color: #F4F4F8; border-radius: 0 0 26px 26px; background: radial-gradient(120% 100% at 85% 0%, color-mix(in srgb, var(--tc) 55%, #0b0b12), #0b0b12 70%); display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; align-items: center; }
+.mehero .me-h { grid-row: span 1; filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+.me-n .first { display: block; font-size: 18px; opacity: .85; }
+.me-n .last { display: block; font-family: var(--font-d); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: 40px; line-height: .9; }
+.me-n small { display: flex; align-items: center; gap: 6px; margin-top: 6px; opacity: .8; }
+.mehero .fame { grid-column: 1 / -1; margin-top: 8px; }
+.fame-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; }
+.fame-top b { font-family: var(--font-d); font-size: 20px; text-transform: uppercase; letter-spacing: .02em; }
+.fame-bar { height: 10px; border-radius: 6px; background: rgba(255,255,255,.14); overflow: hidden; margin-top: 6px; }
+.fame-bar i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #7DD3FC, #F2C14E 70%, #E10600); }
+.me-kpis { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.me-kpis div { background: rgba(255,255,255,.08); border-radius: 12px; padding: 8px 10px; }
+.me-kpis b { display: block; font-family: var(--font-d); font-size: 22px; line-height: 1; }
+.me-kpis span { font-size: 11.5px; opacity: .75; }
+.mgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.mtile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px; border-radius: 18px; background: var(--card); box-shadow: var(--shadow); text-align: left; }
+.mtile .mi { font-size: 26px; margin-bottom: 4px; }
+.mtile b { font-family: var(--font-d); font-size: 22px; line-height: 1; }
+.mtile small { color: var(--muted); font-size: 13px; }
+.mtile .dotbadge { top: 10px; right: 10px; }
+.press-cta { width: 100%; background: linear-gradient(90deg, rgba(225,6,0,.12), var(--card)); box-shadow: var(--shadow), inset 0 0 0 1.5px var(--red); }
+.objs { padding: 6px 14px; }
+.obj { padding: 10px 0; }
+.obj + .obj { border-top: 1px solid var(--line); }
+.obj-t { display: flex; justify-content: space-between; gap: 10px; font-size: 14.5px; }
+.obj-t b { font-family: var(--font-d); font-size: 18px; flex: none; }
+.obj-bar { height: 6px; border-radius: 4px; background: var(--card-2); margin-top: 6px; overflow: hidden; }
+.obj-bar i { display: block; height: 100%; background: var(--aurelia); border-radius: 4px; }
+.obj.ok .obj-bar i { background: var(--green); }
+.badges-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; flex-wrap: wrap; }
+.bdg { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: var(--card-2); font-size: 18px; filter: grayscale(1); opacity: .45; }
+.bdg.on { filter: none; opacity: 1; background: rgba(242, 193, 78, .2); }
+.bdg-more { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--muted); }
+.bdg-more svg { width: 16px; height: 16px; }
+.li-ic { width: 24px; text-align: center; font-size: 19px; flex: none; }
+.mecard { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; text-align: left; }
+.mc-m { flex: 1; min-width: 0; }
+.mc-m .fame-bar { background: var(--card-2); }
+.mc-k { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+.mails .mail { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 12px 14px; text-align: left; }
+.group > :is(.mail, .led, .shop-it) + :is(.mail, .led, .shop-it) { border-top: 1px solid var(--line); }
+.mail-ic { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 12px; background: var(--card-2); font-size: 19px; }
+.mail-ic.big { width: 48px; height: 48px; font-size: 24px; }
+.mail-t { flex: 1; min-width: 0; }
+.mail-t b { display: block; font-size: 14px; color: var(--muted); font-weight: 600; }
+.mail-t span { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mail-t small { color: var(--faint); font-size: 12px; }
+.mail.new .mail-t b, .mail.new .mail-t span { color: var(--text); font-weight: 700; }
+.mail-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--aurelia); margin-top: 6px; flex: none; }
+.mailview { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
+.mv-h { display: flex; align-items: center; gap: 12px; }
+.mv-h b { display: block; }
+.mv-h small { color: var(--muted); }
+.mailview h2 { font-family: var(--font-d); font-size: 24px; margin: 14px 0 6px; line-height: 1.05; }
+.mailview p { line-height: 1.55; }
+.offer-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 18px; margin-bottom: 12px; background: var(--card); box-shadow: var(--shadow); border-left: 5px solid var(--tc); }
+.offer-card b { font-size: 18px; }
+.offer-kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin-top: 8px; font-size: 14px; }
+.offer-kv span { color: var(--muted); }
+.offer-kv b { font-size: 14px; }
+.choices { display: grid; gap: 8px; }
+.money-hero { padding: 18px; border-radius: 20px; margin-bottom: 12px; color: #F4F4F8; background: linear-gradient(135deg, #0B2239, #111118); }
+.money-hero span { font-size: 13px; opacity: .75; text-transform: uppercase; letter-spacing: .06em; }
+.money-hero b { display: block; font-family: var(--font-d); font-size: 46px; line-height: 1; margin: 4px 0; }
+.money-hero.sm b { font-size: 34px; }
+.money-hero small { opacity: .8; }
+.led { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; }
+.led small { display: block; color: var(--faint); font-size: 12px; }
+.led b.pos { color: var(--green); } .led b.neg { color: var(--red); }
+.shop-it { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.shop-it.owned { opacity: .7; }
+.si-ic { font-size: 26px; width: 34px; text-align: center; flex: none; }
+.si-t { flex: 1; min-width: 0; }
+.si-t b { display: block; font-size: 15px; }
+.si-t small { color: var(--muted); font-size: 12.5px; }
+.vitrina { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.vitrina span { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); font-size: 34px; text-align: center; }
+.vitrina small { font-size: 11px; color: var(--muted); }
+.helmet-prev { display: grid; place-items: center; padding: 10px 0 6px; background: radial-gradient(circle, var(--card-2), transparent 70%); }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw-c { width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+.sw-c.on { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text); }
+.pats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pat { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 14px; background: var(--card); box-shadow: var(--shadow); font-size: 13px; font-weight: 600; }
+.pat small { font-weight: 400; color: var(--muted); font-size: 11px; }
+.pat.on { box-shadow: inset 0 0 0 2px var(--red); }
+.achs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.ach { display: flex; flex-direction: column; gap: 2px; padding: 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); opacity: .55; }
+.ach .ai { font-size: 30px; filter: grayscale(1); }
+.ach b { font-size: 15px; }
+.ach small { color: var(--muted); font-size: 12.5px; }
+.ach.on { opacity: 1; box-shadow: var(--shadow), inset 0 0 0 1.5px #F2C14E; }
+.ach.on .ai { filter: none; }
+.chart { padding: 10px 10px 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .cg { stroke: var(--line); stroke-width: 1; }
+.chart .ct { fill: var(--muted); font-size: 10px; font-family: var(--font-b); }
+.chart .ct.dnf { fill: var(--red); font-size: 12px; font-weight: 700; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 6px 6px 0; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.lg-f { font-size: 20px; width: 26px; text-align: center; flex: none; }
+.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.gal-th { aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; background: var(--card-2); }
+.gal-th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-empty { grid-column: 1 / -1; padding: 14px; border-radius: 14px; background: var(--card); color: var(--muted); font-size: 14px; }
+.gal-add { margin-top: 10px; cursor: pointer; }
+.photo-big { display: block; width: 100%; border-radius: 12px; }
+.pq { margin-bottom: 16px; }
+.pq-q { padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: var(--card); box-shadow: var(--shadow); margin-bottom: 8px; }
+.pq-q p { margin: 4px 0 0; font-weight: 600; }
+.pa { display: block; width: 100%; text-align: left; padding: 10px 12px; margin: 0 0 6px; border-radius: 14px; background: var(--card-2); border: 1.5px solid transparent; font-size: 15px; line-height: 1.4; }
+.pa .tone { display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #fff; }
+.pa.t-hum .tone { background: #0E9F6E; } .pa.t-dip .tone { background: #0284C7; } .pa.t-pro .tone { background: #E10600; }
+.pa.on { border-color: var(--text); background: var(--card); }
+.dotd { padding: 8px 14px; }
+.dd-r { display: grid; grid-template-columns: 1fr 90px 44px; gap: 10px; align-items: center; padding: 6px 0; font-size: 14.5px; }
+.dd-r.win span { font-weight: 700; }
+.dd-b { height: 8px; border-radius: 4px; background: var(--card-2); overflow: hidden; }
+.dd-b i { display: block; height: 100%; }
+
+/* ---------- negociación ---------- */
+.chip.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+.negbox { margin-top: 14px; padding: 14px; border-radius: 18px; background: var(--card); box-shadow: var(--shadow); }
+.neg-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 8px; }
+.neg-h > b { font-family: var(--font-d); font-size: 22px; margin-right: auto; }
+.neg-h span { font-size: 13px; color: var(--muted); }
+.int-alto { color: var(--green); } .int-medio { color: #D97706; } .int-bajo { color: var(--red); }
+.pat-d { letter-spacing: 2px; color: var(--red); }
+.list-btn:disabled { opacity: .45; }
 
 </style>
 </head>
@@ -1290,7 +1424,7 @@ const S = {
   aiMaxImages: 4,
   aiOff: false,
   downloads: null,
-  nav: { tab: "home", stacks: { home: [], news: [], races: [], standings: [], paddock: [] } },
+  nav: { tab: "home", stacks: { home: [], news: [], races: [], standings: [], me: [], paddock: [] } },
   ui: { standingsSeg: "drivers", paddockSeg: "drivers", newsFilter: "all" },
   scroll: {},
   sheet: null
@@ -2167,7 +2301,7 @@ function socialFor(g, core, ctx, kind) {
     let text = g.fill(g.pick(DRV_T[lg][o] || DRV_T.en.points), { P: ctx.place, PU: UP(ctx.place), N: finished(x) ? x.pos : "", T: ctx.tag });
     if (id === ctx.mate && finished(x) && (!finished(ctx.me) || x.pos < ctx.me.pos)) text = g.pick(["Hoy he hablado en la pista. 🇧🇷", "Sigo aquí. 🇧🇷 #" + ctx.tag]);
     if (id === ctx.mate && o !== "win" && finished(ctx.me) && (!finished(x) || ctx.me.pos < x.pos)) text = g.pick(["Seguimos. 🇧🇷", "El campeonato es largo. 🇧🇷", "Trabajo, trabajo y trabajo. 🇧🇷"]);
-    const scale = id === ME ? 1.2 : ["verstappen", "hamilton", "leclerc", "senna", "norris", "alonso"].includes(id) ? 1.5 : 0.7;
+    const scale = id === ME ? fameMult(core) * 1.2 : ["verstappen", "hamilton", "leclerc", "senna", "norris", "alonso"].includes(id) ? 1.5 : 0.7;
     add({ who: "driver", id, text, likes: Math.round(big(90000, 420000) * scale), reposts: Math.round(big(6000, 40000) * scale), replies: Math.round(big(2000, 15000) * scale) });
   };
   if (kind === "quali") {
@@ -2653,6 +2787,673 @@ function champions(core) {
 }
 
 /* ============================================================
+   MI CARRERA: fama, dinero, contrato, correo, decisiones
+   Nada de esto cambia resultados deportivos: es la vida del piloto
+   fuera de la pista.
+   ============================================================ */
+
+/* ---------- leyendas (datos reales; carrera completa) ---------- */
+const LEGENDS = [
+  { id: "l_schumacher", name: "Michael Schumacher", flag: "🇩🇪", titles: 7, wins: 91, podiums: 155, poles: 68, gp: 306, pts: 1566 },
+  { id: "l_fangio", name: "Juan Manuel Fangio", flag: "🇦🇷", titles: 5, wins: 24, podiums: 35, poles: 29, gp: 51, pts: 245 },
+  { id: "l_prost", name: "Alain Prost", flag: "🇫🇷", titles: 4, wins: 51, podiums: 106, poles: 33, gp: 199, pts: 768.5 },
+  { id: "l_vettel", name: "Sebastian Vettel", flag: "🇩🇪", titles: 4, wins: 53, podiums: 122, poles: 57, gp: 299, pts: 3098 },
+  { id: "l_brabham", name: "Jack Brabham", flag: "🇦🇺", titles: 3, wins: 14, podiums: 31, poles: 13, gp: 126, pts: 253 },
+  { id: "l_stewart", name: "Jackie Stewart", flag: "🇬🇧", titles: 3, wins: 27, podiums: 43, poles: 17, gp: 99, pts: 359 },
+  { id: "l_lauda", name: "Niki Lauda", flag: "🇦🇹", titles: 3, wins: 25, podiums: 54, poles: 24, gp: 171, pts: 420.5 },
+  { id: "l_piquet", name: "Nelson Piquet", flag: "🇧🇷", titles: 3, wins: 23, podiums: 60, poles: 24, gp: 204, pts: 481.5 },
+  { id: "l_ascari", name: "Alberto Ascari", flag: "🇮🇹", titles: 2, wins: 13, podiums: 17, poles: 14, gp: 32, pts: 107.64 },
+  { id: "l_ghill", name: "Graham Hill", flag: "🇬🇧", titles: 2, wins: 14, podiums: 36, poles: 13, gp: 176, pts: 270 },
+  { id: "l_clark", name: "Jim Clark", flag: "🇬🇧", titles: 2, wins: 25, podiums: 32, poles: 33, gp: 72, pts: 255 },
+  { id: "l_fittipaldi", name: "Emerson Fittipaldi", flag: "🇧🇷", titles: 2, wins: 14, podiums: 35, poles: 6, gp: 144, pts: 281 },
+  { id: "l_hakkinen", name: "Mika Häkkinen", flag: "🇫🇮", titles: 2, wins: 20, podiums: 51, poles: 26, gp: 161, pts: 420 },
+  { id: "l_mansell", name: "Nigel Mansell", flag: "🇬🇧", titles: 1, wins: 31, podiums: 59, poles: 32, gp: 187, pts: 480 },
+  { id: "l_rosberg", name: "Nico Rosberg", flag: "🇩🇪", titles: 1, wins: 23, podiums: 57, poles: 30, gp: 206, pts: 1594.5 },
+  { id: "l_dhill", name: "Damon Hill", flag: "🇬🇧", titles: 1, wins: 22, podiums: 42, poles: 20, gp: 115, pts: 360 }
+].concat(["hamilton", "verstappen", "alonso", "senna"].map((d) => {
+  const x = DRIVERS[d];
+  return { id: "l_" + d, driver: d, name: x.first + " " + x.last, flag: x.flag, titles: x.real.titles, wins: x.real.wins, podiums: x.real.podiums, poles: x.real.poles, gp: x.real.gp, pts: x.real.pts };
+}));
+function legendsTable(core, sort) {
+  const cs = careerStats(core, S.seasons, ME);
+  const me = { id: "me", me: true, name: "Andrés Arévalo", flag: "🇪🇸", titles: cs.titles, wins: cs.wins, podiums: cs.podiums, poles: cs.poles, gp: cs.races, pts: cs.pts };
+  const key = sort || "titles";
+  const cmp = (a, b) => (b[key] - a[key]) || (b.titles - a.titles) || (b.wins - a.wins) || (b.podiums - a.podiums) || (a.me ? 1 : b.me ? -1 : 0);
+  const all = LEGENDS.concat([me]).sort(cmp);
+  const pos = all.findIndex((r) => r.me) + 1;
+  const inTop = pos <= 20;
+  const rows = all.filter((r) => !r.me || inTop).slice(0, 20);
+  const above = inTop ? (pos > 1 ? all[pos - 2] : null) : rows[19];
+  return { rows, me, pos, inTop, above, key };
+}
+
+/* ---------- escuderías: poder económico ---------- */
+const TEAM_WEALTH = { redbull: 1.15, ferrari: 1.2, mercedes: 1.15, mclaren: 1.05, aston: 0.85, aurelia: 0.9, alpine: 0.7, williams: 0.65, rb: 0.55, haas: 0.5, sauber: 0.6 };
+const BRANDS = [
+  { id: "velox", name: "Velox Relojes", what: "relojes de lujo", min: 20, base: 45000 },
+  { id: "nebula", name: "Nébula Energy", what: "bebida energética", min: 10, base: 30000 },
+  { id: "castellana", name: "Castellana Seguros", what: "seguros", min: 25, base: 50000 },
+  { id: "kairo", name: "Kairo Gafas", what: "gafas de sol", min: 35, base: 60000 },
+  { id: "tramontana", name: "Tramontana Moda", what: "moda", min: 45, base: 80000 },
+  { id: "aurum", name: "Aurum Motors", what: "coches eléctricos", min: 60, base: 120000 },
+  { id: "pixelplay", name: "PixelPlay", what: "videojuegos", min: 30, base: 40000 }
+];
+const AGENT_NAME = "Javier Solís";
+const HELMET_PATTERNS = [
+  { id: "raya", name: "Raya", price: 0 }, { id: "doble", name: "Doble raya", price: 0 }, { id: "liso", name: "Liso", price: 0 },
+  { id: "rayo", name: "Rayo", price: 50000 }, { id: "estrellas", name: "Estrellas", price: 50000 }, { id: "damero", name: "Bandera a cuadros", price: 75000 }, { id: "llamas", name: "Llamas", price: 90000 }
+];
+const SHOP = [
+  { id: "reloj", cat: "lujo", name: "Reloj de edición limitada", icon: "⌚", price: 180000, fame: 0.5, asset: 0.9 },
+  { id: "hiper", cat: "lujo", name: "Hiperdeportivo", icon: "🏎️", price: 2600000, fame: 1.5, asset: 0.8 },
+  { id: "clasico", cat: "lujo", name: "Deportivo clásico de 1967", icon: "🚗", price: 1400000, fame: 1, asset: 1 },
+  { id: "atico", cat: "lujo", name: "Ático en Mónaco", icon: "🏙️", price: 3800000, fame: 1.5, asset: 1 },
+  { id: "villa", cat: "lujo", name: "Villa en Ibiza", icon: "🏝️", price: 5500000, fame: 2, asset: 1 },
+  { id: "yate", cat: "lujo", name: "Yate de 40 metros", icon: "🛥️", price: 14000000, fame: 3, asset: 0.85 },
+  { id: "agente1", cat: "carrera", name: "Representante: nivel 1", icon: "🤝", price: 250000, needs: null, desc: "Mejores ofertas (+10% de sueldo) y más interés de otros equipos." },
+  { id: "agente2", cat: "carrera", name: "Representante: nivel 2", icon: "🤝", price: 700000, needs: "agente1", desc: "Ofertas un 20% mejores y negociaciones más fáciles." },
+  { id: "agente3", cat: "carrera", name: "Representante: nivel 3", icon: "🤝", price: 1800000, needs: "agente2", desc: "El mejor agente del paddock: ofertas un 35% mejores." },
+  { id: "cm1", cat: "carrera", name: "Community manager: nivel 1", icon: "📱", price: 90000, needs: null, desc: "Tu fama crece un 15% más rápido." },
+  { id: "cm2", cat: "carrera", name: "Community manager: nivel 2", icon: "📱", price: 280000, needs: "cm1", desc: "Tu fama crece un 30% más rápido." },
+  { id: "cm3", cat: "carrera", name: "Community manager: nivel 3", icon: "📱", price: 650000, needs: "cm2", desc: "Equipo de redes completo: fama un 50% más rápido." },
+  { id: "don1", cat: "fundacion", name: "Donación: escuelas de karting", icon: "💙", price: 100000, fame: 1, trust: 1, repeat: true },
+  { id: "don2", cat: "fundacion", name: "Donación: hospitales infantiles", icon: "💙", price: 500000, fame: 3, trust: 2, repeat: true },
+  { id: "don3", cat: "fundacion", name: "Gran gala de la Fundación Arévalo", icon: "💙", price: 2000000, fame: 6, trust: 3, repeat: true },
+  { id: "doc", cat: "marca", name: "Documental sobre tu temporada", icon: "🎬", price: 300000, fame: 4 },
+  { id: "ropa", cat: "marca", name: "Línea de ropa «AA»", icon: "👕", price: 900000, fame: 2, desc: "Ingresos extra cada carrera según tu fama." },
+  { id: "karting", cat: "marca", name: "Circuito de karting propio", icon: "🏁", price: 2500000, fame: 2.5, asset: 0.9, desc: "Ingresos extra cada carrera." }
+];
+
+/* ---------- estado ---------- */
+function fameFromStats(core) {
+  const cs = careerStats(core, S.seasons, ME);
+  return Math.max(5, Math.min(95, 10 + cs.wins * 6 + (cs.podiums - cs.wins) * 2 + cs.poles * 1.5 + cs.titles * 15));
+}
+function blankCareer(core) {
+  const cs = careerStats(core, S.seasons, ME);
+  const salary = 1500000;
+  const races = cs.races;
+  const fame = fameFromStats(core);
+  const money = 250000 + Math.round((salary / (core.totalRounds || 20)) * races) + cs.wins * 150000 + (cs.podiums - cs.wins) * 50000;
+  return {
+    v: 1, fame: Math.round(fame * 10) / 10, followers: Math.round(150000 + fame * 28000), money,
+    ledger: [{ id: "init", key: "init", season: core.season, r: 0, label: "Ahorros y sueldos hasta hoy", amount: money }],
+    contract: { team: teamOf(core, ME) || "aurelia", salary, from: core.season, until: core.season + 1, role: "igualdad", bonus: { win: 150000, podium: 50000, title: 2000000 } },
+    trust: 62, agent: 0, cm: 0, owned: [], helmet: null, inbox: [], sponsors: [], pending: null,
+    objectives: null, achievements: {}, dotd: {}, press: {}, processed: legacyProcessed(core), awards: [], renewalAsked: null, legacyMarked: true
+  };
+}
+function legacyProcessed(core) {
+  const p = {};
+  core.rounds.forEach((rd) => {
+    if (rd.quali) p[`${core.season}-${rd.r}-quali`] = { legacy: true };
+    if (rd.race) p[`${core.season}-${rd.r}-race`] = { legacy: true };
+  });
+  return p;
+}
+function careerView(core) { return (core && core.career) || blankCareer(core); }
+function careerOf(core) {
+  if (!core.career) core.career = blankCareer(core);
+  const c = core.career;
+  if (!c.legacyMarked) {
+    /* Datos de la versión anterior: las carreras previas ya se cobraron al crear la carrera. */
+    const init = c.ledger.some((l) => l.id === "init");
+    if (init) Object.entries(legacyProcessed(core)).forEach(([k, v]) => { if (!c.processed[k]) c.processed[k] = v; });
+    c.legacyMarked = true;
+  }
+  return c;
+}
+function fmtMoney(n) {
+  const v = Math.round(Number(n || 0));
+  const a = Math.abs(v);
+  const s = a >= 1e6 ? NF.format(Math.round(a / 1e5) / 10) + " M€" : a >= 1000 ? NF.format(Math.round(a / 1000)) + " mil €" : NF.format(a) + " €";
+  return (v < 0 ? "−" : "") + s;
+}
+function fameTier(f) {
+  return f >= 90 ? "Leyenda viva" : f >= 75 ? "Superestrella" : f >= 55 ? "Estrella" : f >= 35 ? "Revelación" : f >= 18 ? "Promesa" : "Desconocido";
+}
+function marketValue(core) {
+  const c = careerView(core);
+  const titles = (core.history || []).filter((h) => h.champion === ME).length;
+  return Math.round((1000000 + Math.pow(c.fame / 100, 2.2) * 55000000) * (1 + titles * 0.1) / 10000) * 10000;
+}
+function netWorth(core) {
+  const c = careerView(core);
+  const assets = c.owned.reduce((a, id) => { const it = SHOP.find((x) => x.id === id); return a + (it && it.asset ? it.price * it.asset : 0); }, 0);
+  return Math.round(c.money + assets);
+}
+function cmMult(c) { return 1 + [0, 0.15, 0.3, 0.5][c.cm || 0]; }
+function agentMult(c) { return 1 + [0, 0.1, 0.2, 0.35][c.agent || 0]; }
+function fameMult(core) { const f = careerView(core).fame; return 0.45 + f / 55; }
+function unread(core) { return careerView(core).inbox.filter((m) => m.status === "new").length; }
+
+function addLedger(c, key, season, r, label, amount) {
+  if (!amount) return;
+  c.money = Math.round(c.money + amount);
+  c.ledger.unshift({ id: key + "-" + c.ledger.length + "-" + Math.round(Math.abs(amount)), key, season, r, label, amount: Math.round(amount) });
+  if (c.ledger.length > 90) c.ledger.length = 90;
+}
+function addFame(c, d) {
+  let x = d;
+  if (x > 0) x = x * cmMult(c) * (1 - c.fame / 150);
+  c.fame = Math.round(Math.max(0, Math.min(100, c.fame + x)) * 10) / 10;
+  return x;
+}
+function addTrust(c, d) { c.trust = Math.round(Math.max(0, Math.min(100, c.trust + d))); }
+function addMail(c, m) {
+  c.inbox.unshift(Object.assign({ status: "new", t: Date.now() + c.inbox.length }, m));
+  if (c.inbox.length > 60) c.inbox = c.inbox.filter((x, i) => i < 45 || x.status === "new").slice(0, 60);
+}
+function heatBump(core, other, delta, note) {
+  const list = core.narrative.rivalries = core.narrative.rivalries || [];
+  let r = list.find((x) => (x.a === ME && x.b === other) || (x.b === ME && x.a === other));
+  if (!r) { if (delta <= 0) return; r = { a: ME, b: other, heat: 20, note: note || "Una rivalidad nueva en el paddock." }; list.push(r); }
+  r.heat = Math.max(5, Math.min(100, r.heat + delta));
+  if (note) r.note = note;
+}
+
+/* ---------- objetivos de temporada ---------- */
+function makeObjectives(core, c) {
+  const mate = teammatesOf(core, ME)[0];
+  const big = c.fame >= 40;
+  const n = core.totalRounds || 20;
+  const list = [
+    big ? { id: "top3", text: "Terminar entre los 3 primeros del Mundial", kind: "pos", target: 3 } : { id: "top8", text: "Terminar entre los 8 primeros del Mundial", kind: "pos", target: 8 },
+    { id: "pods", text: `Conseguir al menos ${Math.round(n * (big ? 0.4 : 0.15))} podios`, kind: "podiums", target: Math.max(1, Math.round(n * (big ? 0.4 : 0.15))) },
+    { id: "team", text: `${team(teamOf(core, ME)).short} entre los ${big ? 2 : 5} primeros de constructores`, kind: "teampos", target: big ? 2 : 5 }
+  ];
+  if (mate) list.push({ id: "mate", text: `Ganar a ${fullName(mate)} en el cara a cara de carrera`, kind: "h2h", target: 1 });
+  return { season: core.season, list, settled: false };
+}
+function objectiveProgress(core, o) {
+  const s = seasonStats(core, ME);
+  if (o.kind === "pos") { const p = driverPos(core, ME); return { value: `P${p}`, ok: p <= o.target, pct: Math.min(100, Math.round((o.target / p) * 100)) }; }
+  if (o.kind === "podiums") return { value: `${s.podiums} de ${o.target}`, ok: s.podiums >= o.target, pct: Math.min(100, Math.round((s.podiums / o.target) * 100)) };
+  if (o.kind === "teampos") { const p = teamPos(core, teamOf(core, ME)); return { value: `P${p}`, ok: p <= o.target, pct: Math.min(100, Math.round((o.target / p) * 100)) }; }
+  if (o.kind === "h2h") { const mate = teammatesOf(core, ME)[0]; const h = headToHead(core.rounds, ME, mate); return { value: `${h.r.a}-${h.r.b}`, ok: h.r.a > h.r.b, pct: h.r.a + h.r.b ? Math.round((h.r.a / (h.r.a + h.r.b)) * 100) : 50 }; }
+  return { value: "", ok: false, pct: 0 };
+}
+
+/* ---------- logros ---------- */
+const ACHIEVEMENTS = [
+  { id: "first_win", icon: "🏆", name: "Primera victoria", desc: "Gana tu primera carrera." },
+  { id: "first_pole", icon: "⏱️", name: "Primera pole", desc: "Sal primero en la parrilla." },
+  { id: "debut_win", icon: "🌟", name: "Debut soñado", desc: "Gana en tu primera carrera en la F1." },
+  { id: "perfect", icon: "💎", name: "Fin de semana perfecto", desc: "Pole y victoria en el mismo Gran Premio." },
+  { id: "hattrick", icon: "🎩", name: "Hat-trick", desc: "Pole, victoria y vuelta rápida en la misma carrera." },
+  { id: "streak3", icon: "🔥", name: "En racha", desc: "Tres victorias seguidas." },
+  { id: "streak5", icon: "☄️", name: "Imparable", desc: "Cinco victorias seguidas." },
+  { id: "comeback", icon: "🚀", name: "Remontada", desc: "Sube al podio saliendo 10.º o peor." },
+  { id: "backwin", icon: "🧨", name: "Desde atrás", desc: "Gana saliendo 6.º o peor." },
+  { id: "home", icon: "🇪🇸", name: "Profeta en su tierra", desc: "Gana el GP de España." },
+  { id: "monaco", icon: "👑", name: "Rey de Mónaco", desc: "Gana en Montecarlo." },
+  { id: "wins10", icon: "🥇", name: "Diez victorias", desc: "Llega a 10 victorias en la F1." },
+  { id: "wins25", icon: "🏅", name: "Veinticinco victorias", desc: "Llega a 25 victorias en la F1." },
+  { id: "pods25", icon: "🍾", name: "Veinticinco podios", desc: "Llega a 25 podios en la F1." },
+  { id: "poles10", icon: "💜", name: "Diez poles", desc: "Llega a 10 poles en la F1." },
+  { id: "senna5", icon: "⚔️", name: "Rey del garaje", desc: "Termina 5 carreras por delante de Senna en una temporada." },
+  { id: "champion", icon: "🌍", name: "Campeón del mundo", desc: "Gana el Mundial de pilotos." },
+  { id: "double", icon: "🏛️", name: "Doblete", desc: "Mundial de pilotos y de constructores en la misma temporada." },
+  { id: "dotd3", icon: "🗳️", name: "El favorito", desc: "Sé elegido Piloto del día 3 veces." },
+  { id: "millionaire", icon: "💰", name: "Millonario", desc: "Ten 10 millones en el banco." },
+  { id: "star", icon: "✨", name: "Superestrella", desc: "Llega a 75 de fama." }
+];
+function checkAchievements(core) {
+  const c = careerView(core);
+  const tl = timeline(core, S.seasons, ME);
+  const races = tl.filter((e) => e.round.race && e.x);
+  const cs = careerStats(core, S.seasons, ME);
+  const got = {};
+  const hit = (id, e) => { if (!got[id]) got[id] = e ? { season: e.season, r: e.round.r } : { season: core.season, r: null }; };
+  races.forEach((e, i) => {
+    const w = finished(e.x) && e.x.pos === 1;
+    const g = gridOf(e.round, ME);
+    if (w) hit("first_win", e);
+    if (w && i === 0) hit("debut_win", e);
+    if (w && e.q === 1) hit("perfect", e);
+    if (w && e.q === 1 && e.x.fl === true) hit("hattrick", e);
+    if (finished(e.x) && e.x.pos <= 3 && g >= 10) hit("comeback", e);
+    if (w && g >= 6) hit("backwin", e);
+    if (w && e.round.gp === "esp") hit("home", e);
+    if (w && e.round.gp === "mon") hit("monaco", e);
+  });
+  tl.forEach((e) => { if (e.q === 1) hit("first_pole", e); });
+  if (cs.winStreak.best >= 3) hit("streak3");
+  if (cs.winStreak.best >= 5) hit("streak5");
+  if (cs.wins >= 10) hit("wins10");
+  if (cs.wins >= 25) hit("wins25");
+  if (cs.podiums >= 25) hit("pods25");
+  if (cs.poles >= 10) hit("poles10");
+  const mate = teammatesOf(core, ME)[0];
+  if (mate && headToHead(core.rounds, ME, mate).r.a >= 5) hit("senna5");
+  if ((core.history || []).some((h) => h.champion === ME)) hit("champion");
+  if ((core.history || []).some((h) => h.champion === ME && h.constructorsChampion === h.team)) hit("double");
+  if (Object.values(c.dotd || {}).filter((v) => v && v.winner === ME).length >= 3) hit("dotd3");
+  if (c.money >= 10000000) hit("millionaire");
+  if (c.fame >= 75) hit("star");
+  return got;
+}
+
+/* ---------- ofertas ---------- */
+function makeOffer(core, c, g, teamId, kind) {
+  const mv = marketValue(core);
+  const w = TEAM_WEALTH[teamId] || 0.7;
+  const salary = Math.round((mv * w * (0.85 + g.R() * 0.3) * agentMult(c)) / 50000) * 50000;
+  const years = kind === "renewal" ? 2 : g.pick([1, 2, 2, 3]);
+  const myPos = driverPos(core, ME);
+  const mates = teamDrivers(core, teamId).filter((d) => d !== ME);
+  const lead = mates.every((d) => driverPos(core, d) > myPos);
+  const role = kind === "renewal" ? (c.trust >= 65 && lead ? "primer" : "igualdad") : (w < 0.9 || lead ? "primer" : "igualdad");
+  const off = { team: teamId, salary: Math.max(800000, salary), years, role, bonus: { win: Math.round(salary * 0.08 / 10000) * 10000 || 100000, podium: Math.round(salary * 0.025 / 10000) * 10000 || 40000, title: Math.round(salary * 0.5 / 100000) * 100000 || 1000000 }, counters: 0 };
+  return ensureNeg(core, c, off, kind);
+}
+function offerText(core, o) {
+  return `${fmtMoney(o.salary)} al año durante ${o.years} ${o.years === 1 ? "temporada" : "temporadas"}, como ${o.role === "primer" ? "primer piloto" : "piloto con igualdad de trato"}. Primas: ${fmtMoney(o.bonus.win)} por victoria, ${fmtMoney(o.bonus.podium)} por podio y ${fmtMoney(o.bonus.title)} por título.`;
+}
+
+/* ---------- dilemas ---------- */
+const DILEMMAS = [
+  { id: "crypto", need: (core, c) => c.fame >= 25, from: "Bitmax Exchange", subject: "Propuesta de patrocinio personal", body: "Somos una plataforma de criptomonedas en plena expansión. Te ofrecemos 1,5 millones de euros por llevar nuestro logo en tu casco y publicar tres posts. Tu equipo no está muy convencido.",
+    choices: [
+      { label: "Aceptar el dinero", fx: { money: 1500000, fame: 1, trust: -6 }, res: "Has aceptado. El dinero ya está en tu cuenta, pero en Aurelia no les ha hecho ninguna gracia.", news: { title: "ARÉVALO FIRMA CON UNA CRIPTOMONEDA", sub: "El patrocinio personal del piloto de Aurelia levanta ampollas en el equipo." } },
+      { label: "Rechazarlo", fx: { trust: 3 }, res: "Has dicho que no. En Aurelia valoran el gesto." }
+    ] },
+  { id: "order", need: (core) => !!teammatesOf(core, ME)[0], from: AURELIA_BOSS + " (Aurelia Racing)", subject: "Sobre la próxima carrera", body: "Andrés, necesitamos puntos de los dos coches. Si en la próxima carrera estás por delante de Ayrton sin opciones de podio, te pediremos que le dejes pasar. Necesito saber que puedo contar contigo.",
+    choices: [
+      { label: "Acatar la orden", fx: { trust: 6, heatMate: -5 }, res: "Valenti te lo agradece. Ayrton, curiosamente, no ha dicho nada." },
+      { label: "Negarte", fx: { trust: -8, heatMate: 10, fame: 1 }, res: "Le has dicho a Valenti que no dejarás pasar a nadie. La reunión ha terminado en silencio.", news: { title: "ARÉVALO SE NIEGA A LAS ÓRDENES DE EQUIPO", sub: "Tensión máxima en Aurelia tras una reunión a puerta cerrada." } }
+    ] },
+  { id: "gala", need: () => true, from: "Fundación Pequeños Pilotos", subject: "Invitación a nuestra gala benéfica", body: "Nos encantaría contar contigo en nuestra gala anual. Los niños de nuestras escuelas de karting te admiran muchísimo.",
+    choices: [
+      { label: "Ir y donar 30.000 €", fx: { money: -30000, fame: 1.5, trust: 1 }, res: "La gala ha sido un éxito y las fotos con los niños han dado la vuelta a las redes." },
+      { label: "Excusarte", fx: { fame: -0.3 }, res: "Has declinado la invitación con educación." }
+    ] },
+  { id: "exclusive", need: (core) => !!teammatesOf(core, ME)[0], from: "Marta Villalba (El Cronómetro)", subject: "Entrevista exclusiva", body: "Queremos una entrevista larga para el domingo. Te preguntaré por tu relación con Senna, sin rodeos.",
+    choices: [
+      { label: "Hablar claro de Senna", fx: { fame: 2.5, heatMate: 8, trust: -2 }, res: "La entrevista es portada. Tus palabras sobre Senna no han pasado desapercibidas.", news: { title: "ARÉVALO, SIN FILTROS: «CON AYRTON NO HAY AMISTAD, HAY RESPETO»", sub: "Entrevista exclusiva con el piloto de Aurelia." } },
+      { label: "Entrevista diplomática", fx: { fame: 1 }, res: "Una entrevista correcta que ha gustado a los aficionados." },
+      { label: "Rechazarla", fx: {}, res: "Has preferido no conceder la entrevista." }
+    ] },
+  { id: "ad", need: (core, c) => c.fame >= 20, from: "Agencia Luna Films", subject: "Anuncio de televisión", body: "Una marca de automóviles quiere rodar contigo un anuncio para toda Europa: 400.000 €, dos días de rodaje entre carreras.",
+    choices: [
+      { label: "Aceptar el rodaje", fx: { money: 400000, fame: 1.5, trust: -1 }, res: "El anuncio ya se emite en media Europa." },
+      { label: "Rechazarlo y centrarte", fx: { trust: 2 }, res: "Prefieres centrarte en correr. El equipo lo agradece." }
+    ] },
+  { id: "rivalpost", need: (core) => (core.narrative.rivalries || []).some((r) => r.b !== teammatesOf(core, ME)[0] && r.a !== teammatesOf(core, ME)[0]), from: "Tu community manager", subject: "Te están criticando en redes", body: "Un rival ha publicado un mensaje dando a entender que ganas gracias al coche. Las redes arden. ¿Cómo respondemos?",
+    rival: true,
+    choices: [
+      { label: "Con humor", fx: { fame: 2, heatRival: 5 }, res: "Tu respuesta con humor es lo más compartido del día." },
+      { label: "Ignorarlo", fx: { fame: 0.3 }, res: "Has decidido no entrar al trapo." },
+      { label: "Responder duro", fx: { fame: 1, heatRival: 12, trust: -2 }, res: "Tu respuesta ha encendido la rivalidad.", news: { title: "GUERRA EN REDES: ARÉVALO RESPONDE", sub: "El cruce de mensajes calienta la próxima carrera." } }
+    ] },
+  { id: "sim", need: () => true, from: AURELIA_BOSS + " (Aurelia Racing)", subject: "Sesión extra en el simulador", body: "Los ingenieros quieren una jornada extra en el simulador para preparar la próxima carrera. Es voluntaria.",
+    choices: [
+      { label: "Ir al simulador", fx: { trust: 3 }, res: "Los ingenieros están encantados con tu implicación." },
+      { label: "Descansar", fx: {}, res: "Has preferido desconectar unos días." }
+    ] },
+  { id: "school", need: () => true, from: "Colegio de tu barrio", subject: "¿Vendrías a vernos?", body: "Los alumnos de tu antiguo colegio han hecho un mural con tu coche. Les haría muchísima ilusión que vinieras a verlo.",
+    choices: [
+      { label: "Ir por sorpresa", fx: { fame: 1.5 }, res: "El vídeo de la visita se ha hecho viral." },
+      { label: "Mandar un vídeo", fx: { fame: 0.5 }, res: "Tu vídeo ha emocionado a los chavales." }
+    ] }
+];
+
+/* ---------- rueda de prensa ---------- */
+function pressQuestions(core, round) {
+  const res = (round.race && round.race.res) || {};
+  const x = res[ME];
+  const mate = teammatesOf(core, ME)[0];
+  const winner = Object.keys(res).find((d) => finished(res[d]) && res[d].pos === 1);
+  const c = careerView(core);
+  const qs = [];
+  const by = (o) => o;
+  if (!finished(x)) qs.push({ id: "dnf", by: by("cronometro"), q: "¿Qué ha pasado hoy?", target: null, opts: [
+    { tone: "humilde", a: "Duele, pero son cosas de las carreras. Volveremos más fuertes." },
+    { tone: "diplomático", a: "Lo analizaremos con el equipo antes de sacar conclusiones." },
+    { tone: "provocador", a: "Hay cosas que no dependen de mí. El equipo tiene que mejorar.", trust: -4 }] });
+  else if (x.pos === 1) qs.push({ id: "win", by: by("pitwall"), q: "¿Hay alguien capaz de pararte?", target: null, opts: [
+    { tone: "humilde", a: "Todos pueden. Hoy nos ha salido todo y hay que valorarlo." },
+    { tone: "diplomático", a: "El Mundial es muy largo. No me confío en absoluto." },
+    { tone: "provocador", a: "Que lo intenten. Estamos aquí para ganarlas todas." }] });
+  else if (winner) qs.push({ id: "lost", by: by(NAT_OUTLET[DRIVERS[winner].nat] || "chicane"), q: `¿Qué te ha faltado para ganar a ${LN(winner)}?`, target: winner, opts: [
+    { tone: "humilde", a: `${LN(winner)} ha estado mejor hoy y hay que reconocerlo.` },
+    { tone: "diplomático", a: "Nos ha faltado un poco de ritmo. Lo analizaremos." },
+    { tone: "provocador", a: `Con el mismo coche, ${LN(winner)} no me habría ganado.` }] });
+  if (mate) qs.push({ id: "mate", by: by("folha"), q: "¿Quién es el primer piloto de Aurelia?", target: mate, opts: [
+    { tone: "humilde", a: "Somos dos pilotos empujando al equipo. Ayrton tiene tres títulos y yo aprendo cada día." },
+    { tone: "diplomático", a: "Eso lo decide la pista. Yo me centro en mi coche." },
+    { tone: "provocador", a: "Mira la clasificación. Ahí tienes la respuesta." }] });
+  const offers = c.inbox.filter((m) => m.type === "offer" && m.status === "new");
+  if (offers.length || c.pending) qs.push({ id: "future", by: by("confidencial"), q: `Se habla del interés de ${team((c.pending || offers[0].data).team).name}. ¿Seguirás en Aurelia?`, target: null, opts: [
+    { tone: "humilde", a: "Estoy muy feliz en Aurelia. Les debo mucho." , trust: 2 },
+    { tone: "diplomático", a: "Ahora solo pienso en correr. Del futuro ya hablaremos." },
+    { tone: "provocador", a: "Escucharé a todo el mundo. Quiero el mejor coche.", trust: -5 }] });
+  else qs.push({ id: "title", by: by("rettilineo"), q: "¿Te ves luchando por el Mundial?", target: null, opts: [
+    { tone: "humilde", a: "Voy carrera a carrera. Todavía tengo mucho que aprender." },
+    { tone: "diplomático", a: "Si seguimos sumando, estaremos ahí al final." },
+    { tone: "provocador", a: "No he venido a la F1 a ser segundo. He venido a ganar el Mundial." }] });
+  return qs.slice(0, 3);
+}
+const TONE_FX = { humilde: { fame: 0.4, trust: 1, heat: -3 }, "diplomático": { fame: 0.6, trust: 0, heat: 0 }, provocador: { fame: 1.8, trust: -2, heat: 8 } };
+
+/* ---------- procesado tras cada sesión ---------- */
+function revertProcessed(core, c, key) {
+  const p = c.processed[key];
+  if (!p) return;
+  c.fame = Math.max(0, Math.min(100, c.fame - (p.fame || 0)));
+  c.followers = Math.max(0, c.followers - (p.followers || 0));
+  c.trust = Math.max(0, Math.min(100, c.trust - (p.trust || 0)));
+  c.ledger = c.ledger.filter((l) => { if (l.key === key) { c.money -= l.amount; return false; } return true; });
+  c.inbox = c.inbox.filter((m) => !(m.key === key && m.status === "new"));
+  (p.sponsors || []).forEach((id) => { const s = c.sponsors.find((x) => x.id === id); if (s) s.left++; });
+  delete c.processed[key];
+}
+function careerAfterSession(core, session, r) {
+  if (!core.career) {
+    /* Primera vez: el punto de partida no incluye la sesión que se acaba de guardar. */
+    const tmp = clone(core);
+    const rr = roundOf(tmp, r);
+    if (rr) { if (session === "race") delete rr.race; else if (session === "quali") delete rr.quali; else delete rr.sprint; }
+    core.career = blankCareer(tmp);
+  }
+  const c = careerOf(core);
+  const round = roundOf(core, r);
+  const key = `${core.season}-${r}-${session}`;
+  if (c.processed[key] && c.processed[key].legacy) {
+    if (session === "race") { core.progress = core.progress || {}; core.progress[r] = Object.assign({}, core.standings); }
+    return { press: false };
+  }
+  revertProcessed(core, c, key);
+  const g = NG(core, round, "career-" + session);
+  const p = { fame: 0, followers: 0, trust: 0, sponsors: [] };
+  if (!c.objectives || c.objectives.season !== core.season) c.objectives = makeObjectives(core, c);
+  if (session === "quali") {
+    const q = qOf(round, ME);
+    if (q === 1) p.fame += addFame(c, 1);
+    else if (q && q <= 3) p.fame += addFame(c, 0.3);
+    c.processed[key] = p;
+    return { press: false };
+  }
+  if (session !== "race") { c.processed[key] = p; return { press: false }; }
+  const x = resOf(round, ME);
+  const o = outcome(x);
+  const cs = careerStats(core, S.seasons, ME);
+  const mate = teammatesOf(core, ME)[0];
+  /* fama */
+  let fd = { win: 4, podium: 2.5, points: 0.8, nopoints: -0.6, dnf: -1.2, dsq: -2, unknown: 0 }[o];
+  if (o === "win" && cs.winStreak.cur >= 3) fd += 1;
+  if (o === "win" && round.gp === "esp") fd += 2;
+  if (qOf(round, ME) === 1 && o === "win") fd += 0.5;
+  p.fame += addFame(c, fd);
+  const fol = Math.round(c.fame * (700 + g.R() * 500) * cmMult(c) + (o === "win" ? 60000 : o === "podium" ? 25000 : 0));
+  c.followers += fol; p.followers = fol;
+  /* confianza del equipo */
+  let td = { win: 3, podium: 1.5, points: 0.3, nopoints: -1, dnf: -2, dsq: -3, unknown: 0 }[o];
+  const mx = mate ? resOf(round, mate) : null;
+  if (mate && x && mx) { const cmp = cmpRace(x, mx); if (cmp === 1) td += 1; if (cmp === -1) td -= 1; }
+  addTrust(c, td); p.trust = td;
+  /* dinero */
+  const perRace = Math.round(c.contract.salary / (core.totalRounds || 20));
+  addLedger(c, key, core.season, r, `Sueldo: ronda ${r}`, perRace);
+  if (o === "win") addLedger(c, key, core.season, r, "Prima por victoria", c.contract.bonus.win);
+  else if (o === "podium") addLedger(c, key, core.season, r, "Prima por podio", c.contract.bonus.podium);
+  addLedger(c, key, core.season, r, "Derechos de imagen", Math.round(c.fame * 2500));
+  c.sponsors.forEach((s) => { if (s.left > 0) { addLedger(c, key, core.season, r, `Patrocinio: ${s.name}`, s.perRace); s.left--; p.sponsors.push(s.id); } });
+  if (c.owned.includes("ropa")) addLedger(c, key, core.season, r, "Línea de ropa «AA»", Math.round(40000 * (c.fame / 50)));
+  if (c.owned.includes("karting")) addLedger(c, key, core.season, r, "Circuito de karting", 35000);
+  if (c.cm) addLedger(c, key, core.season, r, "Community manager", -[0, 8000, 20000, 45000][c.cm]);
+  if (c.agent) addLedger(c, key, core.season, r, "Comisión del representante", -[0, 10000, 25000, 50000][c.agent]);
+  c.sponsors = c.sponsors.filter((s) => s.left > 0 || p.sponsors.includes(s.id));
+  /* caducan ofertas */
+  c.inbox.forEach((m) => { if (m.status === "new" && m.expires && (m.season < core.season || m.expires < r)) m.status = "expired"; });
+  /* correo */
+  const mk = (m) => addMail(c, Object.assign({ id: `${key}-${m.type}-${c.inbox.length}`, key, season: core.season, r }, m));
+  const valenti = AURELIA_BOSS + " (Aurelia Racing)";
+  if (o === "win" && g.R() < 0.4) mk({ type: "team", from: valenti, subject: "Enhorabuena", body: g.pick(["Qué carrera, Andrés. Toda la fábrica está celebrando. Sigue así.", "Victoria de campeón. Esta noche celebramos, mañana a trabajar para la siguiente."]) });
+  else if ((o === "dnf" || o === "nopoints") && g.R() < 0.6) mk({ type: "team", from: valenti, subject: "Cabeza fría", body: c.trust < 45 ? "Andrés, necesitamos más de ti. Los resultados y la actitud tienen que mejorar." : "Día difícil. Lo analizamos juntos y pasamos página. Confío en ti." });
+  /* patrocinio */
+  const brands = BRANDS.filter((b) => c.fame >= b.min && !c.sponsors.some((s) => s.brand === b.id) && !c.inbox.some((m) => m.type === "sponsor" && m.data && m.data.brand === b.id && m.status === "new"));
+  if (brands.length && g.R() < 0.45) {
+    const b = g.pick(brands);
+    const perRace = Math.round((b.base * (0.6 + c.fame / 80)) / 1000) * 1000;
+    const races = g.pick([4, 6, 8, 10]);
+    mk({ type: "sponsor", from: b.name, subject: `Propuesta de patrocinio personal`, body: `Nos encantaría que fueras la imagen de nuestra marca de ${b.what}. Te ofrecemos ${fmtMoney(perRace)} por carrera durante ${races} carreras (${fmtMoney(perRace * races)} en total).`, data: { brand: b.id, name: b.name, perRace, races }, expires: r + 2 });
+  }
+  /* ofertas de equipos */
+  const myTeam = teamOf(core, ME);
+  const myPos = driverPos(core, ME);
+  const left = core.rounds.filter((x2) => !x2.race).length;
+  const openOffers = c.inbox.filter((m) => m.type === "offer" && m.status === "new").length;
+  if (!c.pending && r >= 4 && left >= 1 && openOffers < 2 && g.R() < 0.2 + c.fame / 400 + (c.agent || 0) * 0.07) {
+    const pool = TEAM_IDS.filter((t) => t !== myTeam && !c.inbox.some((m) => (m.type === "offer") && m.status === "new" && m.data.team === t));
+    const top = pool.filter((t) => (TEAM_WEALTH[t] || 0) >= 1);
+    const choices = (c.fame >= 50 || myPos <= 3) ? top.concat(pool.filter((t) => !top.includes(t)).slice(0, 2)) : pool.filter((t) => !top.includes(t));
+    if (choices.length) {
+      const t = g.pick(choices);
+      const off = makeOffer(core, c, g, t, "offer");
+      mk({ type: "offer", from: `Dirección deportiva de ${team(t).name}`, subject: `Oferta para la temporada ${core.season + 1}`, body: `Andrés, hemos seguido tu temporada con mucha atención y queremos que formes parte de ${team(t).name} a partir de la próxima temporada.\n\nNuestra propuesta: ${offerText(core, off)}\n\nLa oferta es válida hasta después de la ronda ${Math.min(r + 3, core.totalRounds)}.`, data: off, expires: r + 3 });
+    }
+  }
+  /* renovación con su equipo */
+  if (c.contract.until <= core.season && r >= Math.floor((core.totalRounds || 20) / 2) && c.renewalAsked !== core.season && !c.pending) {
+    c.renewalAsked = core.season;
+    const off = makeOffer(core, c, g, myTeam, "renewal");
+    off.salary = Math.round((off.salary * (0.85 + c.trust / 400)) / 50000) * 50000;
+    mk({ type: "renewal", from: valenti, subject: "Tu renovación", body: `Andrés, tu contrato termina esta temporada y queremos que sigas con nosotros.\n\nTe proponemos: ${offerText(core, off)}`, data: off, expires: core.totalRounds });
+  }
+  /* dilema */
+  const pool = DILEMMAS.filter((d) => d.need(core, c) && !c.inbox.some((m) => m.type === "dilemma" && m.data.id === d.id && m.season === core.season));
+  if (pool.length && !c.inbox.some((m) => m.type === "dilemma" && m.status === "new") && g.R() < 0.55) {
+    const d = g.pick(pool);
+    let rival = null;
+    if (d.rival) { const list = (core.narrative.rivalries || []).filter((x2) => x2.a !== mate && x2.b !== mate); const rv = list[0]; rival = rv ? (rv.a === ME ? rv.b : rv.a) : null; }
+    mk({ type: "dilemma", from: d.from, subject: d.subject, body: rival ? d.body.replace("Un rival", fullName(rival)) : d.body, data: { id: d.id, rival } });
+  }
+  /* objetivos al empezar */
+  if (!c.objectives.announced) {
+    c.objectives.announced = true;
+    mk({ type: "team", from: valenti, subject: `Objetivos para la temporada ${core.season}`, body: "Estos son los objetivos que el equipo espera de ti esta temporada:\n\n" + c.objectives.list.map((x2) => "• " + x2.text).join("\n") + "\n\nSi los cumples, habrá prima. Si no, tendremos que hablar." });
+  }
+  /* logros */
+  const got = checkAchievements(core);
+  const fresh = Object.keys(got).filter((id) => !c.achievements[id]);
+  fresh.forEach((id) => { c.achievements[id] = Object.assign({ t: Date.now() }, got[id]); });
+  if (fresh.length === 1) { const a = ACHIEVEMENTS.find((x2) => x2.id === fresh[0]); mk({ type: "achievement", from: "Paddock", subject: `${a.icon} Logro desbloqueado: ${a.name}`, body: a.desc }); }
+  else if (fresh.length > 1) mk({ type: "achievement", from: "Paddock", subject: `🏅 Has desbloqueado ${fresh.length} logros`, body: fresh.map((id) => { const a = ACHIEVEMENTS.find((x2) => x2.id === id); return `${a.icon} ${a.name}: ${a.desc}`; }).join("\n") });
+  /* progreso del Mundial para las gráficas */
+  core.progress = core.progress || {};
+  if (!Object.keys(core.progress).length && round.contrib && !core.stale) {
+    const prev = {};
+    DRIVER_IDS.forEach((d) => { prev[d] = r1((core.standings[d] || 0) - (round.contrib[d] || 0)); });
+    const pr = core.rounds.filter((x2) => x2.race && x2.r < r).pop();
+    if (pr) core.progress[pr.r] = prev;
+  }
+  core.progress[r] = Object.assign({}, core.standings);
+  c.processed[key] = p;
+  c.press[`${core.season}-${r}`] = c.press[`${core.season}-${r}`] || { done: false };
+  return { press: !c.press[`${core.season}-${r}`].done };
+}
+
+/* ---------- aplicar decisiones ---------- */
+function applyFx(core, c, fx, rival) {
+  if (!fx) return;
+  if (fx.money) addLedger(c, "decision", core.season, null, fx.label || "Decisión", fx.money);
+  if (fx.fame) addFame(c, fx.fame);
+  if (fx.trust) addTrust(c, fx.trust);
+  const mate = teammatesOf(core, ME)[0];
+  if (fx.heatMate && mate) heatBump(core, mate, fx.heatMate);
+  if (fx.heatRival && rival) heatBump(core, rival, fx.heatRival);
+}
+function acceptOffer(core, mail) {
+  const c = careerOf(core);
+  const o = mail.data;
+  if (mail.type === "renewal") {
+    c.contract = { team: o.team, salary: o.salary, from: core.season, until: core.season + o.years, role: o.role, bonus: o.bonus };
+    addTrust(c, 5);
+  } else {
+    c.pending = { team: o.team, salary: o.salary, years: o.years, role: o.role, bonus: o.bonus, season: core.season + 1 };
+    addTrust(c, -12);
+    addFame(c, 2);
+    c.inbox.forEach((m) => { if ((m.type === "offer" || m.type === "renewal") && m.status === "new" && m !== mail) m.status = "rejected"; });
+  }
+  mail.status = "accepted";
+}
+/* ---------- negociación ----------
+   Cada equipo tiene un tope secreto de sueldo, una paciencia (3 rondas de
+   contraofertas) y puede o no aceptar que seas primer piloto. */
+const NEG_STEPS = [0, 0.1, 0.2, 0.3, 0.5];
+function ensureNeg(core, c, o, kind) {
+  if (o.max) return o;
+  const w = TEAM_WEALTH[o.team] || 0.7;
+  const f = c.fame;
+  const interest = kind === "renewal" ? (c.trust >= 70 ? "alto" : c.trust >= 45 ? "medio" : "bajo") : w >= 1 ? (f >= 65 ? "alto" : f >= 45 ? "medio" : "bajo") : (f >= 35 ? "alto" : "medio");
+  const extra = { alto: 0.32, medio: 0.18, bajo: 0.07 }[interest] + (c.agent || 0) * 0.05 + (kind === "renewal" ? (c.trust - 55) / 300 : 0);
+  o.interest = interest;
+  o.base = o.base || o.salary;
+  o.max = Math.round((o.salary * (1.04 + Math.max(0, extra))) / 50000) * 50000;
+  o.patience = o.patience == null ? 3 : o.patience;
+  o.roleOk = o.role === "primer" || interest === "alto" || w < 0.9;
+  o.maxYears = interest === "bajo" ? 2 : 4;
+  return o;
+}
+function agentHint(c, o) {
+  if (!c.agent) return "Sin representante no sabes hasta dónde pueden llegar. Contratar uno en la tienda te daría pistas.";
+  if (c.agent === 1) return `Tu representante cree que tienen margen para subir ${o.max > o.salary * 1.2 ? "bastante" : o.max > o.salary * 1.08 ? "algo" : "muy poco"}.`;
+  const lo = Math.round((o.max * 0.93) / 100000) * 100000, hi = Math.round((o.max * 1.03) / 100000) * 100000;
+  return `${AGENT_NAME} calcula que su tope está entre ${fmtMoney(lo)} y ${fmtMoney(hi)} al año${o.roleOk ? "" : ", y que no te darán el rol de primer piloto"}.`;
+}
+function negotiate(core, mail, ask) {
+  const c = careerOf(core);
+  const o = ensureNeg(core, c, mail.data, mail.type);
+  if (o.patience <= 0) return { ok: "no", text: "Ya no quieren negociar más." };
+  let max = o.max;
+  let lev = null;
+  if (ask.leverage) {
+    const other = c.inbox.find((m) => m.id === ask.leverage && m.status === "new" && (m.type === "offer" || m.type === "renewal"));
+    if (other && other.data.salary > max) {
+      lev = other;
+      const stretch = o.interest === "alto" ? 1.25 : o.interest === "medio" ? 1.12 : 1.04;
+      max = Math.min(Math.round((other.data.salary * 1.02) / 50000) * 50000, Math.round((o.max * stretch) / 50000) * 50000);
+    }
+  }
+  const wantSalary = Math.round(ask.salary / 50000) * 50000;
+  const wantYears = Math.max(1, Math.min(5, ask.years || o.years));
+  const wantRole = ask.role || o.role;
+  const parts = [];
+  let years = wantYears, role = wantRole;
+  if (wantYears > o.maxYears) { years = o.maxYears; parts.push(`como mucho te ofrecen ${o.maxYears} temporadas`); }
+  if (wantRole === "primer" && !o.roleOk) { role = o.role; parts.push("el rol de primer piloto no es negociable"); }
+  o.patience--;
+  if (mail.type === "renewal") addTrust(c, -1);
+  if (wantSalary <= max) {
+    Object.assign(o, { salary: Math.max(o.salary, wantSalary), years, role, agreed: true });
+    if (lev) o.max = Math.max(o.max, max);
+    return { ok: parts.length ? "half" : "yes", text: `${lev ? `La oferta de ${team(lev.data.team).name} ha surtido efecto. ` : ""}Aceptan ${fmtMoney(o.salary)} al año durante ${o.years} ${o.years === 1 ? "temporada" : "temporadas"}${o.role === "primer" ? " como primer piloto" : ""}${parts.length ? ", pero " + parts.join(" y ") : ""}. Ya puedes firmar.` };
+  }
+  if (wantSalary <= max * 1.15) {
+    Object.assign(o, { salary: Math.max(o.salary, max), years, role, agreed: true });
+    o.max = Math.max(o.max, max);
+    o.patience = 0;
+    return { ok: "half", text: `No llegan a tanto. Su última palabra: ${fmtMoney(o.salary)} al año${parts.length ? "; además, " + parts.join(" y ") : ""}.` };
+  }
+  if (o.patience <= 0) {
+    if (mail.type === "renewal") { addTrust(c, -4); return { ok: "no", text: "Aurelia da por cerrada la negociación. La oferta sigue sobre la mesa tal cual, pero no habrá más cambios." }; }
+    mail.status = "withdrawn";
+    return { ok: "no", text: "Tu petición les ha parecido desorbitada y retiran la oferta." };
+  }
+  return { ok: "no", text: `Tu petición está muy lejos de lo que pueden pagar. Les queda paciencia para ${o.patience} ${o.patience === 1 ? "intento más" : "intentos más"}.` };
+}
+/* Pedir una mejora de contrato a tu equipo o que tu representante busque equipo. */
+function askRaise(core) {
+  const c = careerOf(core);
+  const r = doneRounds(core).length;
+  c.askedRaise = core.season;
+  const g = NG(core, { r }, "raise");
+  const myTeam = teamOf(core, ME);
+  const good = c.trust >= 55 && (driverPos(core, ME) <= 4 || c.fame >= 50);
+  if (!good) {
+    addTrust(c, -2);
+    addMail(c, { id: `raise-${core.season}-${r}`, key: "raise", season: core.season, r, type: "team", from: AURELIA_BOSS + " (Aurelia Racing)", subject: "Sobre tu contrato", body: "Andrés, ahora mismo no es el momento de hablar de dinero. Demuestra en la pista que te lo mereces y volveremos a hablar." });
+    return false;
+  }
+  const off = makeOffer(core, c, g, myTeam, "renewal");
+  off.salary = Math.max(off.salary, Math.round((c.contract.salary * 1.15) / 50000) * 50000);
+  off.years = Math.max(2, c.contract.until - core.season + 1);
+  ensureNeg(core, c, off, "renewal");
+  addMail(c, { id: `raise-${core.season}-${r}`, key: "raise", season: core.season, r, type: "renewal", from: AURELIA_BOSS + " (Aurelia Racing)", subject: "Propuesta de mejora de contrato", body: `Lo has hecho muy bien y queremos premiarlo. Te proponemos mejorar y ampliar tu contrato:\n\n${offerText(core, off)}`, data: off, expires: Math.min(core.totalRounds, r + 3) });
+  return true;
+}
+function agentSearch(core) {
+  const c = careerOf(core);
+  const r = doneRounds(core).length;
+  c.agentSearch = { season: core.season, r };
+  const g = NG(core, { r }, "agent");
+  const myTeam = teamOf(core, ME);
+  const pool = g.shuffle(TEAM_IDS.filter((t) => t !== myTeam && !c.inbox.some((m) => m.type === "offer" && m.status === "new" && m.data.team === t)));
+  const top = pool.filter((t) => (TEAM_WEALTH[t] || 0) >= 1);
+  const pickFrom = c.fame >= 50 ? top.concat(pool.filter((t) => !top.includes(t))) : pool.filter((t) => !top.includes(t)).concat(top);
+  const n = Math.min(pickFrom.length, (c.agent || 0) >= 2 ? 2 : 1);
+  const teams = pickFrom.slice(0, n);
+  teams.forEach((t, i) => {
+    const off = ensureNeg(core, c, makeOffer(core, c, g, t, "offer"), "offer");
+    addMail(c, { id: `agent-${core.season}-${r}-${t}`, key: "agent", season: core.season, r, type: "offer", from: `Dirección deportiva de ${team(t).name}`, subject: `Oferta para la temporada ${core.season + 1}`, body: `Tu representante, ${AGENT_NAME}, nos ha trasladado tu interés. Esta es nuestra propuesta:\n\n${offerText(core, off)}`, data: off, expires: Math.min(core.totalRounds, r + 3) });
+  });
+  addMail(c, { id: `agent-sum-${core.season}-${r}`, key: "agent", season: core.season, r, type: "info", from: `${AGENT_NAME} (tu representante)`, subject: teams.length ? "Tengo ofertas para ti" : "El mercado está parado", body: teams.length ? `He movido tu nombre por el paddock y ${teams.length === 1 ? "hay un equipo interesado" : "hay dos equipos interesados"}: ${teams.map((t) => team(t).name).join(" y ")}. Las tienes en el correo. Negocia con cabeza: puedes usar una oferta para presionar a la otra.` : "Ahora mismo nadie mueve ficha. Volveré a intentarlo más adelante." });
+  return teams.length;
+}
+
+/* ---------- cierre de temporada ---------- */
+function careerSeasonClose(core, next, entry) {
+  const c = careerOf(core);
+  const n = clone(c);
+  const lines = [];
+  if (c.objectives && c.objectives.season === core.season) {
+    c.objectives.list.forEach((o) => {
+      const pr = objectiveProgress(core, o);
+      if (pr.ok) { addLedger(n, "obj", core.season, null, `Objetivo cumplido: ${o.text}`, 300000); addTrust(n, 5); lines.push(`✅ ${o.text}`); }
+      else { addTrust(n, -5); lines.push(`❌ ${o.text}`); }
+    });
+  }
+  if (entry.champion === ME) { addLedger(n, "title", core.season, null, "Prima por el título", c.contract.bonus.title); addFame(n, 15); }
+  /* gala */
+  const table = driverTable(core);
+  const rookies = table.filter((r) => ROOKIES.includes(r.id));
+  const heat = (core.narrative.rivalries || [])[0];
+  const awards = [
+    { id: "driver", name: "Piloto del año", who: entry.champion },
+    { id: "rookie", name: "Novato del año", who: rookies[0] ? rookies[0].id : null },
+    { id: "team", name: "Equipo del año", team: entry.constructorsChampion },
+    { id: "rival", name: "Rivalidad del año", text: heat ? `${LN(heat.a)} contra ${LN(heat.b)}` : null },
+    { id: "fans", name: "Favorito de la afición", who: n.fame >= 50 ? ME : table[0].id }
+  ].filter((a) => a.who || a.team || a.text);
+  awards.forEach((a) => { if (a.who === ME) addFame(n, 2); });
+  n.awards = (n.awards || []).concat([{ season: core.season, list: awards }]);
+  /* fichaje */
+  let transfer = null;
+  if (n.pending && n.pending.season === core.season + 1) {
+    const to = n.pending.team, from = teamOf(core, ME);
+    const others = teamDrivers(core, to).sort((a, b) => (core.standings[a] || 0) - (core.standings[b] || 0));
+    const swap = others[0];
+    next.roster = Object.assign({}, next.roster || {});
+    next.roster[ME] = Object.assign({}, next.roster[ME] || {}, { team: to });
+    if (swap) next.roster[swap] = Object.assign({}, next.roster[swap] || {}, { team: from });
+    n.contract = { team: to, salary: n.pending.salary, from: core.season + 1, until: core.season + n.pending.years, role: n.pending.role, bonus: n.pending.bonus };
+    transfer = { to, from, swap };
+    n.pending = null;
+    n.trust = 60;
+  } else if (n.contract.until <= core.season) {
+    n.contract = Object.assign({}, n.contract, { from: core.season + 1, until: core.season + 1, salary: Math.round(n.contract.salary * 0.9 / 50000) * 50000 });
+    addMail(n, { id: `renew-auto-${core.season}`, key: "close", season: core.season + 1, r: 0, type: "team", from: AURELIA_BOSS + " (Aurelia Racing)", subject: "Contrato prorrogado un año", body: "Como no firmaste la renovación, activamos la cláusula de un año con un sueldo algo menor. Tendrás que ganártelo." });
+  }
+  n.objectives = null;
+  n.renewalAsked = null;
+  n.processed = {};
+  addMail(n, { id: `gala-${core.season}`, key: "close", season: core.season + 1, r: 0, type: "info", from: "Gala de la Fórmula 1", subject: `🏅 Premios de la temporada ${core.season}`, body: awards.map((a) => `${a.name}: ${a.who ? fullName(a.who) : a.team ? team(a.team).name : a.text}`).join("\n") + (lines.length ? `\n\nTus objetivos:\n${lines.join("\n")}` : "") });
+  next.career = n;
+  return { awards, lines, transfer };
+}
+
+/* ============================================================
    UI: utilidades, iconos, componentes y navegación
    ============================================================ */
 const $ = (sel, el) => (el || document).querySelector(sel);
@@ -2682,6 +3483,8 @@ const ICON = {
   reset: svg('<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4.5v4h4"/>'),
   map: svg('<path d="M9 4.5 3.5 6.5v13l5.5-2 6 2 5.5-2v-13l-5.5 2-6-2z"/><path d="M9 4.5v13M15 6.5v13"/>'),
   info: svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.2"/>'),
+  me: svg('<path d="M3.5 15.2C3.5 9.3 7.8 5 13.5 5c4.6 0 7.5 3 7.5 7.1v2.4c0 1.1-.9 2-2 2h-4l-1.6 2.3H8c-2.5 0-4.5-1.6-4.5-3.6z"/><path d="M12 10.3h9"/>'),
+  mail: svg('<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4.2 7.2 12 12.8l7.8-5.6"/>'),
   timer: svg('<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M9.5 3.5h5M12 3.5v3M18.2 7.3l1.3-1.3"/>'),
   up: svg('<path d="M6 15l6-6 6 6"/>'),
   down: svg('<path d="M6 9l6 6 6-6"/>')
@@ -2762,7 +3565,7 @@ const TABS = [
   { id: "home", label: "Inicio", icon: "home" },
   { id: "news", label: "Noticias", icon: "news" },
   { id: "races", label: "Carreras", icon: "flag" },
-  { id: "standings", label: "Mundial", icon: "trophy" },
+  { id: "me", label: "Mi carrera", icon: "me" },
   { id: "paddock", label: "Paddock", icon: "paddock" }
 ];
 function currentScreen() {
@@ -2787,6 +3590,7 @@ function back() {
   go(() => { S.nav.stacks[S.nav.tab].pop(); }, "fade");
 }
 function switchTab(tab) {
+  if (tab === "standings") { S.ui.racesSeg = "standings"; tab = "races"; S.nav.stacks.races = []; if (S.nav.tab === "races") { S.anim = "fade"; render(); window.scrollTo(0, 0); return; } }
   if (tab === S.nav.tab) {
     if (S.nav.stacks[tab].length) { S.nav.stacks[tab] = []; S.anim = "fade"; render(); window.scrollTo(0, 0); }
     else window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2817,7 +3621,8 @@ function renderTopbar(scr, out) {
   const ro = !S.canWrite && S.core ? `<span class="ro-badge">Solo lectura</span>` : "";
   if (root) {
     bar.innerHTML = `<span class="wordmark" aria-label="Paddock"><span class="slashes"><i></i><i></i><i></i></span>PADDOCK</span>
-<span class="spacer"></span>${ro}${S.core ? `<span class="pill-season">Temporada ${S.core.season}</span>` : ""}
+<span class="spacer"></span>${ro}${S.core ? `<span class="pill-season">T${S.core.season}</span>` : ""}
+${S.core ? (() => { const n = unread(S.core); return `<button class="icon-btn mailbtn" data-act="goto-inbox" aria-label="Correo${n ? `, ${n} sin leer` : ""}">${ICON.mail}${n ? `<span class="dotbadge">${n}</span>` : ""}</button>`; })() : ""}
 <button class="icon-btn" data-act="open-settings" aria-label="Ajustes">${ICON.gear}</button>`;
   } else {
     bar.innerHTML = `<button class="back-btn" data-act="back" aria-label="Atrás">${ICON.back}<span>Atrás</span></button>
@@ -2857,6 +3662,7 @@ function render() {
   view.className = "";
   if (S.anim) { void view.offsetWidth; view.className = S.anim; S.anim = null; }
   view.innerHTML = out.html;
+  if (view.querySelector("[data-gal]")) hydrateGalleries(view);
   renderTabbar();
   renderFab(scr);
 }
@@ -2945,7 +3751,7 @@ function frontPage(a, i, big) {
   const tag = big ? "div" : "button";
   return `<${tag} class="fp m-${m.mast}${big ? " big" : ""}" ${big ? "" : `data-act="open-fp" data-arg="${esc(a.id)}|${i}"`} style="--pa:${m.paper};--pi:${m.ink};--pc:${m.accent};--tc:${fc}" aria-label="Portada de ${esc(m.name)}: ${esc(f.headline)}">
 <span class="fp-mast"><span class="fp-name">${esc(m.name)}</span><span class="fp-ed">${m.country} ${esc(EDITION[m.lang] || "")}</span></span>
-<span class="fp-photo"><span class="fp-flag">${c ? c.flag : a.kind === "season" ? "🏆" : "🏁"}</span>${helmet(fc, big ? 112 : 58)}${f.focus ? `<span class="fp-cap">${esc(DRIVERS[f.focus].last)}</span>` : ""}</span>
+<span class="fp-photo"><span class="fp-flag">${c ? c.flag : a.kind === "season" ? "🏆" : "🏁"}</span>${f.focus ? drvHelmet(f.focus, big ? 112 : 58) : helmet(fc, big ? 112 : 58)}${f.focus ? `<span class="fp-cap">${esc(DRIVERS[f.focus].last)}</span>` : ""}</span>
 <span class="fp-head${f.headline.length > 30 ? " long" : ""}">${esc(f.headline)}</span>${f.deck ? `<span class="fp-deck">${esc(f.deck)}</span>` : ""}</${tag}>`;
 }
 function kiosk(a) { return `<div class="kiosk">${a.frontPages.map((_, i) => frontPage(a, i)).join("")}</div>`; }
@@ -2953,7 +3759,7 @@ function kiosk(a) { return `<div class="kiosk">${a.frontPages.map((_, i) => fron
 function postAuthor(p) {
   if (p.who === "driver" && DRIVERS[p.id]) {
     const t = S.core ? teamOf(S.core, p.id) : DRIVERS[p.id].team;
-    return { name: fullName(p.id), sub: `Piloto de ${team(t).name}`, av: `<span class="av av-h" style="--tc:${tcolor(t)}">${helmet(tcolor(t), 30)}</span>`, vf: true, link: "driver:" + p.id };
+    return { name: fullName(p.id), sub: `Piloto de ${team(t).name}`, av: `<span class="av av-h" style="--tc:${tcolor(t)}">${drvHelmet(p.id, 30)}</span>`, vf: true, link: "driver:" + p.id };
   }
   if (p.who === "team" && TEAMS[p.id]) return { name: team(p.id).name, sub: "Cuenta oficial", av: `<span class="av av-c">${crest(p.id, 40)}</span>`, vf: true, link: "team:" + p.id };
   if (p.who === "journalist" && MEDIA[p.id]) { const m = MEDIA[p.id]; return { name: m.journalist, sub: `@${m.handle} en ${m.name}`, av: jAvatar(m, 42), vf: true, link: "media:" + p.id }; }
@@ -3045,11 +3851,11 @@ function leaderCard(core) {
   const tied = t.filter((r) => r.pos > 1 && r.pts === second.pts).map((r) => DRIVERS[r.id].last);
   const gap = L.pts - second.pts;
   if (!L.pts) {
-    return `<div class="group leader">${helmet(tcolor(teamOf(core, ME)), 54)}<span class="who"><span class="dname"><span class="ln">Mundial a cero</span></span><small>Todavía no se ha disputado ninguna carrera</small></span></div>`;
+    return `<div class="group leader">${drvHelmet(ME, 54)}<span class="who"><span class="dname"><span class="ln">Mundial a cero</span></span><small>Todavía no se ha disputado ninguna carrera</small></span></div>`;
   }
   const who = tied.length > 2 ? `${tied.length} pilotos` : tied.join(" y ");
   return `<button class="group leader" style="width:100%;text-align:left" data-act="push" data-arg="driver:${L.id}">
-${helmet(tcolor(d.team), 54)}<span class="who">${dname(L.id)}<small>${esc(team(d.team).name)}</small></span>
+${drvHelmet(L.id, 54)}<span class="who">${dname(L.id)}<small>${esc(team(d.team).name)}</small></span>
 <span class="pts"><b class="num">${fmt(L.pts)}</b><span>${gap > 0 ? `+${fmt(gap)} sobre ${esc(who)}` : `empatado con ${esc(who)}`}</span></span></button>`;
 }
 
@@ -3102,6 +3908,13 @@ function homeScreen() {
   const out = [heroPoster(core)];
   if (core.stale) out.push(`<div class="sec">${staleBanner(core)}</div>`);
   out.push(sec("Líder del Mundial", leaderCard(core)));
+  {
+    const cv = careerView(core);
+    const un = unread(core);
+    const last = doneRounds(core).slice(-1)[0];
+    const pend = last && cv.press && cv.press[`${core.season}-${last.r}`] && !cv.press[`${core.season}-${last.r}`].done;
+    out.push(sec("Mi carrera", `${pend ? `<button class="group list-btn press-cta" style="margin-bottom:10px" data-act="press-open" data-arg="${last.r}">🎙️<span class="t">Rueda de prensa pendiente<small>Los periodistas te esperan</small></span>${ICON.chev}</button>` : ""}<button class="group mecard" data-act="tab" data-arg="me">${drvHelmet(ME, 52)}<span class="mc-m">${fameBar(cv.fame)}<span class="mc-k"><span>💶 ${fmtMoney(cv.money)}</span><span>👥 ${cfmt(cv.followers)}</span><span>✉️ ${un ? `${un} nuevos` : "al día"}</span></span></span></button>`));
+  }
   const news = S.news.filter((a) => a.season === core.season).slice(0, 4);
   if (news.length) {
     out.push(sec("Última hora", coverCard(news[0]) + (news.length > 1 ? `<div class="group" style="margin-top:10px">${news.slice(1).map(newsRow).join("")}</div>` : ""),
@@ -3261,6 +4074,8 @@ function articleScreen(id) {
     body.push(`<h2>📱 En redes</h2>${(a.trending || []).length ? `<div class="chips" style="margin-bottom:12px">${a.trending.map((t) => `<span class="chip"><b>${esc(t.tag)}</b>${t.posts ? cfmt(t.posts) : ""}</span>`).join("")}</div>` : ""}<div class="group feed">${a.social.map((_, i) => socialPost(a, i)).join("")}</div>`);
   }
   if ((a.radio || []).length) body.push(`<h2>📻 Radio paddock</h2><ul class="radio">${a.radio.map((h) => `<li>${inlineMd(h)}</li>`).join("")}</ul>`);
+  body.push(dotdBlock(a));
+  if (a.kind === "race" && S.core && a.season === S.core.season && roundOf(S.core, a.r) && roundOf(S.core, a.r).race) body.push(`<div class="row-btns sec"><button class="btn btn-ghost" data-act="share-card" data-arg="${a.r}">📤 Tarjeta para compartir</button></div>`);
   body.push(statBox(a.stats, a.kind));
   const canRewrite = S.canWrite && aiReady() && a.r && S.core && a.season === S.core.season && ["previa", "quali", "race", "sprint"].includes(a.kind);
   if (S.canWrite) {
@@ -3290,8 +4105,9 @@ function racesScreen() {
   const core = S.core;
   const done = doneRounds(core).length;
   const seg = S.ui.racesSeg || "cal";
-  const bar = `<div class="seg" role="tablist"><button data-act="seg" data-arg="racesSeg:cal" aria-pressed="${seg === "cal"}">Calendario</button><button data-act="seg" data-arg="racesSeg:circuits" aria-pressed="${seg === "circuits"}">Circuitos</button></div>`;
+  const bar = `<div class="seg" role="tablist">${[["cal", "Calendario"], ["standings", "Mundial"], ["circuits", "Circuitos"]].map(([k, l]) => `<button data-act="seg" data-arg="racesSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`;
   if (seg === "circuits") return { html: bar + circuitsBody(core) };
+  if (seg === "standings") return { html: bar + standingsScreen().html };
   return {
     html: `${bar}<div class="sec-h" style="margin-top:4px"><h2>Temporada ${core.season}</h2>${S.canWrite ? `<button class="link" data-act="cal-open">Editar calendario</button>` : `<span class="muted">${done} de ${core.totalRounds}</span>`}</div>
 <p class="note" style="margin:-4px 0 8px">${done} de ${core.totalRounds} carreras disputadas, al ${core.distance || 50}% de distancia.</p>
@@ -3382,6 +4198,8 @@ function raceScreen(arg) {
       : `<button class="btn btn-ghost btn-sm" data-act="upload" data-arg="sprint:${round.r}">${ICON.plus}Añadir sprint</button>`);
     out.push(`<div class="row-btns sec">${fix.join("")}</div>`);
   }
+  if (round.race) out.push(`<div class="row-btns sec"><button class="btn btn-ghost" data-act="share-card" data-arg="${round.r}">📤 Tarjeta para compartir</button>${(() => { const pk = careerView(core).press[`${core.season}-${round.r}`]; return S.canWrite && pk && !pk.done ? `<button class="btn btn-red" data-act="press-open" data-arg="${round.r}">🎙️ Rueda de prensa</button>` : ""; })()}</div>`);
+  if (round.race || round.quali) out.push(galleryBlock(`${core.season}-${round.r}`));
   const arts = S.news.filter((a) => a.season === core.season && a.r === round.r);
   if (arts.length) out.push(sec("Noticias de esta ronda", `<div class="group">${arts.map(newsRow).join("")}</div>`));
   return { title: c ? c.gp : `Ronda ${round.r}`, html: out.join("") };
@@ -3409,13 +4227,13 @@ function standingsScreen() {
 function dcard(core, id, row) {
   const d = drv(core, id);
   return `<button class="dcard" style="--tc:${tcolor(d.team)}" data-act="push" data-arg="driver:${id}">
-<span class="bignum">${esc(d.num != null ? d.num : d.code)}</span>${helmet(tcolor(d.team), 58)}
+<span class="bignum">${esc(d.num != null ? d.num : d.code)}</span>${drvHelmet(id, 58)}
 <span>${dname(id)}<small>${d.flag} ${crest(d.team, 15)} ${esc(team(d.team).short)}</small><span class="ptsline"><small>P${row.pos} del Mundial</small><b class="num">${fmt(row.pts)}</b></span></span></button>`;
 }
 function paddockScreen() {
   const core = S.core;
   const seg = S.ui.paddockSeg;
-  const out = [`<div class="seg" role="tablist">${[["drivers", "Pilotos"], ["teams", "Escuderías"], ["palmares", "Palmarés"], ["history", "Historia"]].map(([k, l]) => `<button data-act="seg" data-arg="paddockSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`];
+  const out = [`<div class="seg" role="tablist">${[["drivers", "Pilotos"], ["teams", "Escuderías"], ["history", "Historia"]].map(([k, l]) => `<button data-act="seg" data-arg="paddockSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`];
   if (seg === "drivers") {
     const t = driverTable(core);
     out.push(`<div class="dgrid">${t.map((r) => dcard(core, r.id, r)).join("")}</div>`);
@@ -3438,7 +4256,7 @@ function driverScreen(id) {
   if (!d) return notFound("Piloto");
   const t = team(d.team);
   const row = driverTable(core).find((x) => x.id === id);
-  const out = [`<header class="phero" style="--tc:${t.color}"><span class="bignum">${esc(d.num != null ? d.num : d.code)}</span>${helmet(t.color, 110)}
+  const out = [`<header class="phero" style="--tc:${t.color}"><span class="bignum">${esc(d.num != null ? d.num : d.code)}</span>${drvHelmet(id, 110)}
 <div class="first">${esc(d.first)}</div><h1 class="last">${esc(d.last)}</h1>
 <div class="meta"><span class="pos">P${row.pos}</span><span>${fmt(row.pts)} pts</span><span>${d.flag} ${esc(d.nat)}</span><button class="teamlink" data-act="push" data-arg="team:${d.team}">${crest(d.team, 18)} ${esc(t.name)}</button></div></header>`];
   out.push(id === ME ? myProfile(core) : otherProfile(core, id));
@@ -3956,11 +4774,12 @@ async function commitUpload(mode, rowsOverride) {
   try { await Store.saveCore(); } catch (e) { return; }
   st.saved = true;
   const existing = findArticle(core.season, st.r, st.session);
-  if (mode === "ai" && aiReady()) { await writeChronicle(st, existing && st.edit ? existing : null); return; }
+  if (mode === "ai" && aiReady()) { await careerProcessOnly(st.session, st.r); await writeChronicle(st, existing && st.edit ? existing : null); return; }
   if (!existing || existing.auto) {
     const id = await publishAutoNews(st.session, st.r, st.edit);
     closeSheet();
-    if (id) openArticle(id);
+    const pressed = await careerFlow(st.session, st.r);
+    if (!pressed && id) openArticle(id);
     return;
   }
   closeSheet();
@@ -4173,6 +4992,8 @@ function confirmCloseSeason() {
 async function doCloseSeason() {
   const core = S.core;
   const { seasonDoc, next, entry } = closeSeason(core);
+  const cr = careerSeasonClose(core, next, entry);
+  seasonDoc.awards = cr.awards;
   let narr = null;
   if (aiReady()) {
     const st = { type: "working", title: "Escribiendo el cierre de temporada", msgs: AI_BUSY.write, ctl: new AbortController() };
@@ -4199,6 +5020,9 @@ async function doCloseSeason() {
   const title = entry.pos === 1 ? `¡ARÉVALO, CAMPEÓN DEL MUNDO EN LA TEMPORADA ${core.season}!` : `ARÉVALO CIERRA LA TEMPORADA ${core.season} EN LA POSICIÓN ${entry.pos}`;
   const art = makeArticle(core, null, "season", narr ? { kicker: "Fin de temporada", title: o.title || title, subtitle: o.subtitle || "", sections, headlines: o.headlines, frontPages: o.frontPages, social: o.social, trending: o.trending } : null,
     narr ? null : { title, subtitle: `${entry.wins} victorias, ${entry.poles} poles y ${entry.podiums} podios en ${entry.races} carreras.`, sections: [{ heading: "Resumen", body: `Terminó con ${fmt(entry.pts)} puntos. ${team(entry.team).name} acabó P${entry.teamPos} en constructores.` }] });
+  art.sections = (art.sections || []).concat([{ heading: "🏅 La gala", body: cr.awards.map((x) => `${x.name}: ${x.who ? fullName(x.who) : x.team ? team(x.team).name : x.text}`).join("\n") }])
+    .concat(cr.lines.length ? [{ heading: "🎯 Tus objetivos", body: cr.lines.join("\n") }] : [])
+    .concat(cr.transfer ? [{ heading: "🔁 Cambio de equipo", body: `Andrés Arévalo corre la temporada ${core.season + 1} con ${team(cr.transfer.to).name}.${cr.transfer.swap ? ` ${fullName(cr.transfer.swap)} ocupa su asiento en ${team(cr.transfer.from).name}.` : ""} En F1 25, empieza la nueva temporada con tu equipo nuevo.` }] : []);
   try {
     await Store.saveSeason(seasonDoc);
     await Store.saveArticle(art);
@@ -4255,7 +5079,7 @@ async function doRestore() {
     stopBusy();
     closeSheet();
     toast("Copia restaurada");
-    S.nav.stacks = { home: [], news: [], races: [], standings: [], paddock: [] };
+    S.nav.stacks = { home: [], news: [], races: [], standings: [], me: [], paddock: [] };
     render();
   } catch (e) { stopBusy(); closeSheet(); }
 }
@@ -4267,7 +5091,7 @@ function confirmReset() {
       await wipeRemote();
       S.core = blankCore(1);
       await Store.saveCore().catch(() => null);
-      S.nav.stacks = { home: [], news: [], races: [], standings: [], paddock: [] };
+      S.nav.stacks = { home: [], news: [], races: [], standings: [], me: [], paddock: [] };
       render();
       toast("Universo reiniciado: temporada 1");
     }
@@ -4349,7 +5173,7 @@ function entrySheet(st) {
   const chips = pool.map((id) => {
     const d = DRIVERS[id];
     const t = teamOf(core, id);
-    return `<button class="pchip${id === ME ? " me" : ""}" style="--tc:${tcolor(t)}" data-act="e-pick" data-arg="${id}">${helmet(tcolor(t), 26)}<span><b>${esc(d.last)}</b><small>${esc(team(t).short)}${d.num != null ? " #" + d.num : ""}</small></span></button>`;
+    return `<button class="pchip${id === ME ? " me" : ""}" style="--tc:${tcolor(t)}" data-act="e-pick" data-arg="${id}">${drvHelmet(id, 26)}<span><b>${esc(d.last)}</b><small>${esc(team(t).short)}${d.num != null ? " #" + d.num : ""}</small></span></button>`;
   }).join("");
   let jump = "";
   if (race && st.mode === "pos" && st.target == null && next < DRIVER_IDS.length) {
@@ -4409,14 +5233,31 @@ async function commitEntry(mode) {
   try { await Store.saveCore(); } catch (e) { return; }
   const existing = findArticle(core.season, st.r, st.session);
   if (mode === "ai" && aiReady()) {
+    await careerProcessOnly(st.session, st.r);
     Object.assign(st, { type: "upload", step: "writing", rows: [], files: [], saved: true });
     await writeChronicle(st, existing && st.edit ? existing : null);
     return;
   }
   const id = await publishAutoNews(st.session, st.r, st.edit);
   closeSheet();
-  if (id) openArticle(id);
+  const pressed = await careerFlow(st.session, st.r);
+  if (!pressed && id) openArticle(id);
   toast(st.edit ? "Corrección guardada: noticias actualizadas" : st.session === "race" ? "Resultados guardados: hay noticias nuevas en el paddock" : "Resultados guardados");
+}
+
+/* Procesa fama, dinero, correo y logros tras guardar una sesión. Devuelve true si abre la rueda de prensa. */
+async function careerFlow(session, r) {
+  const before = Object.keys(careerView(S.core).achievements || {}).length;
+  let res = { press: false };
+  try { await mutateCore((core) => { res = careerAfterSession(core, session, r); }); } catch (e) { return false; }
+  const after = Object.keys(careerView(S.core).achievements || {}).length;
+  if (after > before) setTimeout(() => toast(`🏅 ¡Nuevo logro desbloqueado! Míralo en Mi carrera`), 1600);
+  if (res.press && session === "race" && S.canWrite) { openPress(r); return true; }
+  return false;
+}
+
+async function careerProcessOnly(session, r) {
+  try { await mutateCore((core) => { careerAfterSession(core, session, r); }); } catch (e) { /* se reintenta en la siguiente sesión */ }
 }
 
 /* ============================================================
@@ -4518,11 +5359,12 @@ SHEETS.distance = distanceSheet;
 function historyBody(core) {
   const out = [];
   out.push(`<button class="storycard" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>De tu debut a hoy: capítulos, hitos y rivalidades</small></span>${ICON.chev}</button>`);
+  out.push(sec("Las leyendas de la F1", legendsBody(core)));
   const sort = S.ui.allTimeSort || "pts";
   const rows = allTimeTable(core).sort((a, b) => (b[sort] - a[sort]) || (b.pts - a.pts));
   const labels = [["pts", "Puntos"], ["wins", "Victorias"], ["podiums", "Podios"], ["poles", "Poles"], ["titles", "Mundiales"]];
   const unit = { pts: "pts", wins: "V", podiums: "podios", poles: "poles", titles: "títulos" };
-  out.push(sec("Clasificación histórica", `<div class="filters" role="toolbar" aria-label="Ordenar">${labels.map(([k, l]) => `<button data-act="seg" data-arg="allTimeSort:${k}" aria-pressed="${sort === k}">${l}</button>`).join("")}</div>
+  out.push(sec("Clasificación histórica de tu universo", `<div class="filters" role="toolbar" aria-label="Ordenar">${labels.map(([k, l]) => `<button data-act="seg" data-arg="allTimeSort:${k}" aria-pressed="${sort === k}">${l}</button>`).join("")}</div>
 <div class="group">${rows.map((r, i) => `<button class="srow${r.id === ME ? " me" : ""}" data-act="push" data-arg="driver:${r.id}"><span class="pos num">${i + 1}</span><span class="bar" style="background:${tcolor(teamOf(core, r.id))}"></span>
 <span class="who">${dname(r.id)}<small>${r.wins} V, ${r.podiums} podios, ${r.poles} poles${r.titles ? `, ${r.titles} 🏆` : ""}</small></span><span class="val"><b class="num">${fmt(r[sort])}</b><small>${unit[sort]}</small></span></button>`).join("")}</div>
 <p class="note">Todas las temporadas de tu universo. Victorias, podios y poles cuentan los resultados anotados; los puntos, el Mundial oficial.</p>`));
@@ -4548,6 +5390,672 @@ function storyScreen() {
 }
 SCREENS.circuit = circuitScreen;
 SCREENS.story = storyScreen;
+
+/* ============================================================
+   MI CARRERA: pantallas y acciones
+   ============================================================ */
+
+/* ---------- casco personalizado ---------- */
+const HELMET_BASE = "M6 38.5C6 21 18.5 9 35.5 9 48.5 9 58 17.5 58 30v7.5c0 3.3-2.7 6-6 6H41.5L37 50H15.5C10.3 50 6 45.3 6 38.5z";
+function helmetPattern(pat, c2) {
+  switch (pat) {
+    case "raya": return `<path d="M9 42.5h28" stroke="${c2}" stroke-width="5" stroke-linecap="round"/>`;
+    case "doble": return `<path d="M12 27C22 15 38 11 55 17" stroke="${c2}" stroke-width="4" fill="none"/><path d="M9 34C20 21 38 17 58 23" stroke="${c2}" stroke-width="4" fill="none"/>`;
+    case "rayo": return `<path d="M8 40 24 27l-1 7 17-14-9 18 1-7z" fill="${c2}"/>`;
+    case "estrellas": return [[16, 30], [24, 20], [14, 42], [30, 40], [36, 14]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.9)" d="M0-5 1.5-1.5 5-1.2 2.3 1.1 3.1 4.7 0 2.8-3.1 4.7-2.3 1.1-5-1.2-1.5-1.5z" fill="${c2}"/>`).join("");
+    case "damero": { let s = ""; for (let i = 0; i < 12; i++) for (let j = 0; j < 2; j++) if ((i + j) % 2 === 0) s += `<rect x="${6 + i * 4}" y="${40 + j * 4}" width="4" height="4" fill="${c2}"/>`; return s; }
+    case "llamas": return `<path d="M5 44c6-2 8-8 14-9-3 3-2 6 1 6 1-4 5-6 9-6-3 3-2 6 2 6 2-3 5-4 8-4-4 3-3 7 1 9H6z" fill="${c2}"/>`;
+    default: return "";
+  }
+}
+function customHelmet(h, size) {
+  const s = size || 44;
+  const id = "hm" + (++crestSeq);
+  return `<svg class="helmet" width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="${id}"><path d="${HELMET_BASE}"/></clipPath></defs>
+<path d="${HELMET_BASE}" fill="${h.c1}"/><g clip-path="url(#${id})">${helmetPattern(h.pat, h.c2)}<path d="M6 38.5C6 21 18.5 9 35.5 9c4.8 0 9.2 1.1 12.8 3.2C39.5 12 27 16 19.5 27.5 15 34.3 13.6 41.4 14 49.8 9.4 48.6 6 44.3 6 38.5z" fill="#000" opacity=".14"/></g>
+<path d="M30.5 21.5h23c2.5 0 4.5 2 4.5 4.5v7H31c-2.5 0-4.5-2-4.5-4.5V26c0-2.5 2-4.5 4-4.5z" fill="#0A0F1E" stroke="${h.c3}" stroke-width="1.6"/>
+<path d="M33 25h19" stroke="#fff" stroke-opacity=".32" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function drvHelmet(id, size) {
+  const h = id === ME && S.core ? careerView(S.core).helmet : null;
+  if (h) return customHelmet(h, size);
+  return helmet(tcolor(S.core ? teamOf(S.core, id) : DRIVERS[id].team), size);
+}
+
+/* ---------- fotos (se guardan en el propio dispositivo) ---------- */
+const Media = {
+  db: null, urls: {},
+  ok() { try { return !!window.indexedDB; } catch (e) { return false; } },
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise((res, rej) => {
+      const q = indexedDB.open("paddock-media", 1);
+      q.onupgradeneeded = () => { const st = q.result.createObjectStore("photos", { keyPath: "id" }); st.createIndex("key", "key"); };
+      q.onsuccess = () => { this.db = q.result; res(this.db); };
+      q.onerror = () => rej(q.error);
+    });
+  },
+  async tx(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const t = db.transaction("photos", mode);
+      const out = fn(t.objectStore("photos"));
+      t.oncomplete = () => res(out && out.result !== undefined ? out.result : out);
+      t.onerror = () => rej(t.error);
+    });
+  },
+  add(blob, key) { const id = key + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); return this.tx("readwrite", (st) => st.put({ id, key, t: Date.now(), blob })).then(() => id); },
+  list(key) { return this.tx("readonly", (st) => (key ? st.index("key").getAll(key) : st.getAll())); },
+  get(id) { return this.tx("readonly", (st) => st.get(id)); },
+  del(id) { if (this.urls[id]) { URL.revokeObjectURL(this.urls[id]); delete this.urls[id]; } return this.tx("readwrite", (st) => st.delete(id)); },
+  url(p) { if (!this.urls[p.id]) this.urls[p.id] = URL.createObjectURL(p.blob); return this.urls[p.id]; }
+};
+function galleryBlock(key, title) {
+  if (!Media.ok()) return "";
+  return sec(title || "📸 Tus capturas", `<div class="gal" data-gal="${key}"><div class="gal-empty">Cargando…</div></div>
+${S.canWrite ? `<label class="btn btn-ghost btn-sm gal-add">${ICON.camera}Añadir capturas<input type="file" accept="image/*" multiple hidden data-photos="${key}"></label>` : ""}`);
+}
+async function hydrateGalleries(root) {
+  if (!Media.ok()) return;
+  const nodes = (root || document).querySelectorAll("[data-gal]");
+  for (const el of nodes) {
+    const key = el.dataset.gal;
+    let list = [];
+    try { list = await Media.list(key === "*" ? null : key); } catch (e) { el.innerHTML = `<div class="gal-empty">No se pueden guardar fotos en este navegador.</div>`; continue; }
+    list.sort((a, b) => b.t - a.t);
+    el.innerHTML = list.length ? list.map((p) => `<button class="gal-th" data-act="photo-open" data-arg="${p.id}"><img src="${Media.url(p)}" alt="Captura"></button>`).join("")
+      : `<div class="gal-empty">${key === "*" ? "Aún no has añadido capturas. Pásalas de la PS5 al iPhone y añádelas desde cada Gran Premio." : "Sin capturas de este Gran Premio."}</div>`;
+  }
+}
+async function addPhotos(key, files) {
+  let n = 0;
+  for (const f of Array.from(files || [])) {
+    try {
+      const blob = await downscale(f, 1800, 0.85);
+      await Media.add(blob, key);
+      n++;
+    } catch (e) { /* se ignora el archivo */ }
+  }
+  toast(n ? `${n} ${n === 1 ? "captura guardada" : "capturas guardadas"}` : "No se ha podido guardar la captura");
+  hydrateGalleries();
+}
+function downscale(file, max, q) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      cv.toBlob((b) => { URL.revokeObjectURL(url); b ? resolve(b) : reject(new Error("blob")); }, "image/jpeg", q);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("img")); };
+    img.src = url;
+  });
+}
+function photoSheet(st) {
+  return { title: "Captura", body: st.url ? `<img class="photo-big" src="${st.url}" alt="Captura">` : "Cargando…",
+    foot: `${navigator.share ? `<button class="btn btn-red btn-block" data-act="photo-share">Compartir</button>` : ""}${S.canWrite ? `<button class="btn btn-danger btn-block" data-act="photo-del">${ICON.trash}Borrar captura</button>` : ""}` };
+}
+SHEETS.photo = photoSheet;
+
+/* ---------- pantalla Yo ---------- */
+function fameBar(f) { return `<div class="fame"><div class="fame-top"><b>${fameTier(f)}</b><span class="num">${NF.format(f)}/100</span></div><div class="fame-bar"><i style="width:${f}%"></i></div></div>`; }
+function meScreen() {
+  const core = S.core;
+  const c = careerView(core);
+  const d = drv(core, ME);
+  const t = team(d.team);
+  const un = unread(core);
+  const pressKey = `${core.season}-${(doneRounds(core).slice(-1)[0] || {}).r}`;
+  const pendingPress = c.press && c.press[pressKey] && !c.press[pressKey].done && doneRounds(core).length;
+  const out = [];
+  out.push(`<header class="mehero" style="--tc:${t.color}"><div class="me-h">${drvHelmet(ME, 96)}</div>
+<div class="me-n"><span class="first">Andrés</span><span class="last">Arévalo</span><small>${crest(d.team, 16)} ${esc(t.name)}${d.num != null ? " #" + d.num : ""}</small></div>
+${fameBar(c.fame)}
+<div class="me-kpis"><div><b class="num">${cfmt(c.followers)}</b><span>seguidores</span></div><div><b class="num">${fmtMoney(marketValue(core))}</b><span>valor de mercado</span></div><div><b class="num">${c.trust}</b><span>confianza</span></div></div></header>`);
+  if (pendingPress) out.push(`<button class="group list-btn press-cta" data-act="press-open" data-arg="${(doneRounds(core).slice(-1)[0] || {}).r}">🎙️<span class="t">Rueda de prensa pendiente<small>Los periodistas te esperan tras la última carrera</small></span>${ICON.chev}</button>`);
+  out.push(`<div class="mgrid">
+<button class="mtile" data-act="push" data-arg="inbox:">${un ? `<span class="dotbadge">${un}</span>` : ""}<span class="mi">✉️</span><b>Correo</b><small>${un ? `${un} sin leer` : "Al día"}</small></button>
+<button class="mtile" data-act="push" data-arg="finance:"><span class="mi">💶</span><b>${fmtMoney(c.money)}</b><small>Saldo</small></button>
+<button class="mtile" data-act="push" data-arg="contract:">${(() => { const n = c.inbox.filter((m) => (m.type === "offer" || m.type === "renewal") && m.status === "new").length; return n ? `<span class="dotbadge">${n}</span>` : ""; })()}<span class="mi">📝</span><b>${c.contract.until - core.season + 1} ${c.contract.until - core.season + 1 === 1 ? "año" : "años"}</b><small>${c.pending ? `Fichado por ${esc(team(c.pending.team).short)}` : (() => { const n = c.inbox.filter((m) => (m.type === "offer" || m.type === "renewal") && m.status === "new").length; return n ? `${n} ${n === 1 ? "oferta" : "ofertas"} abiertas` : "Contrato"; })()}</small></button>
+<button class="mtile" data-act="push" data-arg="shop:"><span class="mi">🛍️</span><b>Tienda</b><small>Patrimonio ${fmtMoney(netWorth(core))}</small></button></div>`);
+  const obj = c.objectives && c.objectives.season === core.season ? c.objectives : makeObjectives(core, c);
+  out.push(sec(`Objetivos de la temporada ${core.season}`, `<div class="group objs">${obj.list.map((o) => { const p = objectiveProgress(core, o); return `<div class="obj${p.ok ? " ok" : ""}"><div class="obj-t"><span>${p.ok ? "✅" : "🎯"} ${esc(o.text)}</span><b>${esc(p.value)}</b></div><div class="obj-bar"><i style="width:${p.pct}%"></i></div></div>`; }).join("")}</div><p class="note">Cada objetivo cumplido al cerrar la temporada da una prima de 300.000 € y más confianza del equipo.</p>`));
+  const got = Object.keys(c.achievements || {});
+  out.push(sec("Logros", `<button class="group badges-row" data-act="push" data-arg="achievements:">${ACHIEVEMENTS.slice(0, 8).map((a) => `<span class="bdg${got.includes(a.id) ? " on" : ""}" title="${esc(a.name)}">${a.icon}</span>`).join("")}<span class="bdg-more">${got.length}/${ACHIEVEMENTS.length} ${ICON.chev}</span></button>`));
+  const links = [
+    ["palmares:", ICON.trophy, "Palmarés", "Mundiales, victorias, rachas y circuitos"],
+    ["story:", "📖", "Mi historia", "Tu carrera contada capítulo a capítulo"],
+    ["legends:", "🐐", "Tú contra las leyendas", "Los 20 mejores de la historia y tú"],
+    ["charts:", "📈", "Tus gráficas", "El Mundial carrera a carrera"],
+    ["gallery:", "📸", "Galería", "Tus capturas de la PS5"]
+  ];
+  out.push(`<div class="group sec">${links.map(([arg, ic, t2, s2]) => `<button class="list-btn" data-act="push" data-arg="${arg}">${ic.startsWith("<svg") ? ic : `<span class="li-ic">${ic}</span>`}<span class="t">${t2}<small>${s2}</small></span>${ICON.chev}</button>`).join("")}
+<button class="list-btn" data-act="helmet-open"><span class="li-ic">🪖</span><span class="t">Diseñar mi casco<small>Colores y diseños exclusivos</small></span>${ICON.chev}</button></div>`);
+  return { html: out.join("") };
+}
+
+/* ---------- correo ---------- */
+const MAIL_ICON = { offer: "🤝", renewal: "📝", sponsor: "💼", dilemma: "❓", team: "🏎️", achievement: "🏅", info: "📣", press: "🎙️" };
+const MAIL_STATUS = { accepted: "Aceptada", rejected: "Rechazada", expired: "Caducada", withdrawn: "Retirada", answered: "Respondido" };
+function inboxScreen() {
+  const c = careerView(S.core);
+  const list = c.inbox.slice().sort((a, b) => b.t - a.t);
+  return { title: "Correo", html: list.length ? `<div class="group mails">${list.map((m) => `<button class="mail${m.status === "new" ? " new" : ""}" data-act="push" data-arg="mail:${esc(m.id)}"><span class="mail-ic">${MAIL_ICON[m.type] || "✉️"}</span>
+<span class="mail-t"><b>${esc(m.from)}</b><span>${esc(m.subject)}</span><small>${m.r ? `Tras la ronda ${m.r}, temporada ${m.season}` : `Temporada ${m.season}`}${MAIL_STATUS[m.status] ? `: ${MAIL_STATUS[m.status].toLowerCase()}` : m.expires && m.status === "new" ? `. Caduca tras la ronda ${m.expires}` : ""}</small></span>${m.status === "new" ? `<i class="mail-dot"></i>` : ""}</button>`).join("")}</div>`
+    : `<div class="empty"><b>Bandeja vacía</b>Los correos llegan después de cada carrera: ofertas, patrocinios, tu equipo y mucho más.</div>` };
+}
+function mailScreen(id) {
+  const core = S.core;
+  const c = careerView(core);
+  const m = c.inbox.find((x) => x.id === id);
+  if (!m) return notFound("Correo");
+  if (m.status === "new" && ["team", "achievement", "info", "press"].includes(m.type) && S.canWrite) setTimeout(() => markRead(id), 0);
+  const actions = [];
+  const open = m.status === "new" && S.canWrite;
+  if (m.type === "offer" || m.type === "renewal") {
+    const o = m.data;
+    actions.push(`<div class="offer-card" style="--tc:${team(o.team).color}">${crest(o.team, 48)}<div><b>${esc(team(o.team).name)}</b><div class="offer-kv"><span>Sueldo</span><b>${fmtMoney(o.salary)}/año</b><span>Duración</span><b>${o.years} ${o.years === 1 ? "temporada" : "temporadas"}</b><span>Rol</span><b>${o.role === "primer" ? "Primer piloto" : "Igualdad"}</b><span>Por victoria</span><b>${fmtMoney(o.bonus.win)}</b></div></div></div>`);
+    if (m.reply) actions.push(`<div class="tip">💬 ${esc(m.reply)}</div>`);
+    if (open && m.type === "offer" && c.pending) actions.push(`<div class="warn">Ya has firmado con ${esc(team(c.pending.team).name)} para la próxima temporada.</div>`);
+    else if (open) {
+      actions.push(`<div class="row-btns"><button class="btn btn-red" data-act="mail-accept" data-arg="${esc(id)}">${o.agreed ? "Firmar lo acordado" : "Aceptar"}</button><button class="btn btn-ghost" data-act="mail-reject" data-arg="${esc(id)}">Rechazar</button></div>`);
+      actions.push(negotiationPanel(m));
+      if (m.type === "offer") actions.push(`<p class="note">Si firmas, el fichaje será efectivo al cerrar la temporada. En F1 25 tendrás que empezar la siguiente con tu nuevo equipo.</p>`);
+      else actions.push(`<p class="note">Si firmas la renovación, el nuevo sueldo empieza a contar desde ya.</p>`);
+    }
+  } else if (m.type === "sponsor" && open) {
+    actions.push(`<div class="row-btns"><button class="btn btn-red" data-act="mail-accept" data-arg="${esc(id)}">Firmar el patrocinio</button><button class="btn btn-ghost" data-act="mail-reject" data-arg="${esc(id)}">Rechazar</button></div>`);
+  } else if (m.type === "dilemma") {
+    const d = DILEMMAS.find((x) => x.id === m.data.id);
+    if (open && d) actions.push(`<div class="choices">${d.choices.map((ch, i) => `<button class="btn btn-ghost btn-block" data-act="mail-choice" data-arg="${esc(id)}|${i}">${esc(ch.label)}</button>`).join("")}</div>`);
+    if (m.result) actions.push(`<div class="tip">➡️ ${esc(m.result)}</div>`);
+  }
+  if (!open && MAIL_STATUS[m.status] && m.type !== "dilemma") actions.push(`<div class="tip">Estado: ${MAIL_STATUS[m.status]}.</div>`);
+  return { title: "Correo", html: `<article class="mailview"><div class="mv-h"><span class="mail-ic big">${MAIL_ICON[m.type] || "✉️"}</span><div><b>${esc(m.from)}</b><small>Para: Andrés Arévalo</small></div></div>
+<h2>${esc(m.subject)}</h2>${paras(m.body)}</article>${actions.join("")}` };
+}
+async function markRead(id) {
+  const m = careerView(S.core).inbox.find((x) => x.id === id);
+  if (!m || m.status !== "new") return;
+  await mutateCore((core) => { const x = careerOf(core).inbox.find((y) => y.id === id); if (x) x.status = "read"; }).catch(() => null);
+}
+
+function negDraft(m) {
+  S.ui.neg = S.ui.neg || {};
+  const o = m.data;
+  if (!S.ui.neg[m.id]) S.ui.neg[m.id] = { step: 1, years: o.years, role: o.role, leverage: "" };
+  return S.ui.neg[m.id];
+}
+function negotiationPanel(m) {
+  const core = S.core;
+  const c = careerView(core);
+  const o = ensureNeg(core, c, clone(m.data), m.type);
+  const d = negDraft(m);
+  if (o.patience <= 0) return `<div class="tip">🤝 La negociación está cerrada: solo puedes firmar o rechazar.</div>`;
+  const ask = Math.round((o.salary * (1 + NEG_STEPS[d.step])) / 50000) * 50000;
+  const levs = c.inbox.filter((x) => x.id !== m.id && x.status === "new" && (x.type === "offer" || x.type === "renewal") && x.data.salary > o.salary);
+  const dots = "●".repeat(o.patience) + "○".repeat(Math.max(0, 3 - o.patience));
+  return `<div class="negbox"><div class="neg-h"><b>Negociar</b><span>Interés: <b class="int-${o.interest}">${o.interest}</b></span><span title="Paciencia">Paciencia <b class="pat-d">${dots}</b></span></div>
+<p class="note" style="margin:0 0 10px">${esc(agentHint(c, o))}</p>
+<div class="field"><span class="lbl">Sueldo que pides: <b>${fmtMoney(ask)}</b>/año</span><div class="chips">${NEG_STEPS.map((p, i) => `<button class="chip${d.step === i ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|step|${i}">${i ? "+" + Math.round(p * 100) + "%" : "Igual"}</button>`).join("")}</div></div>
+<div class="field"><span class="lbl">Temporadas</span><div class="chips">${[1, 2, 3, 4].map((y) => `<button class="chip${d.years === y ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|years|${y}">${y}</button>`).join("")}</div></div>
+<div class="field"><span class="lbl">Rol</span><div class="chips"><button class="chip${d.role !== "primer" ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|role|igualdad">Igualdad</button><button class="chip${d.role === "primer" ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|role|primer">Primer piloto</button></div></div>
+${levs.length ? `<div class="field"><span class="lbl">Presionar con otra oferta</span><div class="chips"><button class="chip${!d.leverage ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|leverage|">No</button>${levs.map((x) => `<button class="chip${d.leverage === x.id ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|leverage|${esc(x.id)}">${esc(team(x.data.team).short)}: ${fmtMoney(x.data.salary)}</button>`).join("")}</div></div>` : ""}
+<button class="btn btn-ghost btn-block" data-act="neg-send" data-arg="${esc(m.id)}">Enviar contraoferta</button>
+<p class="note">Cada contraoferta gasta paciencia. Si pides demasiado, pueden retirar la oferta${m.type === "renewal" ? " (Aurelia no la retira, pero la confianza baja)" : ""}.</p></div>`;
+}
+
+/* ---------- contrato y dinero ---------- */
+function contractScreen() {
+  const core = S.core;
+  const c = careerView(core);
+  const k = c.contract;
+  const out = [`<div class="offer-card big" style="--tc:${team(k.team).color}">${crest(k.team, 64)}<div><span class="lbl">Contrato actual</span><b style="font-size:22px">${esc(team(k.team).name)}</b>
+<div class="offer-kv"><span>Sueldo</span><b>${fmtMoney(k.salary)}/año</b><span>Hasta</span><b>Temporada ${k.until}</b><span>Rol</span><b>${k.role === "primer" ? "Primer piloto" : "Igualdad de trato"}</b><span>Por victoria</span><b>${fmtMoney(k.bonus.win)}</b><span>Por podio</span><b>${fmtMoney(k.bonus.podium)}</b><span>Por título</span><b>${fmtMoney(k.bonus.title)}</b></div></div></div>`];
+  if (c.pending) out.push(`<div class="banner" style="margin-top:12px">🔁<div>Has firmado con <b>${esc(team(c.pending.team).name)}</b> para la temporada ${c.pending.season}: ${fmtMoney(c.pending.salary)} al año durante ${c.pending.years} ${c.pending.years === 1 ? "temporada" : "temporadas"}. El cambio se hará al cerrar esta temporada.</div></div>`);
+  const open = c.inbox.filter((m) => (m.type === "offer" || m.type === "renewal") && m.status === "new");
+  if (open.length) out.push(sec("Ofertas sobre la mesa", `<div class="group">${open.map((m) => `<button class="list-btn" data-act="push" data-arg="mail:${esc(m.id)}">${crest(m.data.team, 34)}<span class="t">${esc(team(m.data.team).name)}${m.type === "renewal" ? " (renovación)" : ""}<small>${fmtMoney(m.data.salary)}/año, ${m.data.years} ${m.data.years === 1 ? "temporada" : "temporadas"}, ${m.data.role === "primer" ? "primer piloto" : "igualdad"}${m.expires ? `. Caduca tras la ronda ${m.expires}` : ""}</small></span>${ICON.chev}</button>`).join("")}</div>`));
+  if (S.canWrite && !c.pending) {
+    const done = doneRounds(core).length;
+    const canRaise = c.askedRaise !== core.season && !c.inbox.some((m) => m.type === "renewal" && m.status === "new");
+    const canSearch = c.agent && (!c.agentSearch || c.agentSearch.season !== core.season || done - c.agentSearch.r >= 3) && done < core.totalRounds;
+    out.push(sec("Mover el mercado", `<div class="group">
+<button class="list-btn" data-act="ask-raise" ${canRaise ? "" : "disabled"}>📈<span class="t">Pedir una mejora a ${esc(team(k.team).short)}<small>${canRaise ? "Una vez por temporada. Mejor si vas bien y la confianza es alta." : "Ya lo has pedido esta temporada."}</small></span>${ICON.chev}</button>
+<button class="list-btn" data-act="agent-search" ${canSearch ? "" : "disabled"}>🔎<span class="t">Que tu representante busque equipo<small>${!c.agent ? "Necesitas un representante (tienda)." : canSearch ? "Te traerá ofertas al correo." : "Puedes volver a pedirlo en unas carreras."}</small></span>${ICON.chev}</button></div>`));
+  }
+  out.push(sec("Tu valor", tiles([{ k: "valor de mercado", v: fmtMoney(marketValue(core)), cls: "hl" }, { k: "fama", v: NF.format(c.fame) }, { k: "confianza del equipo", v: c.trust }])));
+  out.push(sec("Patrocinios personales", c.sponsors.length ? `<div class="group">${c.sponsors.map((s) => `<div class="list-btn" style="cursor:default"><span class="li-ic">💼</span><span class="t">${esc(s.name)}<small>${fmtMoney(s.perRace)} por carrera, quedan ${s.left}</small></span></div>`).join("")}</div>` : `<div class="group" style="padding:14px 16px">Sin patrocinios activos. Llegan al correo cuando tu fama crece.</div>`));
+  const mates = { agent: ["Sin representante", "Nivel 1", "Nivel 2", "Nivel 3"], cm: ["Sin community manager", "Nivel 1", "Nivel 2", "Nivel 3"] };
+  out.push(sec("Tu equipo personal", `<div class="group kv"><div class="k">Representante</div><div class="v">${c.agent ? AGENT_NAME + ", " + mates.agent[c.agent].toLowerCase() : mates.agent[0]}</div><div class="k">Redes sociales</div><div class="v">${mates.cm[c.cm || 0]}</div></div>`));
+  return { title: "Contrato", html: out.join("") };
+}
+function financeScreen() {
+  const core = S.core;
+  const c = careerView(core);
+  const season = c.ledger.filter((l) => l.season === core.season);
+  const inc = season.filter((l) => l.amount > 0).reduce((a, l) => a + l.amount, 0);
+  const exp = season.filter((l) => l.amount < 0).reduce((a, l) => a + l.amount, 0);
+  return { title: "Dinero", html: `<div class="money-hero"><span>Saldo</span><b class="num">${fmtMoney(c.money)}</b><small>Patrimonio total: ${fmtMoney(netWorth(core))}</small></div>
+${tiles([{ k: `ingresos T${core.season}`, v: fmtMoney(inc), cls: "hl" }, { k: `gastos T${core.season}`, v: fmtMoney(-exp) }, { k: "por carrera de sueldo", v: fmtMoney(c.contract.salary / (core.totalRounds || 20)) }])}
+${sec("Movimientos", `<div class="group ledger">${c.ledger.slice(0, 50).map((l) => `<div class="led"><span>${esc(l.label)}<small>${l.r ? `Ronda ${l.r}, ` : ""}temporada ${l.season}</small></span><b class="num ${l.amount < 0 ? "neg" : "pos"}">${l.amount < 0 ? "" : "+"}${fmtMoney(l.amount)}</b></div>`).join("")}</div>`)}
+<div class="row-btns sec"><button class="btn btn-red" data-act="push" data-arg="shop:">🛍️ Ir a la tienda</button></div>` };
+}
+function shopScreen() {
+  const core = S.core;
+  const c = careerView(core);
+  const cats = [["carrera", "Mejoras de carrera", "Hacen crecer tu fama y mejoran tus ofertas."], ["marca", "Marca personal", "Más fama y nuevos ingresos."], ["fundacion", "Fundación Arévalo", "Reputación y confianza del equipo."], ["lujo", "Lujos", "Tu vitrina de éxito. Cuentan como patrimonio."]];
+  const item = (it) => {
+    const owned = c.owned.includes(it.id) && !it.repeat;
+    const locked = it.needs && !c.owned.includes(it.needs);
+    const cant = c.money < it.price;
+    return `<div class="shop-it${owned ? " owned" : ""}"><span class="si-ic">${it.icon}</span><span class="si-t"><b>${esc(it.name)}</b><small>${esc(it.desc || (it.fame ? `+${NF.format(it.fame)} de fama${it.trust ? `, +${it.trust} de confianza` : ""}` : ""))}</small></span>
+${owned ? `<span class="badge q">Tuyo</span>` : `<button class="btn btn-sm ${cant || locked ? "btn-ghost" : "btn-red"}" data-act="shop-buy" data-arg="${it.id}" ${cant || locked || !S.canWrite ? "disabled" : ""}>${locked ? "Bloqueado" : fmtMoney(it.price)}</button>`}</div>`;
+  };
+  return { title: "Tienda", html: `<div class="money-hero sm"><span>Saldo disponible</span><b class="num">${fmtMoney(c.money)}</b></div>
+${cats.map(([k, t2, s2]) => sec(t2, `<p class="note" style="margin:-4px 0 8px">${s2}</p><div class="group">${SHOP.filter((i) => i.cat === k).map(item).join("")}</div>`)).join("")}
+${sec("Tu vitrina", c.owned.filter((id) => (SHOP.find((x) => x.id === id) || {}).cat === "lujo").length ? `<div class="vitrina">${c.owned.map((id) => SHOP.find((x) => x.id === id)).filter((x) => x && x.cat === "lujo").map((x) => `<span>${x.icon}<small>${esc(x.name)}</small></span>`).join("")}</div>` : `<div class="group" style="padding:14px 16px">Todavía vacía.</div>`)}` };
+}
+async function buyItem(id) {
+  const it = SHOP.find((x) => x.id === id);
+  const c = careerView(S.core);
+  if (!it || c.money < it.price) { toast("No tienes saldo suficiente"); return; }
+  await mutateCore((core) => {
+    const k = careerOf(core);
+    addLedger(k, "shop", core.season, null, `Compra: ${it.name}`, -it.price);
+    if (!it.repeat) k.owned.push(it.id);
+    if (it.fame) addFame(k, it.fame);
+    if (it.trust) addTrust(k, it.trust);
+    if (/^agente\d/.test(it.id)) k.agent = Number(it.id.slice(-1));
+    if (/^cm\d/.test(it.id)) k.cm = Number(it.id.slice(-1));
+  }).catch(() => null);
+  toast(`${it.icon} ${it.name}: ¡hecho!`);
+  if (it.cat === "lujo" && it.price >= 1000000) {
+    const g = newsRng(it.id + Date.now());
+    const art = makeArticle(S.core, null, "flash", null, { id: `s${S.core.season}-shop-${it.id}-${Date.now().toString(36)}`, auto: true, color: "#FF3EA5", kicker: "Paddock Confidencial", title: g() < 0.5 ? `EL NUEVO CAPRICHO DE ARÉVALO` : `ARÉVALO SE DA UN LUJO`, subtitle: `${it.name}: el piloto de Aurelia disfruta de su éxito.`, sections: [{ heading: "🤫 Lo último", body: `Según ha sabido Paddock Confidencial, Andrés Arévalo se ha dado un capricho: ${it.name.toLowerCase()}. En el paddock ya hay quien bromea con que las victorias se notan.` }], stats: null, social: [{ who: "fan", name: "Pepe Box Box", handle: "boxbox_pepe", text: "Mucho lujo y mucho yate… a ver el domingo 🙄", likes: 800, reposts: 40, replies: 90 }] });
+    await Store.saveArticle(art).catch(() => null);
+  }
+  render();
+}
+
+/* ---------- casco ---------- */
+const HELMET_COLORS = ["#7DD3FC", "#0284C7", "#0B2239", "#E10600", "#F2C14E", "#FFFFFF", "#111114", "#27F4D2", "#FF8000", "#8B3DFF", "#0E9F6E", "#FF3EA5", "#C0C7D1", "#B45309"];
+function helmetSheet(st) {
+  const h = st.h;
+  const c = careerView(S.core);
+  const sw = (key) => `<div class="swatches">${HELMET_COLORS.map((col) => `<button class="sw-c${h[key] === col ? " on" : ""}" style="background:${col}" data-act="helmet-set" data-arg="${key}|${col}" aria-label="Color ${col}"></button>`).join("")}</div>`;
+  return {
+    title: "Diseña tu casco",
+    body: `<div class="helmet-prev">${customHelmet(h, 170)}</div>
+<div class="field"><span class="lbl">Color principal</span>${sw("c1")}</div>
+<div class="field"><span class="lbl">Color del diseño</span>${sw("c2")}</div>
+<div class="field"><span class="lbl">Borde de la visera</span>${sw("c3")}</div>
+<div class="field"><span class="lbl">Diseño</span><div class="pats">${HELMET_PATTERNS.map((p) => { const owned = !p.price || c.owned.includes("pat-" + p.id); return `<button class="pat${h.pat === p.id ? " on" : ""}" data-act="helmet-set" data-arg="pat|${p.id}">${customHelmet(Object.assign({}, h, { pat: p.id }), 54)}<span>${esc(p.name)}</span><small>${owned ? "Disponible" : fmtMoney(p.price)}</small></button>`; }).join("")}</div></div>`,
+    foot: `<button class="btn btn-red btn-block" data-act="helmet-save">${(() => { const p = HELMET_PATTERNS.find((x) => x.id === h.pat); return p && p.price && !c.owned.includes("pat-" + p.id) ? `Comprar diseño y guardar (${fmtMoney(p.price)})` : "Guardar casco"; })()}</button>`
+  };
+}
+SHEETS.helmet = helmetSheet;
+
+/* ---------- logros ---------- */
+function achievementsScreen() {
+  const c = careerView(S.core);
+  const got = c.achievements || {};
+  const n = Object.keys(got).length;
+  return { title: "Logros", html: `<div class="money-hero sm"><span>Desbloqueados</span><b class="num">${n}/${ACHIEVEMENTS.length}</b></div>
+<div class="achs">${ACHIEVEMENTS.map((a) => { const g = got[a.id]; const where = g && g.r ? (() => { const rd = g.season === S.core.season ? roundOf(S.core, g.r) : null; const ci = rd && circuit(rd.gp); return `Temporada ${g.season}${ci ? ", " + ci.name : ""}`; })() : g ? `Temporada ${g.season}` : ""; return `<div class="ach${g ? " on" : ""}"><span class="ai">${a.icon}</span><b>${esc(a.name)}</b><small>${esc(g ? where : a.desc)}</small></div>`; }).join("")}</div>` };
+}
+
+/* ---------- gráficas ---------- */
+function pointsSeries(core, d) {
+  const done = doneRounds(core);
+  const prog = core.progress || {};
+  let cum = 0;
+  return done.map((rd) => {
+    const x = resOf(rd, d);
+    if (d === ME) cum += x ? (x.pts || 0) : 0;
+    const snap = prog[rd.r];
+    return snap && snap[d] != null ? snap[d] : d === ME ? cum : null;
+  });
+}
+function lineChart(core) {
+  const done = doneRounds(core);
+  if (!done.length) return `<div class="group" style="padding:14px 16px">Aún no hay carreras.</div>`;
+  const ids = [ME].concat(driverTable(core).map((r) => r.id).filter((d) => d !== ME).slice(0, 4));
+  const series = ids.map((d) => ({ d, pts: pointsSeries(core, d) }));
+  const max = Math.max(10, ...series.flatMap((s) => s.pts.filter((v) => v != null)));
+  const W = 340, H = 220, L = 34, B = 26, T = 10, R = 10;
+  const X = (i) => L + (done.length === 1 ? (W - L - R) / 2 : (i * (W - L - R)) / (done.length - 1));
+  const Y = (v) => T + (1 - v / max) * (H - T - B);
+  const grid = [0, 0.25, 0.5, 0.75, 1].map((f) => `<line x1="${L}" x2="${W - R}" y1="${Y(max * f)}" y2="${Y(max * f)}" class="cg"/><text x="${L - 6}" y="${Y(max * f) + 4}" class="ct" text-anchor="end">${Math.round(max * f)}</text>`).join("");
+  const xs = done.map((rd, i) => `<text x="${X(i)}" y="${H - 8}" class="ct" text-anchor="middle">R${rd.r}</text>`).join("");
+  const lines = series.slice().reverse().map((s) => {
+    const pts = s.pts.map((v, i) => (v == null ? null : `${X(i).toFixed(1)},${Y(v).toFixed(1)}`)).filter(Boolean);
+    if (!pts.length) return "";
+    const col = s.d === ME ? "var(--aurelia)" : tcolor(teamOf(core, s.d));
+    return `<polyline points="${pts.join(" ")}" fill="none" stroke="${col}" stroke-width="${s.d === ME ? 3.5 : 2}" stroke-linejoin="round" stroke-linecap="round"/>${pts.length ? `<circle cx="${pts[pts.length - 1].split(",")[0]}" cy="${pts[pts.length - 1].split(",")[1]}" r="${s.d === ME ? 4.5 : 3}" fill="${col}"/>` : ""}`;
+  }).join("");
+  return `<div class="group chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolución de los puntos">${grid}${xs}${lines}</svg>
+<div class="legend">${series.map((s) => `<span><i style="background:${s.d === ME ? "var(--aurelia)" : tcolor(teamOf(core, s.d))}"></i>${esc(LN(s.d))}</span>`).join("")}</div></div>`;
+}
+function positionsChart(core) {
+  const done = core.rounds.filter((r) => r.race || r.quali);
+  if (!done.length) return "";
+  const n = DRIVER_IDS.length;
+  const W = 340, H = 220, L = 30, B = 26, T = 10, R = 10;
+  const X = (i) => L + (done.length === 1 ? (W - L - R) / 2 : (i * (W - L - R)) / (done.length - 1));
+  const Y = (p) => T + ((p - 1) / (n - 1)) * (H - T - B - 14);
+  const grid = [1, 5, 10, 15, 20].map((p) => `<line x1="${L}" x2="${W - R}" y1="${Y(p)}" y2="${Y(p)}" class="cg"/><text x="${L - 6}" y="${Y(p) + 4}" class="ct" text-anchor="end">P${p}</text>`).join("");
+  const xs = done.map((rd, i) => `<text x="${X(i)}" y="${H - 8}" class="ct" text-anchor="middle">R${rd.r}</text>`).join("");
+  const dots = done.map((rd, i) => {
+    const q = qOf(rd, ME), x = resOf(rd, ME);
+    let s = "";
+    if (q) s += `<circle cx="${X(i)}" cy="${Y(q)}" r="4.5" fill="none" stroke="var(--purple)" stroke-width="2"/>`;
+    if (x && finished(x)) s += `<circle cx="${X(i)}" cy="${Y(x.pos)}" r="5.5" fill="${x.pos === 1 ? "#F2C14E" : "var(--aurelia)"}"/>`;
+    else if (x) s += `<text x="${X(i)}" y="${H - B - 2}" class="ct dnf" text-anchor="middle">✕</text>`;
+    if (q && x && finished(x)) s += `<line x1="${X(i)}" x2="${X(i)}" y1="${Y(q)}" y2="${Y(x.pos)}" stroke="var(--line-2)" stroke-width="1.5"/>`;
+    return s;
+  }).join("");
+  return `<div class="group chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Salida y llegada por carrera">${grid}${xs}${dots}</svg>
+<div class="legend"><span><i style="background:transparent;border:2px solid var(--purple)"></i>Clasificación</span><span><i style="background:var(--aurelia)"></i>Carrera</span><span><i style="background:#F2C14E"></i>Victoria</span><span>✕ Abandono</span></div></div>`;
+}
+function chartsScreen() {
+  const core = S.core;
+  return { title: "Tus gráficas", html: sec("El Mundial, carrera a carrera", lineChart(core) + `<p class="note">Tus puntos y los de los cuatro primeros. Las líneas de los rivales empiezan cuando hay datos del Mundial completo.</p>`) + sec("Salida y llegada", positionsChart(core)) };
+}
+
+/* ---------- leyendas ---------- */
+function legendsBody(core) {
+  const key = S.ui.legSort || "titles";
+  const L = legendsTable(core, key);
+  const lab = { titles: "Mundiales", wins: "Victorias", podiums: "Podios", poles: "Poles", pts: "Puntos" };
+  const unit = lab[key].toLowerCase();
+  const one = { titles: "Mundial", wins: "victoria", podiums: "podio", poles: "pole", pts: "punto" }[key];
+  const gap = L.above ? r1(L.above[key] - L.me[key]) : 0;
+  const tie = () => {
+    if (key === "titles") { const w = L.above.wins - L.me.wins + 1; return w > 0 ? `empatáis en Mundiales y el desempate va por victorias: te ${w === 1 ? "falta" : "faltan"} <b>${w} ${w === 1 ? "victoria" : "victorias"}</b> para superarle` : "le superarás en cuanto sumes un podio más"; }
+    if (key === "wins") return "empatáis en victorias y el desempate va por Mundiales: te falta <b>1 Mundial</b> para superarle";
+    return `empatáis en ${unit}; el desempate va por Mundiales y victorias`;
+  };
+  const need = L.above ? (gap > 0 ? `te ${gap === 1 ? "falta" : "faltan"} <b>${fmt(gap)} ${gap === 1 ? one : unit}</b> para igualarle` : tie()) : "";
+  const next = !L.inTop ? `Aún no estás entre los 20 mejores. Para entrar tienes que superar a <b>${esc(L.above.name)}</b>: ${need}.`
+    : L.above ? `Estás en el puesto <b>${L.pos}</b>. Siguiente objetivo, <b>${esc(L.above.name)}</b>: ${need}.` : "¡Eres el número uno de la historia!";
+  return `<p class="lede" style="margin:0 0 10px">Los 20 mejores pilotos de la historia de la Fórmula 1 con sus datos reales. Y tú, subiendo.</p>
+<div class="filters" role="toolbar" aria-label="Ordenar leyendas">${Object.entries(lab).map(([k, l]) => `<button data-act="seg" data-arg="legSort:${k}" aria-pressed="${key === k}">${l}</button>`).join("")}</div>
+<div class="banner" style="margin-bottom:10px">🎯<div>${next}</div></div>
+<div class="group">${L.rows.map((r, i) => `<div class="srow${r.me ? " me" : ""}" style="cursor:default"><span class="pos num">${i + 1}</span><span class="lg-f">${r.flag}</span>
+<span class="who"><span class="dname"><span class="ln">${esc(r.name)}</span></span><small>${r.titles} 🏆, ${r.wins} V, ${r.podiums} podios, ${r.poles} poles, ${r.gp} GP</small></span><span class="val"><b class="num">${fmt(r[key])}</b><small>${lab[key].toLowerCase()}</small></span></div>`).join("")}</div>
+${L.inTop ? "" : `<p class="lbl" style="margin:14px 2px 8px">Tu carrera</p><div class="group"><div class="srow me" style="cursor:default"><span class="pos num">—</span><span class="lg-f">🇪🇸</span><span class="who"><span class="dname"><span class="ln">Andrés Arévalo</span></span><small>${L.me.titles} 🏆, ${L.me.wins} V, ${L.me.podiums} podios, ${L.me.poles} poles, ${L.me.gp} GP</small></span><span class="val"><b class="num">${fmt(L.me[key])}</b><small>${unit}</small></span></div></div>`}
+<p class="note">Datos reales de su carrera completa en la F1 (los pilotos en activo, hasta el GP de España 2026). Tu fila suma todas tus temporadas en tu universo.</p>`;
+}
+function legendsScreen() { return { title: "Leyendas", html: legendsBody(S.core) }; }
+function galleryScreen() { return { title: "Galería", html: `<p class="lede" style="margin:0 0 12px">Tus capturas de la PS5. Pásalas al iPhone (por ejemplo, con la app PlayStation) y añádelas desde cada Gran Premio. Se guardan en este dispositivo y no van en la copia de seguridad.</p>${galleryBlock("*", "Todas tus capturas")}` }; }
+
+/* ---------- rueda de prensa ---------- */
+function openPress(r) {
+  const core = S.core;
+  const round = roundOf(core, Number(r));
+  if (!round || !round.race) return;
+  openSheet({ type: "press", r: Number(r), qs: pressQuestions(core, round), answers: {} });
+}
+function pressSheet(st) {
+  return {
+    title: "Rueda de prensa",
+    body: `<p class="lede" style="margin:0 0 12px">Elige el tono de cada respuesta. Lo que digas saldrá en la prensa y tendrá consecuencias: fama, rivalidades y la confianza del equipo.</p>
+${st.qs.map((q, i) => `<div class="pq"><div class="pq-q"><b>${esc(MEDIA[q.by] ? MEDIA[q.by].journalist : q.by)}</b> <span class="muted">(${esc(MEDIA[q.by] ? MEDIA[q.by].name : "")})</span><p>${esc(q.q)}</p></div>
+${q.opts.map((o, j) => `<button class="pa${st.answers[i] === j ? " on" : ""} t-${o.tone === "diplomático" ? "dip" : o.tone === "humilde" ? "hum" : "pro"}" data-act="press-pick" data-arg="${i}|${j}"><span class="tone">${o.tone}</span>${esc(o.a)}</button>`).join("")}</div>`).join("")}`,
+    foot: `<button class="btn btn-red btn-block" data-act="press-send" ${Object.keys(st.answers).length < st.qs.length ? "disabled" : ""}>Responder</button><button class="btn btn-ghost btn-block" data-act="press-skip">Saltarse la rueda de prensa</button>`
+  };
+}
+SHEETS.press = pressSheet;
+async function sendPress(skip) {
+  const st = S.sheet;
+  const r = st.r;
+  const core0 = S.core;
+  const key = `${core0.season}-${r}`;
+  const main = S.news.find((a) => a.id === `s${core0.season}-r${r}-race-auto`) || findArticle(core0.season, r, "race");
+  let hot = null;
+  await mutateCore((core) => {
+    const c = careerOf(core);
+    c.press[key] = { done: true, skipped: !!skip };
+    if (skip) { addFame(c, -0.3); return; }
+    const mate = teammatesOf(core, ME)[0];
+    st.qs.forEach((q, i) => {
+      const o = q.opts[st.answers[i]];
+      const fx = TONE_FX[o.tone];
+      addFame(c, fx.fame);
+      addTrust(c, fx.trust + (o.trust || 0));
+      const target = q.id === "mate" ? mate : q.target;
+      if (target && fx.heat) heatBump(core, target, fx.heat);
+      if (o.tone === "provocador" && !hot) hot = { q, o };
+    });
+  }).catch(() => null);
+  if (!skip && main) {
+    const a = clone(main);
+    a.interviews = (a.interviews || []).filter((iv) => iv.speaker !== fullName(ME));
+    a.interviews = st.qs.map((q, i) => ({ speaker: fullName(ME), team: teamOf(S.core, ME), by: q.by, q: q.q, a: q.opts[st.answers[i]].a })).concat(a.interviews);
+    await Store.saveArticle(a).catch(() => null);
+    if (hot) {
+      const tgt = hot.q.id === "mate" ? teammatesOf(S.core, ME)[0] : hot.q.target;
+      const g = newsRng(key + "press");
+      const art = makeArticle(S.core, roundOf(S.core, r), "flash", null, {
+        id: `s${S.core.season}-r${r}-xpress-auto`, t: main.t + 1, auto: true, color: "#E10600", stats: null,
+        kicker: "Rueda de prensa", title: g() < 0.5 ? "LA FRASE DE ARÉVALO QUE INCENDIA EL PADDOCK" : "ARÉVALO, SIN PELOS EN LA LENGUA",
+        subtitle: `«${hot.o.a}»`,
+        sections: [{ heading: "🎙️ Lo que dijo", body: `Preguntado por ${MEDIA[hot.q.by] ? MEDIA[hot.q.by].journalist : "la prensa"} («${hot.q.q}»), Andrés Arévalo respondió sin rodeos: «${hot.o.a}»` }, { heading: "🔥 La reacción", body: tgt ? `En el entorno de ${fullName(tgt)} no ha sentado nada bien. La rivalidad sube de temperatura.` : "Las redes se han dividido entre quienes aplauden su personalidad y quienes le piden más humildad." }],
+        social: [tgt ? { who: "driver", id: tgt, text: g() < 0.5 ? "Hablar es fácil. Nos vemos en la pista." : "Respeto a todo el mundo. En la pista se verá.", likes: 300000, reposts: 30000, replies: 12000 } : null, { who: "fan", name: "Pepe Box Box", handle: "boxbox_pepe", text: "Se le está subiendo a la cabeza 🙄", likes: 2400, reposts: 200, replies: 600 }, { who: "fan", name: "Aurelia Ultras", handle: "aurelia_ultras", text: "ASÍ SE HABLA 🔥💙", likes: 5200, reposts: 800, replies: 300 }].filter(Boolean)
+      });
+      await Store.saveArticle(art).catch(() => null);
+    }
+  }
+  closeSheet();
+  if (main) openArticle(main.id);
+  toast(skip ? "Te has saltado la rueda de prensa" : "Tus respuestas ya están en la prensa");
+}
+
+/* ---------- piloto del día ---------- */
+function dotdBlock(a) {
+  if (a.kind !== "race" || !S.core || a.season !== S.core.season) return "";
+  const round = roundOf(S.core, a.r);
+  if (!round || !round.race) return "";
+  const key = `${a.season}-${a.r}`;
+  const v = careerView(S.core).dotd[key];
+  const fin = Object.entries(round.race.res).filter(([, x]) => finished(x)).sort((x, y) => x[1].pos - y[1].pos).map(([id]) => id);
+  const cands = [...new Set(fin.slice(0, 6).concat([ME, teammatesOf(S.core, ME)[0]]).filter((d) => d && round.race.res[d]))];
+  if (!cands.length) return "";
+  if (v) return `<h2>🗳️ Piloto del día</h2><div class="group dotd">${v.pct.map(([id, p]) => `<div class="dd-r${id === v.winner ? " win" : ""}"><span>${esc(fullName(id))}${id === v.vote ? " <small>(tu voto)</small>" : ""}</span><div class="dd-b"><i style="width:${p}%;background:${tcolor(teamOf(S.core, id))}"></i></div><b class="num">${p}%</b></div>`).join("")}</div>`;
+  return `<h2>🗳️ Piloto del día</h2><p class="note" style="margin-top:0">¿Quién ha hecho la mejor carrera? Vota y mira qué opina la afición.</p><div class="chips">${S.canWrite ? cands.map((id) => `<button class="chip" data-act="dotd-vote" data-arg="${a.r}|${id}">${esc(LN(id))}</button>`).join("") : ""}</div>`;
+}
+async function voteDotd(r, id) {
+  const core0 = S.core;
+  const round = roundOf(core0, r);
+  const g = newsRng(`${core0.season}-${r}-dotd`);
+  const w = {};
+  Object.entries(round.race.res).forEach(([d, x]) => {
+    let s = finished(x) ? Math.max(2, 28 - x.pos * 2.5) : 1;
+    const gr = gridOf(round, d);
+    if (finished(x) && gr && gr - x.pos >= 4) s += (gr - x.pos) * 2.5;
+    if (d === ME) s += careerView(core0).fame / 8;
+    w[d] = s * (0.7 + g() * 0.6);
+  });
+  w[id] = (w[id] || 5) + 30;
+  const tot = Object.values(w).reduce((x, y) => x + y, 0);
+  const pct = Object.entries(w).map(([d, s]) => [d, Math.round((s / tot) * 100)]).sort((x, y) => y[1] - x[1]).slice(0, 4);
+  const winner = pct[0][0];
+  await mutateCore((core) => { const c = careerOf(core); c.dotd[`${core.season}-${r}`] = { vote: id, winner, pct }; if (winner === ME) addFame(c, 1); }).catch(() => null);
+  toast(winner === ME ? "¡Eres el Piloto del día! +fama" : `Piloto del día: ${fullName(winner)}`);
+  render();
+}
+
+/* ---------- tarjeta para compartir ---------- */
+function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+async function shareCard(r) {
+  const core = S.core;
+  const round = roundOf(core, Number(r));
+  if (!round || !round.race) return;
+  const c = circuit(round.gp);
+  const x = resOf(round, ME);
+  const cv = document.createElement("canvas");
+  cv.width = 1080; cv.height = 1350;
+  const g = cv.getContext && cv.getContext("2d");
+  if (!g) { toast("Este dispositivo no puede crear la imagen"); return; }
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) { /* sin fuentes */ }
+  const tc = tcolor(teamOf(core, ME));
+  const grd = g.createLinearGradient(0, 0, 1080, 1350);
+  grd.addColorStop(0, "#1b1b2a"); grd.addColorStop(1, "#07070c");
+  g.fillStyle = grd; g.fillRect(0, 0, 1080, 1350);
+  g.globalAlpha = 0.05; g.strokeStyle = "#fff"; g.lineWidth = 6;
+  for (let i = -1400; i < 1400; i += 44) { g.beginPath(); g.moveTo(i, 1350); g.lineTo(i + 700, 0); g.stroke(); }
+  g.globalAlpha = 1;
+  g.fillStyle = tc; g.fillRect(0, 0, 1080, 14);
+  const D = "'Barlow Condensed', 'Arial Narrow', sans-serif";
+  g.textBaseline = "alphabetic";
+  ["#E10600", "#B80500", "#7E0400"].forEach((col, i) => { g.fillStyle = col; g.beginPath(); const x0 = 70 + i * 26; g.moveTo(x0 + 22, 70); g.lineTo(x0 + 38, 70); g.lineTo(x0 + 16, 122); g.lineTo(x0, 122); g.closePath(); g.fill(); });
+  g.fillStyle = "#fff"; g.font = `italic 900 58px ${D}`; g.fillText("PADDOCK", 170, 120);
+  g.font = "200px sans-serif"; g.globalAlpha = 0.22; g.fillText(c ? c.flag : "🏁", 700, 330); g.globalAlpha = 1;
+  g.fillStyle = "rgba(255,255,255,.72)"; g.font = `700 40px ${D}`;
+  g.fillText(`TEMPORADA ${core.season}, RONDA ${round.r}`, 70, 250);
+  g.fillStyle = "#fff"; g.font = `italic 900 104px ${D}`;
+  g.fillText((c ? c.gp : "Gran Premio").toUpperCase(), 70, 350, 940);
+  const big = x ? (finished(x) ? "P" + x.pos : String(x.st).toUpperCase()) : "—";
+  g.fillStyle = x && finished(x) && x.pos === 1 ? "#F2C14E" : "#fff";
+  g.font = `italic 900 440px ${D}`;
+  g.fillText(big, 60, 780);
+  try {
+    const svgStr = drvHelmet(ME, 360).replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ');
+    const img = await loadImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr));
+    g.drawImage(img, 650, 420, 360, 360);
+  } catch (e) { /* sin casco */ }
+  g.fillStyle = "#fff"; g.font = `italic 900 84px ${D}`; g.fillText("ANDRÉS ARÉVALO", 70, 900);
+  g.fillStyle = tc; g.font = `700 44px ${D}`; g.fillText(team(teamOf(core, ME)).name.toUpperCase(), 70, 960);
+  const lines = [];
+  const gr = gridOf(round, ME);
+  if (gr) lines.push(`Salida: P${gr}`);
+  if (x && x.pts) lines.push(`+${fmt(x.pts)} puntos`);
+  if (x && x.fl) lines.push("Vuelta rápida");
+  const row = driverTable(core).find((z) => z.id === ME);
+  if (row) lines.push(`Mundial: P${row.pos}, ${fmt(row.pts)} pts`);
+  g.fillStyle = "rgba(255,255,255,.85)"; g.font = `700 42px ${D}`;
+  lines.forEach((l, i) => g.fillText(l, 70, 1040 + i * 54));
+  const pod = [1, 2, 3].map((p) => Object.keys(round.race.res).find((d) => finished(round.race.res[d]) && round.race.res[d].pos === p)).filter(Boolean);
+  if (pod.length) { g.fillStyle = "rgba(255,255,255,.6)"; g.font = `700 36px ${D}`; g.fillText("PODIO: " + pod.map((d, i) => `${i + 1}. ${LN(d).toUpperCase()}`).join("   "), 70, 1290, 940); }
+  const blob = await new Promise((res) => cv.toBlob(res, "image/png"));
+  const url = URL.createObjectURL(blob);
+  openSheet({ type: "card", url, blob, name: `paddock-T${core.season}-R${round.r}.png` });
+}
+function cardSheet(st) {
+  return { title: "Tarjeta para compartir", body: `<img class="photo-big" src="${st.url}" alt="Tarjeta del resultado"><p class="note">Si no puedes compartir, mantén pulsada la imagen para guardarla en Fotos.</p>`,
+    foot: navigator.share ? `<button class="btn btn-red btn-block" data-act="card-share">Compartir</button>` : "" };
+}
+SHEETS.card = cardSheet;
+
+/* ---------- acciones ---------- */
+async function mailAction(fn) { await mutateCore(fn).catch(() => null); render(); }
+const CAREER_ACTIONS = {
+  "press-open": (a) => openPress(a),
+  "press-pick": (a) => { const [i, j] = a.split("|").map(Number); S.sheet.answers[i] = j; renderSheet(); },
+  "press-send": () => sendPress(false),
+  "press-skip": () => sendPress(true),
+  "dotd-vote": (a) => { const [r, id] = a.split("|"); voteDotd(Number(r), id); },
+  "share-card": (a) => shareCard(a),
+  "card-share": async () => { const st = S.sheet; try { const f = new File([st.blob], st.name, { type: "image/png" }); if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f] }); else toast("Mantén pulsada la imagen para guardarla"); } catch (e) { /* cancelado */ } },
+  "photo-open": async (a) => { const p = await Media.get(a).catch(() => null); if (p) openSheet({ type: "photo", id: a, url: Media.url(p), blob: p.blob }); },
+  "photo-del": async () => { const id = S.sheet.id; closeSheet(); await Media.del(id).catch(() => null); toast("Captura borrada"); hydrateGalleries(); },
+  "photo-share": async () => { const st = S.sheet; try { const f = new File([st.blob], "captura.jpg", { type: "image/jpeg" }); if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f] }); } catch (e) { /* cancelado */ } },
+  "helmet-open": () => { const c = careerView(S.core); openSheet({ type: "helmet", h: Object.assign({ c1: "#7DD3FC", c2: "#0B2239", c3: "#F2C14E", pat: "raya" }, c.helmet || {}) }); },
+  "helmet-set": (a) => { const [k, v] = a.split("|"); S.sheet.h[k] = v; renderSheet(); },
+  "helmet-save": async () => {
+    const h = Object.assign({}, S.sheet.h);
+    const p = HELMET_PATTERNS.find((x) => x.id === h.pat);
+    const c = careerView(S.core);
+    const cost = p && p.price && !c.owned.includes("pat-" + p.id) ? p.price : 0;
+    if (cost && c.money < cost) { toast("No tienes saldo para ese diseño"); return; }
+    closeSheet();
+    await mutateCore((core) => { const k = careerOf(core); if (cost) { addLedger(k, "shop", core.season, null, `Diseño de casco: ${p.name}`, -cost); k.owned.push("pat-" + p.id); addFame(k, 0.5); } k.helmet = h; }).catch(() => null);
+    toast("Casco nuevo listo 🪖");
+  },
+  "shop-buy": (a) => buyItem(a),
+  "mail-accept": async (id) => {
+    let news = null;
+    await mailAction((core) => {
+      const c = careerOf(core);
+      const m = c.inbox.find((x) => x.id === id);
+      if (!m || m.status !== "new") return;
+      if ((m.type === "offer") && c.pending) return;
+      if (m.type === "sponsor") { c.sponsors.push({ id: m.id, brand: m.data.brand, name: m.data.name, perRace: m.data.perRace, left: m.data.races }); m.status = "accepted"; addFame(c, 0.5); }
+      else { acceptOffer(core, m); news = m; }
+    });
+    if (news) await transferNews(news);
+    toast("Hecho");
+  },
+  "mail-reject": (id) => mailAction((core) => { const c = careerOf(core); const m = c.inbox.find((x) => x.id === id); if (m && m.status === "new") { m.status = "rejected"; if (m.type === "offer") addTrust(c, 2); } }),
+  "neg-set": (a) => {
+    const parts = a.split("|");
+    const id = parts[0], k = parts[1], v = parts.slice(2).join("|");
+    const m = careerView(S.core).inbox.find((x) => x.id === id);
+    if (!m) return;
+    const d = negDraft(m);
+    d[k] = k === "step" || k === "years" ? Number(v) : v;
+    render();
+  },
+  "neg-send": async (id) => {
+    const m0 = careerView(S.core).inbox.find((x) => x.id === id);
+    if (!m0) return;
+    const d = negDraft(m0);
+    const base = m0.data.salary;
+    const ask = { salary: base * (1 + NEG_STEPS[d.step]), years: d.years, role: d.role, leverage: d.leverage || null };
+    let res = null;
+    await mailAction((core) => { const c = careerOf(core); const m = c.inbox.find((x) => x.id === id); if (m && m.status === "new") { res = negotiate(core, m, ask); m.reply = res.text; } });
+    if (S.ui.neg) delete S.ui.neg[id];
+    render();
+    if (res) toast(res.ok === "yes" ? "¡Aceptan tus condiciones!" : res.ok === "half" ? "Contraoferta recibida" : "No aceptan");
+  },
+  "ask-raise": async () => {
+    let ok = false;
+    await mailAction((core) => { ok = askRaise(core); });
+    toast(ok ? "Aurelia te ha enviado una propuesta: mira el correo" : "Tu equipo no quiere hablar de dinero ahora");
+  },
+  "agent-search": async () => {
+    let n = 0;
+    await mailAction((core) => { n = agentSearch(core); });
+    toast(n ? `Tu representante te ha conseguido ${n === 1 ? "una oferta" : `${n} ofertas`}` : "Ahora mismo nadie mueve ficha");
+  },
+  "mail-choice": async (a) => {
+    const [id, i] = [a.slice(0, a.lastIndexOf("|")), Number(a.slice(a.lastIndexOf("|") + 1))];
+    let news = null;
+    await mailAction((core) => {
+      const c = careerOf(core);
+      const m = c.inbox.find((x) => x.id === id);
+      if (!m || m.status !== "new") return;
+      const d = DILEMMAS.find((x) => x.id === m.data.id);
+      const ch = d.choices[i];
+      applyFx(core, c, Object.assign({ label: d.subject }, ch.fx), m.data.rival);
+      m.status = "answered"; m.result = ch.res;
+      if (ch.news) news = { d, ch, m };
+    });
+    if (news) {
+      const art = makeArticle(S.core, null, "flash", null, { id: `s${S.core.season}-dil-${news.d.id}-${Date.now().toString(36)}`, auto: true, color: "#FF3EA5", stats: null, kicker: "Última hora", title: news.ch.news.title, subtitle: news.ch.news.sub, sections: [{ heading: "📰 Lo que se sabe", body: news.ch.res }], social: [{ who: "journalist", id: "confidencial", text: "Lo dijimos antes que nadie. 👀", likes: 12000, reposts: 3000, replies: 1500 }] });
+      await Store.saveArticle(art).catch(() => null);
+    }
+  }
+};
+async function transferNews(m) {
+  const o = m.data;
+  if (m.status !== "accepted") return;
+  const renewal = m.type === "renewal";
+  const art = makeArticle(S.core, null, "flash", null, {
+    id: `s${S.core.season}-deal-${o.team}-${Date.now().toString(36)}`, auto: true, color: renewal ? "#7DD3FC" : "#F2C14E", stats: null,
+    kicker: renewal ? "Renovación" : "¡Bombazo!",
+    title: renewal ? `ARÉVALO RENUEVA CON ${UP(team(o.team).name)}` : `¡ARÉVALO FICHARÁ POR ${UP(team(o.team).name)}!`,
+    subtitle: renewal ? `${o.years} temporadas más y ${fmtMoney(o.salary)} al año.` : `A partir de la temporada ${S.core.season + 1}: ${fmtMoney(o.salary)} al año durante ${o.years} ${o.years === 1 ? "temporada" : "temporadas"}.`,
+    sections: [{ heading: renewal ? "📝 El acuerdo" : "🔁 El fichaje", body: renewal ? `Andrés Arévalo seguirá en ${team(o.team).name}. Rol: ${o.role === "primer" ? "primer piloto" : "igualdad de trato"}.` : `Andrés Arévalo ha firmado con ${team(o.team).name} y cambiará de equipo al terminar la temporada. En Aurelia, la noticia ha caído como un jarro de agua fría.` }],
+    social: renewal ? [{ who: "team", id: o.team, text: "¡Seguimos juntos! 💙✍️", likes: 250000, reposts: 20000, replies: 8000 }] : [{ who: "team", id: o.team, text: `Welcome, Andrés! 🤝 #${S.core.season + 1}`, likes: 600000, reposts: 80000, replies: 40000 }, { who: "journalist", id: "confidencial", text: "Os lo avisamos. 😏", likes: 30000, reposts: 8000, replies: 3000 }]
+  });
+  await Store.saveArticle(art).catch(() => null);
+}
+
+Object.assign(SCREENS, { me: meScreen, inbox: inboxScreen, mail: mailScreen, contract: contractScreen, finance: financeScreen, shop: shopScreen, achievements: achievementsScreen, charts: chartsScreen, legends: legendsScreen, gallery: galleryScreen });
 
 /* ============================================================
    ACCIONES Y ARRANQUE
@@ -4779,6 +6287,9 @@ const ACTIONS = {
   "start-blank": async () => { S.core = blankCore(1); await Store.saveCore().catch(() => null); toast("Temporada 1 creada"); }
 };
 
+Object.assign(ACTIONS, CAREER_ACTIONS, {
+  "goto-inbox": () => { S.nav.tab = "me"; S.nav.stacks.me = [{ screen: "inbox", arg: "" }]; S.anim = "enter"; render(); window.scrollTo(0, 0); }
+});
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-act]");
   if (!el || el.disabled) return;
@@ -4790,6 +6301,7 @@ document.addEventListener("change", (e) => {
   const el = e.target;
   if (el.matches("[data-files]")) { addFiles(el.files); el.value = ""; return; }
   if (el.matches("[data-restore-file]")) { readRestoreFile(el.files && el.files[0]); return; }
+  if (el.matches("[data-photos]")) { addPhotos(el.dataset.photos, el.files); el.value = ""; return; }
   if (el.matches("[data-jump]") && S.sheet && S.sheet.type === "entry") {
     const st = S.sheet;
     const n = Number(el.value);
