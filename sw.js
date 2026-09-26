@@ -1,6 +1,6 @@
 /* Paddock: funciona sin conexión y siempre busca la última versión.
    Sube el número de versión al cambiar la app. */
-const CACHE = "paddock-v6";
+const CACHE = "paddock-v7";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./datos-iniciales.json",
   "./icons/icon-180.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/favicon-32.png"];
 

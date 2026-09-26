@@ -877,6 +877,9 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .pat-d { letter-spacing: 2px; color: var(--red); }
 .list-btn:disabled { opacity: .45; }
 
+.mchips .chip { font-size: 14px; }
+.mpick { margin-top: 10px; }
+
 </style>
 </head>
 <body>
@@ -921,12 +924,13 @@ async function loadInitialData() {
     S.news = sortNews(d.news || []);
     S.seasons = d.seasons || [];
     Local.write();
+    await mutateCore((core) => { refreshAchievements(core); }).catch(() => null);
     render();
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "6";
-const APP_DATE = "25 de septiembre de 2026";
+const APP_VERSION = "7";
+const APP_DATE = "26 de septiembre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
   /* Si llega una versión nueva, la app se recarga sola una vez para mostrarla. */
@@ -1232,7 +1236,7 @@ function applyRace(core, r, data, kind) {
   });
   Object.entries(contrib).forEach(([d, p]) => { if (!legacy || d in old) core.standings[d] = r1((core.standings[d] || 0) + p); });
   if (legacy) Object.keys(contrib).forEach((d) => { if (!(d in old)) delete contrib[d]; });
-  round[key] = { res, full: !!data.full, notes: data.notes || "" };
+  round[key] = { res, full: !!data.full, notes: data.notes || "", moments: Array.isArray(data.moments) ? data.moments : [] };
   round[ck] = contrib;
   if (legacy && data.full) { round.legacy = false; round[ck] = Object.fromEntries(Object.entries(res).filter(([, x]) => x.pts).map(([d, x]) => [d, x.pts])); }
   if (!data.full && !legacy) core.stale = { r };
@@ -1244,7 +1248,7 @@ function applyQuali(core, r, data) {
   const round = roundOf(core, r);
   const res = {};
   Object.entries(data.res || {}).forEach(([d, p]) => { if (DRIVERS[d] && p != null && p !== "") res[d] = Number(p); });
-  round.quali = { res, full: !!data.full, notes: data.notes || "" };
+  round.quali = { res, full: !!data.full, notes: data.notes || "", moments: Array.isArray(data.moments) ? data.moments : [] };
 }
 
 /* Sincroniza con la clasificación oficial del Mundial (foto o edición). */
@@ -2207,6 +2211,14 @@ const DECK = {
 DECK.es.rival = "Arévalo vuelve a imponerse en {P}."; DECK.it.rival = "Il pilota di Aurelia colpisce ancora a {P}.";
 DECK.en.rival = "Aurelia's rookie strikes again in {P}."; DECK.pt.rival = "Arévalo termina à frente de Senna em {P}.";
 DECK.fr.rival = "Le rookie d'Aurelia frappe encore à {P}."; DECK.nl.rival = "De rookie van Aurelia slaat weer toe in {P}.";
+const FP_MORE = {
+  es: { win: [["¡{L} MANDA EN {P}!"], ["¡{L}, DE CINE!"], ["¡{L} ARRASA!"]], streak: [["¡{L} NO TIENE FIN!"], ["¡Y VAN…! {L} LO HACE OTRA VEZ"]], podium: [["{L}, PODIO CON SABOR"], ["{L} SUBE AL CAJÓN EN {P}"]], points: [["{L} SUMA Y SIGUE"], ["{L}, PUNTOS DE ORO"]], nopoints: [["{L} SE ATASCA EN {P}"], ["TARDE PARA OLVIDAR PARA {L}"]], dnf: [["{L} SE QUEDA EN BLANCO"], ["JARRO DE AGUA FRÍA PARA {L}"]], pole: [["¡{L} VUELA EN {P}!"], ["{L}, EL MÁS RÁPIDO"]], qual: [["{L} ARRANCARÁ {N}.º EN {P}"], ["{L}, A REMONTAR DESDE LA {N}.ª PLAZA"]] },
+  it: { win: [["{L}, CHE SPETTACOLO!", "¡{L}, QUÉ ESPECTÁCULO!"], ["{L} DOMINA A {P}", "{L} DOMINA EN {P}"]], podium: [["{L} SALE SUL PODIO", "{L} SUBE AL PODIO"], ["{L}, UN PODIO CHE VALE ORO", "{L}, UN PODIO QUE VALE ORO"]], points: [["{L} RACCOGLIE PUNTI", "{L} SUMA PUNTOS"], ["{L}, SOLO PUNTI", "{L}, SOLO PUNTOS"]], nopoints: [["{L}, GIORNATA DA DIMENTICARE", "{L}, UN DÍA PARA OLVIDAR"], ["BUIO PER {L}", "OSCURIDAD PARA {L}"]], dnf: [["{L} FUORI: CHE BEFFA", "{L}, FUERA: QUÉ MALA SUERTE"], ["DRAMMA {L}", "DRAMA DE {L}"]], pole: [["{L} IN POLE!", "¡{L}, EN LA POLE!"]], qual: [["{L} SCATTERÀ {N}°", "{L} SALDRÁ {N}.º"]], rival: [["ARÉVALO, ANCORA LUI", "ARÉVALO, OTRA VEZ ÉL"], ["IL FENOMENO DI AURELIA", "EL FENÓMENO DE AURELIA"]] },
+  en: { win: [["{L} DOES IT IN {P}!", "¡{L} LO CONSIGUE EN {P}!"], ["GET IN THERE, {L}!", "¡VAMOS, {L}!"], ["{L} STORMS TO VICTORY", "{L} ARRASA HASTA LA VICTORIA"]], podium: [["{L} BAGS A PODIUM", "{L} SE LLEVA UN PODIO"], ["CHAMPAGNE FOR {L}", "CHAMPÁN PARA {L}"]], points: [["{L} GRINDS OUT POINTS", "{L} ARAÑA PUNTOS"], ["SOLID DAY FOR {L}", "DÍA SÓLIDO PARA {L}"]], nopoints: [["{L} LEFT FRUSTRATED", "{L}, FRUSTRADO"], ["NO JOY FOR {L}", "NADA QUE CELEBRAR PARA {L}"]], dnf: [["HEARTBREAK FOR {L}", "DESOLACIÓN PARA {L}"], ["{L} OUT!", "¡{L}, FUERA!"]], pole: [["{L} TAKES POLE!", "¡{L} SE LLEVA LA POLE!"]], qual: [["{L} LINES UP P{N}", "{L} SALDRÁ {N}.º"]], rival: [["ARÉVALO STRIKES AGAIN", "ARÉVALO ATACA DE NUEVO"], ["THE ROOKIE RULES", "EL NOVATO MANDA"]] },
+  pt: { win: [["{L} BRILHA EM {P}!", "¡{L} BRILLA EN {P}!"], ["QUE CORRIDA, {L}!", "¡QUÉ CARRERA, {L}!"]], podium: [["{L} SOBE AO PÓDIO", "{L} SUBE AL PODIO"], ["PÓDIO PARA {L}", "PODIO PARA {L}"]], points: [["{L} SOMA PONTOS", "{L} SUMA PUNTOS"], ["{L} FAZ O POSSÍVEL", "{L} HACE LO QUE PUEDE"]], nopoints: [["{L} DECEPCIONA", "{L} DECEPCIONA"], ["DOMINGO PARA ESQUECER", "UN DOMINGO PARA OLVIDAR"]], dnf: [["{L} FORA DA CORRIDA", "{L}, FUERA DE CARRERA"], ["TRISTEZA: {L} ABANDONA", "TRISTEZA: {L} ABANDONA"]], pole: [["{L} NA POLE!", "¡{L}, EN LA POLE!"]], qual: [["{L} LARGA EM {N}º", "{L} SALDRÁ {N}.º"]], rival: [["AYRTON ATRÁS DO NOVATO", "AYRTON, POR DETRÁS DEL NOVATO"], ["O NOVATO NÃO PARA", "EL NOVATO NO PARA"]] },
+  fr: { win: [["{L} TRIOMPHE À {P}", "{L} TRIUNFA EN {P}"], ["QUEL PILOTE, {L} !", "¡QUÉ PILOTO, {L}!"]], podium: [["{L} MONTE SUR LE PODIUM", "{L} SUBE AL PODIO"], ["UN PODIUM EN OR POUR {L}", "UN PODIO DE ORO PARA {L}"]], points: [["{L} MARQUE DES POINTS", "{L} SUMA PUNTOS"], ["{L}, SOLIDE", "{L}, SÓLIDO"]], nopoints: [["{L} PASSE À CÔTÉ", "{L} PASA DESAPERCIBIDO"], ["DIMANCHE NOIR POUR {L}", "DOMINGO NEGRO PARA {L}"]], dnf: [["{L} CONTRAINT À L'ABANDON", "{L}, OBLIGADO A ABANDONAR"], ["COUP DUR POUR {L}", "GOLPE DURO PARA {L}"]], pole: [["{L} EN POLE !", "¡{L}, EN LA POLE!"]], qual: [["{L} S'ÉLANCERA {N}E", "{L} SALDRÁ {N}.º"]], rival: [["LE ROOKIE D'AURELIA IMPRESSIONNE", "EL NOVATO DE AURELIA IMPRESIONA"]] },
+  nl: { win: [["{L} ZEGEVIERT IN {P}", "{L} TRIUNFA EN {P}"], ["WAT EEN RACE VAN {L}", "QUÉ CARRERA DE {L}"]], podium: [["{L} OP HET PODIUM IN {P}", "{L}, EN EL PODIO DE {P}"], ["PODIUMPLEK VOOR {L}", "PODIO PARA {L}"]], points: [["{L} SCOORT PUNTEN", "{L} SUMA PUNTOS"], ["{L} DOET WAT HIJ KAN", "{L} HACE LO QUE PUEDE"]], nopoints: [["{L} KOMT NIET IN DE PUNTEN", "{L} SE QUEDA SIN PUNTOS"], ["ZWARTE ZONDAG VOOR {L}", "DOMINGO NEGRO PARA {L}"]], dnf: [["{L} VALT UIT", "{L} ABANDONA"], ["DRAMA VOOR {L}", "DRAMA PARA {L}"]], pole: [["{L} PAKT POLE!", "¡{L} SE LLEVA LA POLE!"]], qual: [["{L} START ALS {N}E", "{L} SALDRÁ {N}.º"]], rival: [["ARÉVALO WINT ALWEER", "ARÉVALO GANA OTRA VEZ"]] }
+};
 const OUTLET_FOCUS = {
   cronometro: () => [ME],
   rettilineo: (core) => DRIVER_IDS.filter((d) => teamOf(core, d) === "ferrari" || DRIVERS[d].nat === "Italia"),
@@ -2246,13 +2258,16 @@ function makeFrontPages(g, core, ctx, kind) {
   const lang = (k) => MEDIA[k].lang;
   const L = (id) => UP(LN(id));
   const P = UP(ctx.place);
+  const vr = makeVary(core, g);
   const add = (outlet, focus, key, N) => {
     if (out.some((f) => f.outlet === outlet)) return;
     const lg = lang(outlet);
-    const tpl = (FP[lg] || FP.es)[key] || FP.es[key];
+    const base = (FP[lg] || FP.es)[key] || FP.es[key];
+    const opts = (base ? [[base, FP_ES[key] || FP_ES.points]] : []).concat(((FP_MORE[lg] || {})[key]) || []);
+    const [tpl, tes] = vr.pick(`fp-${lg}-${key}`, opts);
     const v = { L: L(focus), P, N };
     const headline = g.fill(tpl, v);
-    const es = lg === "es" ? "" : g.fill(FP_ES[key] || FP_ES.points, v);
+    const es = lg === "es" ? "" : g.fill(tes || FP_ES[key] || FP_ES.points, v);
     const dk = g.fill((DECK[lg] || DECK.es)[key === "streak" ? "win" : key] || "", v);
     out.push({ outlet, headline, es, deck: dk, focus, body: fpBody(g, core, ctx, outlet, focus, key, kind) });
   };
@@ -2396,12 +2411,18 @@ function updateRivalries(core, round) {
     if (note) r.note = note;
   };
   const me = ctx.me;
+  list.forEach((r) => { r.heat = Math.max(5, r.heat - 2); });
   if (ctx.mate && ctx.mateRes && me) {
     const mateAhead = finished(ctx.mateRes) && (!finished(me) || ctx.mateRes.pos < me.pos);
-    bump(ctx.mate, mateAhead ? 7 : 3, mateAhead ? `Senna se impuso en ${ctx.place} y el garaje de Aurelia está más dividido que nunca.` : null);
+    bump(ctx.mate, mateAhead ? 8 : 2, mateAhead ? `Senna se impuso en ${ctx.place} y el garaje de Aurelia está más dividido que nunca.` : null);
   }
   if (ctx.winner && ctx.winner !== ME && finished(me)) bump(ctx.winner, me.pos <= 3 ? 6 : 3, `${fullName(ctx.winner)} le ganó la partida en ${ctx.place}.`);
   if (finished(me)) ctx.fin.filter((f) => f.id !== ME && f.id !== ctx.mate && Math.abs(f.pos - me.pos) === 1).forEach((f) => bump(f.id, 2));
+  roundMoments(core, round, "race").forEach((m) => {
+    if (!m.who || m.who === ME || !["toque", "duelo", "ultimavuelta", "defensa"].includes(m.id)) return;
+    const notes = { toque: `El toque en ${ctx.place} ha dejado heridas abiertas entre los dos.`, duelo: `Su duelo en ${ctx.place} fue de los que se recuerdan.`, ultimavuelta: `${fullName(m.who)} no olvida el adelantamiento de la última vuelta en ${ctx.place}.`, defensa: `En ${ctx.place}, ${fullName(m.who)} se estrelló contra el muro defensivo de Arévalo.` };
+    bump(m.who, { toque: 12, duelo: 6, ultimavuelta: 8, defensa: 5 }[m.id], notes[m.id]);
+  });
   if (ctx.second && ctx.myRow && ctx.myRow.pos === 1) bump(ctx.second.id, 2, ctx.second.id === ctx.mate ? null : `${fullName(ctx.second.id)} es su perseguidor más directo en el Mundial.`);
   list.forEach((r) => { if (r.b !== ctx.mate && r.a !== ctx.mate && !ctx.res[r.a === ME ? r.b : r.a]) r.heat = Math.max(5, r.heat - 1); });
   core.narrative.rivalries = list.sort((a, b) => b.heat - a.heat).slice(0, 6);
@@ -2413,6 +2434,7 @@ function xArticle(core, round, key, t, o) {
 }
 function extraPieces(core, round, t0) {
   const g = NG(core, round, "extras");
+  const vr = makeVary(core, g);
   const ctx = raceCtx(core, round, "race");
   const cand = [];
   const cs = careerStats(core, S.seasons, ME);
@@ -2421,7 +2443,8 @@ function extraPieces(core, round, t0) {
   const tiny = (p) => Object.assign({ likes: g.int(500, 20000), reposts: g.int(50, 3000), replies: g.int(20, 1200) }, p);
 
   /* campeón matemático */
-  if (!ctx.stale && ctx.leader && ctx.second && ctx.leader.pts - ctx.second.pts > ctx.maxLeft) {
+  const champDone = S.news.some((a) => a.auto && a.season === core.season && a.r !== round.r && /-xchamp-auto$/.test(a.id));
+  if (!champDone && !ctx.stale && ctx.leader && ctx.second && ctx.leader.pts - ctx.second.pts > ctx.maxLeft) {
     const champ = ctx.leader.id;
     cand.push({ w: 100, key: "champ", o: {
       kicker: "¡Campeón del mundo!", color: "#F2C14E",
@@ -2439,14 +2462,14 @@ function extraPieces(core, round, t0) {
     const mateAhead = ctx.mateRes && finished(ctx.mateRes) && (!finished(ctx.me) || ctx.mateRes.pos < ctx.me.pos);
     cand.push({ w: mateAhead ? 40 : 18 + heat / 5, key: "aurelia", o: {
       kicker: "Aurelia, por dentro", color: "#7DD3FC",
-      title: mateAhead ? g.pick(["SENNA ENSEÑA LOS DIENTES", "EL TRICAMPEÓN CONTRAATACA", "SENNA RECUERDA QUIÉN ES"]) : g.pick(["LA GUERRA FRÍA DE AURELIA", "DOS GALLOS, UN CORRAL", "¿HAY SITIO PARA DOS EN AURELIA?"]),
+      title: mateAhead ? vr.pick("xk1", ["SENNA ENSEÑA LOS DIENTES", "EL TRICAMPEÓN CONTRAATACA", "SENNA RECUERDA QUIÉN ES"]) : vr.pick("xk2", ["LA GUERRA FRÍA DE AURELIA", "DOS GALLOS, UN CORRAL", "¿HAY SITIO PARA DOS EN AURELIA?"]),
       subtitle: `El cara a cara de la temporada: Arévalo ${h.r.a}, Senna ${h.r.b} en carrera; ${h.q.a}-${h.q.b} en clasificación.`,
       sections: [
         { heading: "📊 Los números", body: `En carrera, Arévalo ha terminado por delante en ${h.r.a} ocasiones y Senna en ${h.r.b}. Los sábados, ${h.q.a} a ${h.q.b}. En el Mundial, ${fmt(core.standings[ME])} puntos contra ${fmt(core.standings[ctx.mate])}.` },
-        { heading: "🔥 El ambiente", body: g.pick(["Nadie en Aurelia lo admite en público, pero los dos lados del garaje ya no comparten tanta información como al principio del año.", "Las ruedas de prensa son correctas y frías. Los dos pilotos se saludan, pero apenas se miran.", "En el equipo insisten en que hay igualdad de trato. En el paddock, pocos se lo creen."]) + (heat > 60 ? " La tensión está en su punto más alto de la temporada." : "") }
+        { heading: "🔥 El ambiente", body: vr.pick("xk3", ["Nadie en Aurelia lo admite en público, pero los dos lados del garaje ya no comparten tanta información como al principio del año.", "Las ruedas de prensa son correctas y frías. Los dos pilotos se saludan, pero apenas se miran.", "En el equipo insisten en que hay igualdad de trato. En el paddock, pocos se lo creen."]) + (heat > 60 ? " La tensión está en su punto más alto de la temporada." : "") }
       ],
-      interviews: [{ speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", by: "cronometro", q: "¿Tiene un problema entre sus pilotos?", a: g.pick(["Tengo un problema bonito: dos pilotos que quieren ganar. Mientras respeten al equipo, que peleen.", "No hay órdenes de equipo. Hay reglas, y las conocen los dos."]) }],
-      social: [tiny({ who: "journalist", id: "confidencial", text: "Nuevo capítulo de la guerra fría de Aurelia. Palomitas preparadas. 🍿" }), tiny({ who: "fan", name: "Fã do Ayrton", handle: "fa_do_ayrton", text: "Ayrton não é segundo piloto de ninguém. 🇧🇷" })]
+      interviews: [{ speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", by: "cronometro", q: "¿Tiene un problema entre sus pilotos?", a: vr.pick("xk4", ["Tengo un problema bonito: dos pilotos que quieren ganar. Mientras respeten al equipo, que peleen.", "No hay órdenes de equipo. Hay reglas, y las conocen los dos."]) }],
+      social: [tiny({ who: "journalist", id: "confidencial", text: vr.pick("xs-aur1", ["Nuevo capítulo de la guerra fría de Aurelia. Palomitas preparadas. 🍿", "En Aurelia ya no se comparten ni los cafés. ☕👀", "Hoy en el garaje azul: silencio incómodo. 🤐", "Me llegan rumores de una reunión tensa en Aurelia. 👀"]) }), tiny({ who: "fan", name: "Fã do Ayrton", handle: "fa_do_ayrton", text: vr.pick("xs-aur2", ["Ayrton não é segundo piloto de ninguém. 🇧🇷", "Respeito ao tricampeão! 🇧🇷", "O Ayrton vai dar a volta por cima. 🇧🇷", "Paciência. O Ayrton sabe o que faz. 🇧🇷"]) })]
     } });
   }
 
@@ -2456,14 +2479,14 @@ function extraPieces(core, round, t0) {
     const row = ctx.table.find((r) => r.id === w);
     cand.push({ w: 30, key: "form", o: {
       kicker: "Entrevista", color: tcolor(teamOf(core, w)),
-      title: g.pick([`${UP(LN(w))}: «ESTO NO HA HECHO MÁS QUE EMPEZAR»`, `${UP(LN(w))} AVISA AL LÍDER`, `${UP(LN(w))}, EL HOMBRE DEL MOMENTO`]),
+      title: vr.pick("xk5", [`${UP(LN(w))}: «ESTO NO HA HECHO MÁS QUE EMPEZAR»`, `${UP(LN(w))} AVISA AL LÍDER`, `${UP(LN(w))}, EL HOMBRE DEL MOMENTO`]),
       subtitle: `Ganador en ${ctx.place}, es ${row.pos}.º del Mundial con ${fmt(row.pts)} puntos.`,
       sections: [{ heading: "🏁 El momento", body: `${fullName(w)} (${TNAME(core, w)}) se llevó la victoria en ${ctx.place}. En el Mundial es ${row.pos}.º, a ${fmt(ctx.leader.pts - row.pts)} puntos del líder${row.pos === 1 ? " (es él)" : ""}.` }],
       interviews: [
-        { speaker: fullName(w), team: teamOf(core, w), by: NAT_OUTLET[DRIVERS[w].nat] || "chicane", q: "¿Puedes pelear por el Mundial?", a: g.pick(["¿Por qué no? Si seguimos así, vamos a estar ahí hasta el final.", "No pienso en el Mundial. Pienso en ganar la siguiente.", "Hemos demostrado que podemos ganar a cualquiera, también a Aurelia."]) },
-        { speaker: fullName(w), team: teamOf(core, w), by: "cronometro", q: "¿Qué opinas de Arévalo?", a: g.pick(["Es rapidísimo, no hay duda. Pero en esta parrilla nadie te regala nada.", "Tiene talento, pero la temporada es larga y la presión se nota al final.", "Me gusta pelear contra los mejores. Él ahora mismo es la referencia."]) }
+        { speaker: fullName(w), team: teamOf(core, w), by: NAT_OUTLET[DRIVERS[w].nat] || "chicane", q: "¿Puedes pelear por el Mundial?", a: vr.pick("xk6", ["¿Por qué no? Si seguimos así, vamos a estar ahí hasta el final.", "No pienso en el Mundial. Pienso en ganar la siguiente.", "Hemos demostrado que podemos ganar a cualquiera, también a Aurelia."]) },
+        { speaker: fullName(w), team: teamOf(core, w), by: "cronometro", q: "¿Qué opinas de Arévalo?", a: vr.pick("xk7", ["Es rapidísimo, no hay duda. Pero en esta parrilla nadie te regala nada.", "Tiene talento, pero la temporada es larga y la presión se nota al final.", "Me gusta pelear contra los mejores. Él ahora mismo es la referencia."]) }
       ],
-      social: [tiny({ who: "driver", id: w, text: g.pick(["Enjoying this one. Next! 🏆", "What a weekend. Thank you all! 🙏"]), likes: g.int(100000, 400000) })]
+      social: [tiny({ who: "driver", id: w, text: vr.pick("xk8", ["Enjoying this one. Next! 🏆", "What a weekend. Thank you all! 🙏"]), likes: g.int(100000, 400000) })]
     } });
   }
 
@@ -2475,14 +2498,14 @@ function extraPieces(core, round, t0) {
     const tn = team(ct.id).name;
     cand.push({ w: 26, key: "crisis", o: {
       kicker: "Análisis", color: team(ct.id).color,
-      title: g.pick([`ALARMA EN ${UP(tn)}`, `${UP(tn)}, EN CRISIS`, `¿QUÉ LE PASA A ${UP(tn)}?`]),
+      title: vr.pick("xk9", [`ALARMA EN ${UP(tn)}`, `${UP(tn)}, EN CRISIS`, `¿QUÉ LE PASA A ${UP(tn)}?`, `${UP(tn)} NO ENCUENTRA EL RUMBO`, `NUBARRONES SOBRE ${UP(tn)}`, `${UP(tn)} NECESITA UNA REACCIÓN`]),
       subtitle: `${ct.pos}.º en el Mundial de Constructores con ${fmt(ct.pts)} puntos.`,
       sections: [
         { heading: "📉 La situación", body: `${tn} es ${ct.pos}.º en constructores con ${fmt(ct.pts)} puntos, ${fmt(tt[0].pts - ct.pts)} menos que ${team(tt[0].id).name}.${zero[0] ? ` En ${ctx.place} no sumó ni un punto.` : ""} Para un equipo de su historia, no es suficiente.` },
-        { heading: "🔧 Lo que se dice", body: g.pick(["En la fábrica se habla de un paquete de mejoras para las próximas carreras. Nadie se atreve a poner fecha.", "Hay quien apunta a la dirección técnica. Otros, a la falta de ritmo en carrera. Lo único seguro es que la presión aprieta.", "Los pilotos piden calma, pero la paciencia de los directivos tiene un límite."]) }
+        { heading: "🔧 Lo que se dice", body: vr.pick("xk10", ["En la fábrica se habla de un paquete de mejoras para las próximas carreras. Nadie se atreve a poner fecha.", "Hay quien apunta a la dirección técnica. Otros, a la falta de ritmo en carrera. Lo único seguro es que la presión aprieta.", "Los pilotos piden calma, pero la paciencia de los directivos tiene un límite."]) }
       ],
-      interviews: [{ speaker: fullName(teamDrivers(core, ct.id)[0]), team: ct.id, by: "chicane", q: "¿Estáis en crisis?", a: g.pick(["Crisis es una palabra muy grande. Nos falta rendimiento y lo sabemos.", "Estamos trabajando más que nunca. Las cosas van a cambiar.", "No es el nivel que queremos. Punto."]) }],
-      social: [tiny({ who: "fan", name: "Silver Arrows Fan", handle: "silverarrows_sam", text: `Something has to change at ${tn}. This is not acceptable. 😤` })]
+      interviews: [{ speaker: fullName(teamDrivers(core, ct.id)[0]), team: ct.id, by: "chicane", q: "¿Estáis en crisis?", a: vr.pick("xk11", ["Crisis es una palabra muy grande. Nos falta rendimiento y lo sabemos.", "Estamos trabajando más que nunca. Las cosas van a cambiar.", "No es el nivel que queremos. Punto."]) }],
+      social: [tiny({ who: "fan", name: "Silver Arrows Fan", handle: "silverarrows_sam", text: vr.pick("xs-cr", [`Something has to change at ${tn}. This is not acceptable. 😤`, `${tn} fans deserve better. 😔`, `How long can ${tn} keep going like this? 🤔`]) })]
     } });
   }
 
@@ -2495,11 +2518,11 @@ function extraPieces(core, round, t0) {
     if (riser && target) {
       cand.push({ w: 16 + g.R() * 10, key: "market", o: {
         kicker: "Mercado", color: "#FF3EA5",
-        title: g.pick([`${UP(team(target).name)} PREGUNTA POR ${UP(LN(riser.id))}`, `RUMOR: ${UP(LN(riser.id))}, EN LA AGENDA DE ${UP(team(target).name)}`]),
+        title: vr.pick("xk12", [`${UP(team(target).name)} PREGUNTA POR ${UP(LN(riser.id))}`, `RUMOR: ${UP(LN(riser.id))}, EN LA AGENDA DE ${UP(team(target).name)}`]),
         subtitle: "Nadie lo confirma, nadie lo desmiente. Así se mueve el mercado.",
         sections: [
           { heading: "🕵️ El rumor", body: `Según ha podido saber Paddock Confidencial, ${team(target).name} habría preguntado por la situación contractual de ${fullName(riser.id)}, ${riser.pos}.º del Mundial con ${fmt(riser.pts)} puntos con ${TNAME(core, riser.id)}.` },
-          { heading: "🤐 Las reacciones", body: g.pick(["Desde el entorno del piloto se limitan a decir que está centrado en su equipo actual.", "El equipo del piloto lo niega todo y recuerda que tiene contrato en vigor.", "Nadie quiere hablar, que en este paddock suele querer decir mucho."]) + " De momento, es solo un rumor." }
+          { heading: "🤐 Las reacciones", body: vr.pick("xk13", ["Desde el entorno del piloto se limitan a decir que está centrado en su equipo actual.", "El equipo del piloto lo niega todo y recuerda que tiene contrato en vigor.", "Nadie quiere hablar, que en este paddock suele querer decir mucho."]) + " De momento, es solo un rumor." }
         ],
         social: [tiny({ who: "journalist", id: "confidencial", text: `👀 ${team(target).name} + ${LN(riser.id)}. No digo nada. Lo digo todo.` })]
       } });
@@ -2512,7 +2535,7 @@ function extraPieces(core, round, t0) {
     const s = seasonStats(core, ME);
     cand.push({ w: 14, key: "stats", o: {
       kicker: "Los números", color: "#8B3DFF",
-      title: g.pick(["ARÉVALO, EN CIFRAS", "LOS NÚMEROS NO MIENTEN", "LA TEMPORADA DE ARÉVALO, DATO A DATO"]),
+      title: vr.pick("xk14", ["ARÉVALO, EN CIFRAS", "LOS NÚMEROS NO MIENTEN", "LA TEMPORADA DE ARÉVALO, DATO A DATO"]),
       subtitle: `${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.`,
       sections: [
         { heading: "📊 Temporada " + core.season, body: `Carreras: ${s.races}. Victorias: ${s.wins}. Poles: ${s.poles}. Podios: ${s.podiums}. Abandonos: ${s.dnf}. Puntos: ${fmt(s.pts)}.` },
@@ -2527,7 +2550,7 @@ function extraPieces(core, round, t0) {
   if (rookies.length >= 3 && round.r % 3 === 0) {
     cand.push({ w: 12, key: "rookies", o: {
       kicker: "Novatos", color: "#0E9F6E",
-      title: "LA BATALLA DE LOS NOVATOS",
+      title: vr.pick("xk-rk", ["LA BATALLA DE LOS NOVATOS", "LOS NOVATOS, EN CIFRAS", "¿QUIÉN ES EL MEJOR DEBUTANTE?"]),
       subtitle: `${LN(rookies[0].id)} manda entre los debutantes.`,
       sections: [{ heading: "🌱 La clasificación de los novatos", body: rookies.map((r, i) => `${i + 1}. ${fullName(r.id)} (${TNAME(core, r.id)}): ${fmt(r.pts)} puntos`).join("\n") }],
       social: [tiny({ who: "journalist", id: "chicane", text: "Les rookies de cette saison ont un niveau impressionnant." })]
@@ -2545,11 +2568,11 @@ function extraPieces(core, round, t0) {
     const top = DRIVER_IDS.slice().sort((a, b) => score(b) - score(a)).slice(0, 5);
     cand.push({ w: 15, key: "power", o: {
       kicker: "Opinión", color: "#D4001A",
-      title: "POWER RANKING: LOS CINCO MEJORES AHORA MISMO",
+      title: vr.pick("xk-pr", ["POWER RANKING: LOS CINCO MEJORES AHORA MISMO", "¿QUIÉN ESTÁ MÁS EN FORMA?", "EL RANKING DE LA SEMANA", "LOS CINCO QUE MANDAN AHORA"]),
       subtitle: "La opinión de The Pit Wall Post tras la carrera de " + ctx.place + ".",
       sections: [{ heading: "🏅 El top 5", body: top.map((id, i) => { const x = ctx.res[id]; return `${i + 1}. ${fullName(id)}: ${finished(x) ? `P${x.pos} en ${ctx.place}` : x ? "sin puntos esta vez" : "regular"}, ${fmt(core.standings[id])} puntos en el Mundial.`; }).join("\n") },
         { heading: "✍️ El criterio", body: "Pesa sobre todo la última carrera y, después, la temporada. Es una clasificación de opinión, no oficial." }],
-      social: [tiny({ who: "journalist", id: "pitwall", text: `Power ranking is out. ${LN(top[0])} on top. Agree? 👀` })]
+      social: [tiny({ who: "journalist", id: "pitwall", text: vr.pick("xs-pr", [`Power ranking is out. ${LN(top[0])} on top. Agree? 👀`, `My top 5 this week: ${top.map((d) => LN(d)).join(", ")}. Fight me. 😅`, `${LN(top[0])} is the man in form right now. Change my mind.`]) })]
     } });
   }
 
@@ -2558,7 +2581,7 @@ function extraPieces(core, round, t0) {
     const gap = ctx.leader.pts - ctx.second.pts;
     cand.push({ w: ctx.left <= 5 ? 30 : 10, key: "title", o: {
       kicker: "El Mundial", color: "#F2C14E",
-      title: ctx.leader.id === ME ? g.pick([`ARÉVALO, ${fmt(gap)} PUNTOS POR DELANTE`, "EL LÍDER NO AFLOJA"]) : `${UP(LN(ctx.leader.id))} MANDA, ARÉVALO PERSIGUE`,
+      title: ctx.leader.id === ME ? vr.pick("xk15", [`ARÉVALO, ${fmt(gap)} PUNTOS POR DELANTE`, "EL LÍDER NO AFLOJA"]) : `${UP(LN(ctx.leader.id))} MANDA, ARÉVALO PERSIGUE`,
       subtitle: `Quedan ${ctx.left} ${ctx.left === 1 ? "carrera" : "carreras"} y ${fmt(ctx.maxLeft)} puntos en juego.`,
       sections: [{ heading: "🧮 Las cuentas", body: `${fullName(ctx.leader.id)} lidera con ${fmt(ctx.leader.pts)} puntos. ${fullName(ctx.second.id)} es segundo con ${fmt(ctx.second.pts)}. Con ${ctx.left} ${ctx.left === 1 ? "carrera" : "carreras"} por delante quedan ${fmt(ctx.maxLeft)} puntos en juego (sin contar sprints).` + (gap > ctx.maxLeft - 25 && gap <= ctx.maxLeft ? `\n\n⚠️ Si mantiene la ventaja, ${LN(ctx.leader.id)} podría cerrar el título en la próxima carrera.` : "") }],
       social: [tiny({ who: "fan", name: "Grid Nerd 📊", handle: "gridnerd_stats", text: `📊 Quedan ${fmt(ctx.maxLeft)} puntos en juego. Ventaja del líder: ${fmt(gap)}.` })]
@@ -2568,7 +2591,7 @@ function extraPieces(core, round, t0) {
   /* chismes */
   cand.push({ w: 9 + g.R() * 8, key: "gossip", o: {
     kicker: "Paddock Confidencial", color: "#FF3EA5",
-    title: g.pick(["LO QUE NO SALIÓ POR TELEVISIÓN", "EL TOPO LO HA VISTO TODO", "SECRETOS DEL PADDOCK"]),
+    title: vr.pick("xk16", ["LO QUE NO SALIÓ POR TELEVISIÓN", "EL TOPO LO HA VISTO TODO", "SECRETOS DEL PADDOCK"]),
     subtitle: "Rumores, miradas y cenas a puerta cerrada. Nada confirmado, todo interesante.",
     sections: [{ heading: "🤫 Esta semana", body: g.shuffle([
       `Vista una larga conversación entre ${fullName(g.pick(DRIVER_IDS.filter((d) => d !== ME)))} y un alto cargo de ${team(g.pick(BIG_TEAMS)).name}. Dicen que hablaban de golf.`,
@@ -2577,9 +2600,10 @@ function extraPieces(core, round, t0) {
       `Arévalo firmó autógrafos durante más de una hora. Su compañero salió por la puerta de atrás.`,
       `Un patrocinador millonario estaría estudiando entrar en la F1 de la mano de ${team(g.pick(TEAM_IDS.filter((t) => t !== "aurelia"))).name}.`
     ]).slice(0, 3).map((x) => "• " + x).join("\n") }],
-    social: [tiny({ who: "journalist", id: "confidencial", text: "Nueva entrega de secretos del paddock. Leed antes de que la borren. 🤫" })]
+    social: [tiny({ who: "journalist", id: "confidencial", text: vr.pick("xs-gos", ["Nueva entrega de secretos del paddock. Leed antes de que la borren. 🤫", "Hoy vengo cargado. 👀", "El Topo nunca duerme. 🕵️", "Esto no lo vais a leer en ningún otro sitio. 🤫"]) })]
   } });
 
+  try { extraCandidates(core, round, g, ctx).forEach((c) => cand.push(c)); } catch (e) { /* sin piezas extra */ }
   const recent = new Set(S.news.filter((a) => a.auto && a.kind === "flash" && a.season === core.season && a.r < round.r && a.r >= round.r - 2).map((a) => a.id.replace(/^s\d+-r\d+-x/, "").replace(/-auto$/, "")));
   cand.forEach((c) => { if (recent.has(c.key) && c.key !== "champ") c.w *= 0.35; c.w += g.R() * 6; });
   const chosen = cand.sort((a, b) => b.w - a.w).slice(0, 4);
@@ -2589,6 +2613,7 @@ function extraPieces(core, round, t0) {
 /* ---------- previa automática ---------- */
 function autoPrevia(core, round, t) {
   const g = NG(core, round, "previa");
+  const vr = makeVary(core, g);
   const c = circuit(round.gp);
   if (!c) return null;
   const info = (typeof CIRCUIT_INFO !== "undefined" && CIRCUIT_INFO[round.gp]) || {};
@@ -2606,17 +2631,20 @@ function autoPrevia(core, round, t) {
     { heading: `🎯 Arévalo en ${c.place}`, body: here && here.starts ? `Ha corrido aquí ${here.starts} ${here.starts === 1 ? "vez" : "veces"}: ${here.wins} ${here.wins === 1 ? "victoria" : "victorias"}, ${here.podiums} podios y ${here.poles} poles. Su mejor resultado: ${here.best ? "P" + here.best : "sin terminar"}.` : `Será su primera vez en ${c.place} en la Fórmula 1. Terreno nuevo para el piloto de Aurelia.` }
   ];
   if (homes.length) sections.push({ heading: "🏠 En casa", body: homes.map((d) => `${fullName(d)} corre ante su público.`).join(" ") + " La presión y el apoyo, a partes iguales." });
+  const tt = driverTable(core);
+  const near = me && me.pos === 1 ? tt[1] : tt[0];
+  if (me && near) sections.push({ heading: "🎯 El duelo a seguir", body: vr.f("pv-duel", ["Todas las miradas estarán en Arévalo y {X}: {g} puntos les separan.", "El pulso entre Arévalo y {X} continúa, con {g} puntos de diferencia.", "{X} llega a {g} puntos de Arévalo y con ganas de revancha."], { X: fullName(near.id), g: fmt(Math.abs(me.pts - near.pts)) }) });
   const riv = (core.narrative.rivalries || []).slice(0, 3);
   if (riv.length) sections.push({ heading: "🔥 Rivalidades", body: riv.map((r) => `• ${LN(r.a)} contra ${LN(r.b)}: ${r.note}`).join("\n") });
   const mate = teammatesOf(core, ME)[0];
   const interviews = [
-    { speaker: fullName(ME), team: "aurelia", by: "cronometro", q: `¿Cómo afrontas ${c.gp}?`, a: g.pick(["Con muchas ganas. Es un circuito que exige mucho y quiero sacar lo mejor del coche.", "Carrera a carrera. Hay que estar fino desde los libres.", "Lo importante es el sábado. Si clasificamos bien, tendremos opciones."]) }
+    { speaker: fullName(ME), team: "aurelia", by: "cronometro", q: vr.pick("pvq1", [`¿Cómo afrontas ${c.gp}?`, `¿Qué esperas de ${c.place}?`, "¿Cómo llegas a esta carrera?", "¿Qué objetivo te marcas este fin de semana?"]), a: vr.pick("pv1", ["Con muchas ganas. Es un circuito que exige mucho y quiero sacar lo mejor del coche.", "Carrera a carrera. Hay que estar fino desde los libres.", "Lo importante es el sábado. Si clasificamos bien, tendremos opciones.", "Me gusta este trazado. Creo que podemos hacer algo bonito.", "Llego con confianza, pero sin relajarme lo más mínimo.", "Aquí cualquier detalle cuenta. Vamos a trabajar muy bien con los ingenieros.", "Quiero seguir sumando. El Mundial se gana con regularidad."]) }
   ];
-  if (mate) interviews.push({ speaker: fullName(mate), team: "aurelia", by: "folha", q: "¿Qué esperas de este fin de semana?", a: g.pick(["Espero lo de siempre: ganar.", "Estoy preparado. El resto lo dirá la pista.", "No me preocupan los demás. Me preocupa mi vuelta."]) });
-  if (homes[0] && homes[0] !== ME) interviews.push({ speaker: fullName(homes[0]), team: teamOf(core, homes[0]), by: NAT_OUTLET[DRIVERS[homes[0]].nat] || "pitwall", q: "¿Qué significa correr en casa?", a: g.pick(["Es especial. Ver a tanta gente animando te da una energía extra.", "Aquí quiero dar lo mejor de mí. Es la carrera que todos queremos ganar."]) });
-  else if (leader.id !== ME) interviews.push({ speaker: fullName(leader.id), team: teamOf(core, leader.id), by: "pitwall", q: "¿Cómo se lleva ser el líder?", a: g.pick(["Bien. Pero sé que detrás vienen apretando.", "No miro atrás. Miro hacia delante."]) });
+  if (mate) interviews.push({ speaker: fullName(mate), team: "aurelia", by: "folha", q: vr.pick("pvq2", ["¿Qué esperas de este fin de semana?", "¿Cómo está la relación con Arévalo?", "¿Es este el fin de semana de tu reacción?"]), a: vr.pick("pv2", ["Espero lo de siempre: ganar.", "Estoy preparado. El resto lo dirá la pista.", "No me preocupan los demás. Me preocupa mi vuelta.", "Este circuito me trae buenos recuerdos.", "Hay que dar un paso adelante, y lo vamos a dar.", "Tengo cuentas pendientes. Ya está."]) });
+  if (homes[0] && homes[0] !== ME) interviews.push({ speaker: fullName(homes[0]), team: teamOf(core, homes[0]), by: NAT_OUTLET[DRIVERS[homes[0]].nat] || "pitwall", q: "¿Qué significa correr en casa?", a: vr.pick("pv3", ["Es especial. Ver a tanta gente animando te da una energía extra.", "Aquí quiero dar lo mejor de mí. Es la carrera que todos queremos ganar."]) });
+  else if (leader.id !== ME) interviews.push({ speaker: fullName(leader.id), team: teamOf(core, leader.id), by: "pitwall", q: "¿Cómo se lleva ser el líder?", a: vr.pick("pv4", ["Bien. Pero sé que detrás vienen apretando.", "No miro atrás. Miro hacia delante."]) });
   const tag = GP_TAG[round.gp] || "F1";
-  const fps = [{ outlet: "cronometro", focus: ME, headline: me && me.pos === 1 ? g.pick([`${UP(c.name)}: TODOS CONTRA ARÉVALO`, `EL LÍDER LLEGA A ${UP(c.place)}`]) : `ARÉVALO, AL ATAQUE EN ${UP(c.place)}`, es: "", deck: `Previa de la ronda ${round.r}.`, body: sections[1].body + "\n\n" + sections[2].body }];
+  const fps = [{ outlet: "cronometro", focus: ME, headline: me && me.pos === 1 ? vr.pick("pv5", [`${UP(c.name)}: TODOS CONTRA ARÉVALO`, `EL LÍDER LLEGA A ${UP(c.place)}`]) : `ARÉVALO, AL ATAQUE EN ${UP(c.place)}`, es: "", deck: `Previa de la ronda ${round.r}.`, body: sections[1].body + "\n\n" + sections[2].body }];
   if (homes[0] && homes[0] !== ME && NAT_OUTLET[DRIVERS[homes[0]].nat]) {
     const ol = NAT_OUTLET[DRIVERS[homes[0]].nat];
     const home = { it: "{L} CORRE IN CASA", en: "{L} ON HOME SOIL", pt: "{L} CORRE EM CASA", fr: "{L} À LA MAISON", nl: "{L} THUIS", es: "{L} CORRE EN CASA" }[MEDIA[ol].lang];
@@ -2624,7 +2652,7 @@ function autoPrevia(core, round, t) {
   }
   const social = [
     { who: "team", id: "aurelia", text: `Rumbo a ${c.place}. 💙 #${tag} #AureliaRacing`, likes: g.int(40000, 120000), reposts: g.int(2000, 8000), replies: g.int(500, 3000) },
-    { who: "driver", id: ME, text: g.pick([`${c.place}, allá vamos 🏁💙`, `Semana de carrera. ${c.flag} ¡Vamos!`]), likes: g.int(80000, 250000), reposts: g.int(4000, 15000), replies: g.int(1000, 6000) },
+    { who: "driver", id: ME, text: vr.pick("pv6", [`${c.place}, allá vamos 🏁💙`, `Semana de carrera. ${c.flag} ¡Vamos!`]), likes: g.int(80000, 250000), reposts: g.int(4000, 15000), replies: g.int(1000, 6000) },
     { who: "fan", name: "Lucía 🏁", handle: "lucia_boxbox", text: `Semana de ${c.name} 😍 ¿Pole de Arévalo? Yo digo que sí 💙`, likes: g.int(100, 4000), reposts: g.int(5, 300), replies: g.int(5, 200) }
   ];
   if (homes[0] && homes[0] !== ME) social.push({ who: "driver", id: homes[0], text: `Home race! Can't wait to see you all ${c.flag}`, likes: g.int(100000, 400000), reposts: g.int(5000, 20000), replies: g.int(2000, 8000) });
@@ -2655,7 +2683,7 @@ function autoChronicle(core, round, kind) {
     base.frontPages = makeFrontPages(g, core, ctx, "quali");
     base.social = socialFor(g, core, ctx, "quali");
     base.trending = trendsFor(g, core, Object.assign({ me: res[ME] ? {} : null }, ctx), "quali");
-    return base;
+    return enrichChronicle(base, core, round, kind, g);
   }
   const ctx = raceCtx(core, round, kind);
   const iv = [];
@@ -2689,7 +2717,7 @@ function autoChronicle(core, round, kind) {
   } else {
     base.social = socialFor(g, core, ctx, "race").slice(0, 4);
   }
-  return base;
+  return enrichChronicle(base, core, round, kind, g);
 }
 
 /* Genera y guarda todo lo automático de una sesión. Devuelve el id principal. */
@@ -2728,6 +2756,8 @@ async function publishAutoNews(session, r, edit) {
       }
     }
   }
+  S.core = core;
+  await Store.saveCore().catch(() => null);
   for (const a of writes) if (keep(a.id)) await Store.saveArticle(a).catch(() => null);
   return writes.length ? writes[0].id : legacy ? legacy.id : null;
 }
@@ -2809,6 +2839,603 @@ function allTimeTable(core) {
 }
 function champions(core) {
   return (core.history || []).map((h) => ({ season: h.season, driver: h.champion, team: h.constructorsChampion, me: h.pos }));
+}
+
+/* ============================================================
+   VARIEDAD: momentos de carrera, personalidades, rivales y memoria
+   Todo lo deportivo sale de los datos o de lo que el usuario marca.
+   ============================================================ */
+
+/* ---------- memoria anti-repetición ---------- */
+function makeVary(core, g) {
+  const nar = core.narrative = core.narrative || {};
+  const recent = nar.recent = Array.isArray(nar.recent) ? nar.recent : [];
+  const set = new Set(recent);
+  return {
+    g,
+    pick(key, arr) {
+      if (!arr || !arr.length) return "";
+      let pool = arr.map((_, i) => i).filter((i) => !set.has(key + ":" + i));
+      if (!pool.length) {
+        for (let i = recent.length - 1; i >= 0; i--) if (recent[i].startsWith(key + ":")) { set.delete(recent[i]); recent.splice(i, 1); }
+        pool = arr.map((_, i) => i);
+      }
+      const i = pool[Math.floor(g.R() * pool.length)];
+      const k = key + ":" + i;
+      set.add(k); recent.push(k);
+      while (recent.length > 700) set.delete(recent.shift());
+      return arr[i];
+    },
+    f(key, arr, vars) { return g.fill(this.pick(key, arr), vars || {}); }
+  };
+}
+
+/* ---------- momentos de carrera ---------- */
+const MOMENTS = {
+  race: [
+    { id: "remontada", icon: "🚀", label: "Remontada" },
+    { id: "salida", icon: "⚡", label: "Gran salida" },
+    { id: "malasalida", icon: "🐢", label: "Mala salida" },
+    { id: "dominio", icon: "👑", label: "Dominio total" },
+    { id: "ultimavuelta", icon: "🏁", label: "Adelantamiento en la última vuelta", pick: "¿A quién adelantaste?" },
+    { id: "duelo", icon: "⚔️", label: "Duelo", pick: "¿Con quién?" },
+    { id: "defensa", icon: "🛡️", label: "Defensa épica", pick: "¿Ante quién?" },
+    { id: "toque", icon: "💥", label: "Toque", pick: "¿Con quién?" },
+    { id: "sc", icon: "🟡", label: "Safety car" },
+    { id: "vsc", icon: "🟨", label: "Safety car virtual" },
+    { id: "roja", icon: "🔴", label: "Bandera roja" },
+    { id: "lluvia", icon: "🌧️", label: "Lluvia" },
+    { id: "estrategia", icon: "🛞", label: "Estrategia clave" },
+    { id: "sancion", icon: "⏱️", label: "Sanción", pick: "¿A quién?", def: "arevalo" },
+    { id: "averia", icon: "🔧", label: "Problema mecánico", pick: "¿A quién?", def: "arevalo" },
+    { id: "error", icon: "😬", label: "Error propio" },
+    { id: "orden", icon: "📻", label: "Orden de equipo" }
+  ],
+  quali: [
+    { id: "q_ultima", icon: "⏱️", label: "Vuelta en el último intento" },
+    { id: "q_milesimas", icon: "🤏", label: "Por milésimas", pick: "¿Con quién?" },
+    { id: "q_lluvia", icon: "🌧️", label: "Lluvia" },
+    { id: "q_roja", icon: "🔴", label: "Bandera roja" },
+    { id: "q_error", icon: "😬", label: "Error en la vuelta buena" },
+    { id: "q_trafico", icon: "🚦", label: "Tráfico" }
+  ]
+};
+const MOMENT_KW = [
+  [/remont/, "remontada"], [/mala salida|sali mal|salida horrible|salida mala/, "malasalida"],
+  [/(gran|buena|brutal|genial|increible|tremenda) salida|sali (genial|muy bien|como un tiro)/, "salida"],
+  [/de principio a fin|sin rival|paseo|domin/, "dominio"], [/ultima vuelta/, "ultimavuelta"],
+  [/safety car virtual|coche de seguridad virtual|\bvsc\b|virtual/, "vsc"], [/safety|coche de seguridad|\bsc\b/, "sc"],
+  [/bandera roja|roja/, "roja"], [/lluvi|mojad|diluvi|agua/, "lluvia"],
+  [/toque|choque|contacto|chocamos|me dio|le di|me golpeo|me toco/, "toque"],
+  [/sancion|penaliz|segundos de castigo|drive through/, "sancion"],
+  [/estrategia|parada|\bpit\b|neumatic|undercut|overcut|ruedas/, "estrategia"],
+  [/averia|motor|problema mecanico|fallo|se rompio|freno/, "averia"],
+  [/error|trompo|me sali|me equivoque|fallo mio/, "error"], [/defend|defensa|aguante/, "defensa"],
+  [/duelo|pelea|batalla|rueda a rueda/, "duelo"], [/orden(es)? de equipo|dejar pasar|me hicieron dejar|intercambio de posiciones/, "orden"],
+  [/ultimo intento|ultima vuelta de la q|al final de la q3/, "q_ultima"], [/milesim/, "q_milesimas"], [/trafico/, "q_trafico"]
+];
+function normTxt(t) { return String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+function parseMoments(text, kind) {
+  const t = normTxt(text);
+  if (!t.trim()) return [];
+  const allowed = new Set(MOMENTS[kind === "quali" ? "quali" : "race"].map((m) => m.id));
+  const out = [];
+  MOMENT_KW.forEach(([re, id]) => {
+    const real = kind === "quali" ? ({ lluvia: "q_lluvia", roja: "q_roja", error: "q_error" }[id] || id) : id;
+    if (re.test(t) && allowed.has(real) && !out.some((m) => m.id === real)) out.push({ id: real, who: null });
+  });
+  const named = DRIVER_IDS.filter((d) => d !== ME && new RegExp("\\b" + normTxt(DRIVERS[d].last) + "\\b").test(t));
+  out.forEach((m) => { const def = MOMENTS.race.concat(MOMENTS.quali).find((x) => x.id === m.id); if (def && def.pick && named[0]) m.who = named[0]; });
+  return out;
+}
+function roundMoments(core, round, kind) {
+  const src = kind === "quali" ? round.quali : kind === "sprint" ? round.sprint : round.race;
+  if (!src) return [];
+  const list = (src.moments || []).slice();
+  parseMoments(src.notes, kind).forEach((m) => { if (!list.some((x) => x.id === m.id)) list.push(m); });
+  if (kind !== "quali") {
+    const x = src.res[ME];
+    const gr = kind === "race" ? gridOf(round, ME) : null;
+    if (x && finished(x) && gr && gr - x.pos >= 5 && !list.some((m) => m.id === "remontada")) list.push({ id: "remontada", who: null, auto: true });
+    if (x && finished(x) && x.pos === 1 && qOf(round, ME) === 1 && x.fl === true && !list.some((m) => m.id === "dominio")) list.push({ id: "dominio", who: null, auto: true });
+  }
+  return list.map((m) => Object.assign({}, m, { who: m.who && DRIVERS[m.who] ? m.who : (MOMENTS.race.concat(MOMENTS.quali).find((d) => d.id === m.id) || {}).def || null }));
+}
+const MOMENT_TXT = {
+  remontada: ["La remontada de Arévalo fue lo mejor del día: salió {grid}.º y cruzó la meta {pos}.º, adelantamiento a adelantamiento.", "Desde la {grid}.ª posición de salida hasta la {pos}.ª al final: Arévalo firmó una remontada de las que se recuerdan.", "Nadie esperaba tanto desde tan atrás. Arévalo salió {grid}.º y fue devorando rivales hasta terminar {pos}.º.", "Fue una tarde de paciencia y ataque: {gain} posiciones ganadas para el piloto de Aurelia entre la salida y la meta."],
+  remontada_ng: ["Arévalo firmó una remontada de mérito, ganando posiciones durante toda la carrera.", "La carrera de Arévalo fue una remontada constante: vuelta a vuelta, rival a rival.", "Tocó remar desde atrás, y Arévalo lo hizo con una sangre fría impropia de un novato."],
+  salida: ["La salida fue de manual: Arévalo ganó terreno antes incluso de la primera curva.", "Todo empezó con un arranque brillante. Cuando se apagaron los semáforos, Arévalo salió disparado.", "Una salida perfecta marcó el guion: Arévalo se colocó donde quería desde los primeros metros."],
+  malasalida: ["La salida no fue buena: Arévalo perdió terreno en los primeros metros y tuvo que remar.", "El arranque fue un problema. Arévalo se vio superado nada más apagarse los semáforos.", "Una salida lenta obligó a Arévalo a cambiar de plan desde la primera vuelta."],
+  dominio: ["Dominio absoluto: Arévalo mandó de principio a fin sin que nadie le inquietara.", "Fue un paseo. Arévalo marcó el ritmo desde la pole y nunca miró atrás.", "No hubo carrera por la victoria: Arévalo la tuvo bajo control de la primera a la última vuelta."],
+  ultimavuelta: ["El momento de la tarde llegó en la última vuelta: Arévalo se lanzó por dentro y adelantó a {X}.", "Cuando todos daban la posición por decidida, Arévalo sorprendió a {X} en la última vuelta.", "Última vuelta, última oportunidad: Arévalo la aprovechó con un adelantamiento a {X} que ya es de los mejores del año."],
+  duelo: ["El duelo con {X} fue una pelea rueda a rueda que tuvo a toda la grada en pie.", "Arévalo y {X} protagonizaron una batalla preciosa, al límite pero limpia.", "Durante muchas vueltas, la carrera fue cosa de dos: Arévalo contra {X}, sin concesiones."],
+  defensa: ["{X} lo intentó una y otra vez, pero Arévalo cerró todas las puertas con una defensa de campeón.", "Arévalo resistió la presión de {X} vuelta tras vuelta, sin cometer un solo error.", "Fue una lección de defensa: {X} tuvo el ritmo, pero no encontró el hueco."],
+  toque: ["Hubo contacto entre Arévalo y {X}, un toque que encendió los ánimos.", "El toque con {X} fue el momento polémico de la carrera.", "Arévalo y {X} se tocaron en plena lucha, y en el paddock ya hay versiones para todos los gustos."],
+  sc: ["El safety car salió a pista y agrupó a todos, lo que cambió el guion de la carrera.", "Con el safety car en pista, las diferencias desaparecieron y la carrera volvió a empezar.", "La aparición del coche de seguridad lo puso todo patas arriba."],
+  vsc: ["Un safety car virtual neutralizó la carrera durante unas vueltas y abrió la puerta a las estrategias.", "El coche de seguridad virtual dio un respiro a todos y obligó a los muros a decidir rápido."],
+  roja: ["La bandera roja detuvo la carrera y obligó a todos a volver al pit lane.", "Carrera detenida con bandera roja: minutos de tensión en el garaje antes de la reanudación.", "La bandera roja partió la carrera en dos."],
+  lluvia: ["La lluvia lo complicó todo: pista mojada, agarre mínimo y ningún margen de error.", "Con el agua en escena, la carrera se convirtió en una prueba de nervios.", "Carrera en mojado: de las que separan a los buenos de los extraordinarios."],
+  estrategia: ["La estrategia fue decisiva: el muro de Aurelia acertó con el momento de la parada.", "La carrera se decidió también en el pit lane, con una estrategia que salió redonda.", "Neumáticos, paradas y cálculos: la estrategia pesó tanto como el ritmo."],
+  sancion_me: ["Arévalo recibió una sanción de los comisarios que condicionó su carrera.", "Los comisarios castigaron a Arévalo, y esa sanción le costó caro.", "La sanción a Arévalo fue uno de los puntos de debate de la tarde."],
+  sancion_x: ["{X} fue sancionado por los comisarios.", "La sanción a {X} cambió el orden en la zona de puntos.", "Los comisarios castigaron a {X}, que no escondió su enfado."],
+  averia_me: ["Un problema mecánico en el coche de Arévalo complicó su tarde.", "La mecánica no acompañó a Arévalo y el problema le condicionó por completo.", "El coche de Arévalo dio señales de avería y todo se torció."],
+  averia_x: ["{X} sufrió un problema mecánico.", "La mecánica dejó tirado a {X} en el peor momento.", "Un fallo en el coche de {X} le arruinó el día."],
+  error: ["Arévalo cometió un error que le costó caro y que él mismo reconoció.", "Un error de pilotaje manchó la carrera de Arévalo.", "Hubo un fallo propio, de esos que se pagan en la F1."],
+  orden: ["Desde el muro llegó una orden de equipo que dio que hablar en Aurelia.", "La orden de equipo fue el gran tema de conversación en el garaje azul.", "Aurelia movió ficha desde el muro con una orden de equipo que no dejó indiferente a nadie."],
+  q_ultima: ["La vuelta buena llegó en el último intento, cuando más apretaba el reloj.", "Todo se decidió en el último intento, con el cronómetro a cero."],
+  q_milesimas: ["Todo se decidió por milésimas con {X}.", "Una diferencia mínima, de milésimas, con {X}."],
+  q_lluvia: ["La lluvia convirtió la clasificación en una lotería.", "Con la pista mojada, la clasificación fue un ejercicio de valentía."],
+  q_roja: ["Una bandera roja interrumpió la sesión y cambió todos los planes.", "La bandera roja obligó a reorganizar la última parte de la sesión."],
+  q_error: ["Un error en la vuelta buena le impidió mejorar.", "Un fallo en la vuelta clave le costó posiciones."],
+  q_trafico: ["El tráfico le arruinó una vuelta que pintaba muy bien.", "Se encontró tráfico en el peor momento de su vuelta."]
+};
+function momentSentence(vr, m, vars) {
+  let key = m.id;
+  if (m.id === "sancion" || m.id === "averia") key += m.who && m.who !== ME ? "_x" : "_me";
+  if (m.id === "remontada" && !(Number(vars.gain) > 0)) key = "remontada_ng";
+  const arr = MOMENT_TXT[key];
+  if (!arr) return "";
+  return vr.f("mt-" + key, arr, Object.assign({}, vars, { X: m.who ? fullName(m.who) : "un rival" }));
+}
+
+/* ---------- personalidad de los pilotos ---------- */
+const PERSONA = {
+  verstappen: ["Así de simple.", "No hay mucho más que decir.", "Seguimos empujando.", "El coche iba bien, punto.", "Ya está, a la siguiente."],
+  hamilton: ["Estoy muy agradecido al equipo.", "Seguimos creciendo juntos.", "Cada día aprendo algo nuevo.", "Todavía tengo mucha hambre.", "Esto es por todos los que nos apoyan."],
+  leclerc: ["Lo vivo con mucha intensidad.", "Hay que seguir creyendo.", "Para los tifosi, siempre.", "Nos lo merecíamos.", "Allez, a por la siguiente."],
+  norris: ["La verdad es que lo he disfrutado.", "No me quejo, jaja.", "Bastante divertido, la verdad.", "Vamos a por más.", "Papaya power."],
+  piastri: ["Tranquilo, a por la siguiente.", "Contento, sin más.", "Nada que no sepamos.", "Paso a paso."],
+  alonso: ["Llevo muchos años en esto y todavía lo disfruto.", "La experiencia se nota en días así.", "El Mundial es una maratón.", "Estamos donde tenemos que estar.", "Ya sabéis que yo nunca me rindo."],
+  senna: ["La pista es la que habla.", "Mi objetivo no ha cambiado.", "Yo solo pienso en ganar.", "No he venido a ser segundo.", "El resto son palabras."],
+  russell: ["Los datos dirán más.", "Hay que maximizar cada oportunidad.", "Un paso en la buena dirección.", "Seguimos analizando."],
+  antonelli: ["Estoy aprendiendo muchísimo.", "Soy joven, pero tengo hambre.", "Cada carrera es una lección."],
+  sainz: ["Hemos trabajado mucho para esto.", "Estoy orgulloso del equipo.", "Hay que seguir sumando.", "Smooth operator."],
+  albon: ["Vamos mejorando poco a poco.", "El equipo ha hecho un gran trabajo."],
+  gasly: ["Merci à toute l'équipe.", "Contento por la gente de la fábrica.", "Hay que seguir así."],
+  ocon: ["Hemos sacado el máximo.", "Seguimos luchando."],
+  tsunoda: ["Estoy muy motivado.", "Hay que seguir atacando."],
+  hulkenberg: ["La experiencia cuenta.", "Buen trabajo de todos."],
+  arevalo: ["Carrera a carrera.", "Sigo aprendiendo muchísimo.", "Esto es un sueño.", "No me pongo techo.", "Gracias a toda la gente de Aurelia."],
+  default: ["Seguimos trabajando.", "Hay que pasar página.", "Contento con el trabajo del equipo.", "Toca pensar en la siguiente.", "Seguimos aprendiendo."]
+};
+function tail(vr, id) { return vr.pick("tail-" + (PERSONA[id] ? id : "default"), PERSONA[id] || PERSONA.default); }
+const ANS = {
+  win: ["Qué carrera. El coche ha ido perfecto de principio a fin.", "Ganar aquí es especial. Hemos cuidado los neumáticos y no hemos cometido errores.", "No tengo palabras. Esto es para toda la gente de la fábrica.", "Ha sido exigente, pero teníamos ritmo para controlar desde delante.", "Victorias así se disfrutan el doble. Todo ha encajado.", "Lo hemos hecho todo bien: salida, ritmo y estrategia.", "Había que ser paciente y lo hemos sido. Victoria merecida."],
+  podium: ["Un podio siempre es buena noticia. Hoy no teníamos para más.", "Contento con el resultado. Hemos exprimido el coche.", "Estamos cerca. Si seguimos así, la victoria llegará.", "Podio y puntos importantes. Me llevo muchas cosas positivas.", "No era fácil hoy, así que este podio sabe bien."],
+  points: ["Hemos sumado, que es lo importante.", "No es lo que queríamos, pero los puntos cuentan al final del año.", "Carrera complicada. Nos llevamos puntos y cosas que analizar.", "Un resultado sólido en un día difícil.", "Nos ha faltado un poco para estar delante, pero sumamos."],
+  nopoints: ["Un día para olvidar. No hemos tenido ritmo.", "Frustrante. Hemos peleado, pero no había más.", "No podemos estar contentos. Toca analizarlo todo.", "Hoy nada ha salido como esperábamos.", "Hay que entender qué ha pasado y reaccionar rápido."],
+  dnf: ["Una pena no ver la bandera a cuadros.", "Duele, porque podíamos haber sumado.", "Son cosas de las carreras. Toca levantarse.", "No es el final que queríamos, pero pasamos página.", "Me voy con mal sabor de boca, sin duda."],
+  dsq: ["Es una decisión que tenemos que aceptar.", "Duro final de fin de semana. Lo hablaremos por dentro."]
+};
+const QUES = {
+  win: ["¿Cómo se vive una victoria así?", "¿En qué momento supiste que la carrera era tuya?", "¿Esperabais este ritmo?", "¿Es tu mejor victoria?", "¿Qué ha sido lo más difícil hoy?"],
+  podium: ["¿Qué ha faltado para pelear por la victoria?", "¿Te vas satisfecho con el podio?", "¿Estáis más cerca de ganar?"],
+  points: ["¿Da para estar contento?", "¿Dónde se os ha escapado el podio?", "¿Cómo valoras la carrera?"],
+  nopoints: ["¿Qué ha pasado hoy?", "¿Cómo se explica este fin de semana?", "¿Preocupa este resultado?"],
+  dnf: ["¿Cómo te sientes tras el abandono?", "¿Qué te llevas de este fin de semana?"],
+  dsq: ["¿Cómo encajas la descalificación?"]
+};
+const MQ = {
+  remontada: { q: ["¿Cuál fue la clave de la remontada?", "¿En qué momento viste que podías remontar?", "¿Cómo se construye una remontada así?"], a: ["Sabía que tenía ritmo. Había que ser paciente y elegir bien cada adelantamiento.", "Fui vuelta a vuelta. Cuando ves que vas pasando coches, te vienes arriba.", "El coche iba muy bien con el depósito lleno y lo aprovechamos."] },
+  salida: { q: ["Qué salida. ¿La tenías preparada?"], a: ["La salida era clave aquí y la hemos clavado.", "Trabajamos mucho las salidas y hoy ha dado frutos."] },
+  malasalida: { q: ["¿Qué pasó en la salida?"], a: ["Patiné un poco y perdí posiciones. A partir de ahí, a remontar.", "No fue la mejor salida, lo sé. Lo miraremos."] },
+  dominio: { q: ["¿Has tenido algún momento de apuro?", "Parecía fácil desde fuera. ¿Lo fue?"], a: ["Nunca es fácil, pero hoy el coche iba de maravilla.", "Desde fuera puede parecerlo, pero dentro hay que estar concentrado cada vuelta."] },
+  ultimavuelta: { q: ["¿Cómo viviste el adelantamiento a {Xl} en la última vuelta?", "¿Cuándo decidiste lanzarte a por {Xl}?"], a: ["Vi el hueco y no me lo pensé. En la última vuelta no hay nada que perder.", "Llevaba varias vueltas estudiándole. Sabía que tendría una sola oportunidad.", "Ha sido pura adrenalina. De esos adelantamientos que recordaré siempre."] },
+  duelo: { q: ["¿Disfrutaste del duelo con {Xl}?"], a: ["Muchísimo. Pelear así, al límite y limpio, es lo mejor de este deporte.", "Con {Xl} siempre sabes que va a ser duro pero justo."] },
+  defensa: { q: ["¿Cómo aguantaste a {Xl} todas esas vueltas?"], a: ["Había que colocar el coche en los sitios clave y no cometer errores.", "Sabía que venía más rápido, así que tocó defender con cabeza."] },
+  toque: { q: ["¿Qué pasó en el toque con {Xl}?", "¿Quién tuvo la culpa del contacto con {Xl}?"], a: ["Son cosas de las carreras. Los dos queríamos la misma curva.", "Desde dentro lo vi de una forma; seguro que él lo vio de otra. Lo hablaremos.", "No me gusta perder posiciones así, pero no voy a buscar culpables."] },
+  sc: { q: ["¿El safety car os ayudó o os perjudicó?"], a: ["Nos tocó adaptarnos rápido. El equipo reaccionó muy bien.", "Cambió todo, pero supimos aprovechar el momento."] },
+  lluvia: { q: ["¿Cómo fue conducir bajo la lluvia?"], a: ["Muy complicado. Cada curva era diferente.", "Me gusta la lluvia: ahí es donde se nota el piloto."] },
+  estrategia: { q: ["¿Fue la estrategia la clave del resultado?"], a: ["El muro ha estado brillante. La parada llegó en el momento justo.", "La estrategia nos ha dado mucho hoy."] },
+  sancion: { q: ["¿Qué opinas de la sanción?"], a: ["La acepto, aunque no la comparto del todo.", "Los comisarios deciden. Toca aprender y seguir."] },
+  averia: { q: ["¿Qué falló en el coche?"], a: ["Todavía no lo sabemos. El equipo lo está revisando.", "Una pena, porque teníamos buen ritmo."] },
+  error: { q: ["¿Qué pasó en tu error?"], a: ["Fue culpa mía y lo asumo. Aprenderé de ello.", "Me pasé de frenada. No hay excusas."] },
+  orden: { q: ["¿Cómo encajas la orden de equipo?"], a: ["Soy parte de un equipo y lo respeto.", "No voy a entrar en eso ahora. Lo hablaremos dentro."] },
+  lluvia_q: { q: ["¿Cómo fue la clasificación en mojado?"], a: ["Una lotería, pero salió bien.", "Había que arriesgar lo justo."] }
+};
+const RIVAL_ANS = {
+  toque: ["No me ha gustado nada lo de Arévalo. Veremos qué dicen los comisarios.", "Carreras. Los dos queríamos la misma curva.", "Arévalo es rápido, pero hoy se ha pasado."],
+  ultimavuelta: ["Me ha pillado por sorpresa. Chapeau.", "Me ha hecho un buen adelantamiento, no hay más.", "Duele perderlo así, en la última vuelta."],
+  duelo: ["Ha sido una pelea preciosa. Así da gusto correr.", "Con Arévalo siempre es duro, pero limpio."],
+  defensa: ["Lo he intentado todo, pero no había hueco.", "Defendió muy bien, hay que reconocerlo."]
+};
+
+/* ---------- contexto del campeonato ---------- */
+function prevStandings(core, r) {
+  const prog = core.progress || {};
+  const prev = core.rounds.filter((x) => x.race && x.r < r && prog[x.r]).map((x) => x.r).pop();
+  if (prev != null) return prog[prev];
+  const round = roundOf(core, r);
+  if (round && round.contrib && !core.stale && round.race && round.race.full) {
+    const p = {};
+    DRIVER_IDS.forEach((d) => { p[d] = r1((core.standings[d] || 0) - (round.contrib[d] || 0)); });
+    return p;
+  }
+  return null;
+}
+function podStreak(core, d, r) {
+  let n = 0;
+  for (const rd of core.rounds.filter((x) => x.race && x.r <= r).reverse()) { const x = resOf(rd, d); if (!x) break; if (finished(x) && x.pos <= 3) n++; else break; }
+  return n;
+}
+function champCtx(core, round) {
+  const t = driverTable(core);
+  const prev = prevStandings(core, round.r);
+  const rankPrev = prev ? DRIVER_IDS.slice().sort((a, b) => (prev[b] || 0) - (prev[a] || 0)) : null;
+  const gains = DRIVER_IDS.map((d) => ({ d, g: prev ? r1((core.standings[d] || 0) - (prev[d] || 0)) : (resOf(round, d) && resOf(round, d).pts) || 0 })).sort((a, b) => b.g - a.g);
+  const me = t.find((x) => x.id === ME);
+  const other = me.pos === 1 ? t[1] : t[0];
+  const gapNow = me.pos === 1 ? me.pts - t[1].pts : t[0].pts - me.pts;
+  const gapPrev = prev ? (me.pos === 1 ? (prev[ME] || 0) - (prev[t[1].id] || 0) : (prev[t[0].id] || 0) - (prev[ME] || 0)) : null;
+  const streaks = DRIVER_IDS.filter((d) => d !== ME).map((d) => ({ d, n: podStreak(core, d, round.r) })).filter((x) => x.n >= 3).sort((a, b) => b.n - a.n);
+  const contendersOut = t.slice(0, 6).map((x) => x.id).filter((d) => d !== ME && resOf(round, d) && !finished(resOf(round, d)));
+  const leaderChange = rankPrev && rankPrev[0] !== t[0].id ? { from: rankPrev[0], to: t[0].id } : null;
+  const pairs = TEAM_IDS.filter((tm) => tm !== teamOf(core, ME)).map((tm) => { const ds = teamDrivers(core, tm); return ds.length === 2 ? { tm, a: ds[0], b: ds[1], d: Math.abs((core.standings[ds[0]] || 0) - (core.standings[ds[1]] || 0)) } : null; }).filter((x) => x && (core.standings[x.a] || core.standings[x.b])).sort((a, b) => a.d - b.d);
+  return { t, prev, gains, me, other, gapNow, gapPrev, streaks, contendersOut, leaderChange, pair: pairs[0] || null, left: core.rounds.filter((x) => !x.race).length };
+}
+function champSentences(vr, core, round, cc) {
+  const out = [];
+  const L = (id) => fullName(id);
+  if (cc.leaderChange) out.push(vr.f("ch-lead", ["{to} es el nuevo líder del Mundial: arrebata el primer puesto a {from}.", "Cambio en lo más alto: {to} se pone líder por delante de {from}.", "El Mundial tiene nuevo dueño. {to} supera a {from} en la general."], { to: L(cc.leaderChange.to), from: L(cc.leaderChange.from) }));
+  if (cc.gapPrev != null && !core.stale) {
+    const d = r1(cc.gapNow - cc.gapPrev);
+    if (cc.me.pos === 1) out.push(vr.f(d >= 0 ? "ch-up" : "ch-down", d >= 0 ? ["Arévalo amplía su ventaja sobre {O} hasta los {gap} puntos ({d} más que antes).", "La renta de Arévalo crece: ahora son {gap} puntos sobre {O}.", "Otro golpe en la general: {gap} puntos separan ya a Arévalo de {O}."] : ["{O} recorta {dd} puntos y se queda a {gap} de Arévalo.", "La ventaja de Arévalo baja a {gap} puntos: {O} aprieta.", "Aviso para el líder: {O} está ahora a {gap} puntos."], { O: L(cc.other.id), gap: fmt(cc.gapNow), d: fmt(Math.abs(d)), dd: fmt(Math.abs(d)) }));
+    else out.push(vr.f(d <= 0 ? "ch-close" : "ch-far", d <= 0 ? ["Arévalo recorta {dd} puntos y se queda a {gap} de {O}.", "La distancia con {O} baja a {gap} puntos.", "Arévalo se acerca: {gap} puntos le separan del liderato de {O}."] : ["{O} se escapa: ahora le saca {gap} puntos a Arévalo.", "Mal día para la general: {gap} puntos de distancia con {O}."], { O: L(cc.other.id), gap: fmt(cc.gapNow), dd: fmt(Math.abs(d)) }));
+  }
+  const big = cc.gains.find((x) => x.d !== ME && x.g >= 12);
+  if (big) out.push(vr.f("ch-gain", ["{X} fue uno de los grandes beneficiados del día: suma {g} puntos y ya es {pos}.º.", "Gran jornada para {X}, que se lleva {g} puntos y aparece {pos}.º en la general.", "{X} no desaprovechó la ocasión: {g} puntos que le colocan {pos}.º."], { X: L(big.d), g: fmt(big.g), pos: cc.t.find((x) => x.id === big.d).pos }));
+  if (cc.contendersOut[0]) out.push(vr.f("ch-out", ["El abandono de {X} le cuesta caro en la general.", "Día negro para {X}: sin puntos, pierde terreno en la pelea de arriba.", "{X} se va de vacío, y eso en la zona alta del Mundial se paga."], { X: L(cc.contendersOut[0]) }));
+  if (cc.streaks[0]) out.push(vr.f("ch-streak", ["{X} encadena {n} podios seguidos: está en un momento dulce.", "Ojo a {X}: {n} podios consecutivos.", "Nadie está más en forma que {X}, con {n} podios seguidos."], { X: L(cc.streaks[0].d), n: cc.streaks[0].n }));
+  if (cc.pair && cc.pair.d <= 10) out.push(vr.f("ch-pair", ["En {T}, {A} y {B} están separados por solo {d} puntos. Duelo interno servido.", "La pelea más igualada está en {T}: {d} puntos entre {A} y {B}."], { T: team(cc.pair.tm).name, A: L(cc.pair.a), B: L(cc.pair.b), d: fmt(cc.pair.d) }));
+  if (cc.left > 0 && cc.left <= 5 && !core.stale) out.push(vr.f("ch-left", ["Quedan {n} carreras y la cuenta atrás ya ha empezado.", "Con {n} carreras por delante, cada punto vale doble."], { n: cc.left }));
+  return out;
+}
+
+/* ---------- entrevistas ---------- */
+function outletFor(d) { return NAT_OUTLET[DRIVERS[d].nat] || ["chicane", "pitwall", "rettilineo"][DRIVER_IDS.indexOf(d) % 3]; }
+function buildInterviews(vr, core, round, ctx, kind, moms, cc) {
+  const iv = [];
+  const seen = new Set();
+  const place = ctx.place;
+  const put = (d, q, a, by) => { if (!d || seen.has(d)) return; seen.add(d); iv.push({ speaker: fullName(d), team: teamOf(core, d), by: by || outletFor(d), q, a }); };
+  const me = ctx.me;
+  const o = outcome(me);
+  const top = moms.find((m) => MQ[m.id] && (m.id !== "lluvia" || kind !== "quali"));
+  if (o !== "unknown") {
+    let q = vr.pick("q-" + o, QUES[o]), a = vr.pick("a-" + o, ANS[o]);
+    if (top) {
+      const vars = { Xl: top.who ? LN(top.who) : "tu rival", pos: finished(me) ? me.pos : "" };
+      q = vr.f("mq-" + top.id, MQ[top.id].q, vars);
+      a = vr.f("ma-" + top.id, MQ[top.id].a, vars) + " " + a;
+    }
+    if (cc && cc.me.pos === 1) a += " " + vr.pick("a-lead", ["El Mundial es largo, así que carrera a carrera.", "No miro la clasificación: miro la siguiente curva.", "Ser líder es bonito, pero no gana nada todavía.", "La ventaja está bien, pero hay que seguir."]);
+    else if (cc) a += " " + vr.f("a-chase", ["Quedan muchos puntos y vamos a por todos.", "{O} está delante, pero no pienso rendirme.", "El Mundial no se decide hoy."], { O: LN(cc.other.id) });
+    put(ME, q, a + " " + tail(vr, ME), "cronometro");
+  }
+  if (ctx.winner && ctx.winner !== ME) {
+    const w = ctx.winner;
+    put(w, vr.pick("q-win2", QUES.win), vr.pick("a-win2", ANS.win) + " " + vr.pick("a-w-rival", ["Arévalo es muy rápido, pero hoy tocaba ganar a nosotros.", "Sé que Arévalo es la referencia, y ganarle sabe mejor.", "No pienso en los demás, pienso en mi coche."]) + " " + tail(vr, w));
+  }
+  moms.filter((m) => RIVAL_ANS[m.id] && m.who && m.who !== ME).slice(0, 1).forEach((m) => {
+    put(m.who, vr.f("q-riv-" + m.id, ["¿Qué pasó con Arévalo?", "¿Cómo viste el momento con Arévalo?", "¿Qué opinas de lo ocurrido con Arévalo?"], {}), vr.pick("ra-" + m.id, RIVAL_ANS[m.id]) + " " + tail(vr, m.who));
+  });
+  if (ctx.mate && ctx.mateRes) {
+    const x = ctx.mateRes, mo = outcome(x);
+    let a = vr.pick("a-mate-" + mo, ANS[mo] || ANS.points);
+    const ahead = finished(x) && (!finished(me) || x.pos < me.pos);
+    a = (ahead ? vr.pick("mate-ahead", ["Hoy la pista ha hablado. ", "Sigo aquí, y hoy se ha visto. ", "Algunos se olvidaron de mí demasiado pronto. ", "Esto es lo que vengo diciendo: el Mundial es largo. "]) : vr.pick("mate-behind", ["No voy a hablar de mi compañero. Hablo de mi coche. ", "Andrés ha hecho su carrera; yo me centro en la mía. ", "El campeonato no se decide en una tarde. ", "No estoy contento, y no lo voy a esconder. "])) + a;
+    put(ctx.mate, vr.pick("q-mate", ["¿Cómo valoras tu carrera?", "¿Qué te ha faltado hoy?", "¿Cómo está la relación con Arévalo?", "¿Te preocupa la diferencia con tu compañero?"]), a + " " + tail(vr, ctx.mate), "folha");
+  }
+  if (cc && kind === "race") {
+    const rival = cc.other.id !== ctx.mate ? cc.other.id : cc.t.find((x) => x.id !== ME && x.id !== ctx.mate).id;
+    if (rival && !seen.has(rival) && resOf(round, rival)) {
+      const gap = Math.abs((core.standings[rival] || 0) - (core.standings[ME] || 0));
+      put(rival, vr.pick("q-title", ["¿Cómo ves la lucha por el Mundial?", "¿Te ves capaz de alcanzar a Arévalo?", "¿Qué necesitas para ganar el título?"]), vr.f("a-title", ["{g} puntos no son nada con las carreras que quedan.", "Mientras sea matemáticamente posible, lo intentaré.", "Hay que ganar carreras y esperar algún error de los de delante.", "No miro la clasificación. Si hacemos nuestro trabajo, llegará."], { g: fmt(gap) }) + " " + tail(vr, rival));
+    }
+  }
+  if (kind === "race") {
+    const b = bossQuote(ctx.g || vr.g, ctx);
+    iv.push(Object.assign(b, { by: "rettilineo", a: b.a + " " + vr.pick("boss-extra", ["", "Estoy orgulloso de todo el equipo.", "Ahora toca pensar en la siguiente carrera.", "Hay cosas que mejorar, como siempre."]) }));
+  }
+  return iv.slice(0, 6);
+}
+
+/* ---------- redes ---------- */
+const FANS2 = [
+  { name: "Lucía 🏁", handle: "lucia_boxbox", lang: "es", fav: ME },
+  { name: "Aurelia Ultras", handle: "aurelia_ultras", lang: "es", fav: ME },
+  { name: "Marta 🏎️", handle: "marta_en_la_grada", lang: "es", fav: ME },
+  { name: "Pepe Box Box", handle: "boxbox_pepe", lang: "es", skeptic: true },
+  { name: "Grid Nerd 📊", handle: "gridnerd_stats", lang: "es", stats: true },
+  { name: "Fernandista", handle: "nano_33_forever", lang: "es", fav: "alonso" },
+  { name: "Tifosi Rossi", handle: "tifosi_rossi", lang: "it", fav: "leclerc" },
+  { name: "Giulia Rossa", handle: "giulia_forza_rossa", lang: "it", fav: "hamilton" },
+  { name: "Fã do Ayrton", handle: "fa_do_ayrton", lang: "pt", fav: "senna" },
+  { name: "Grid Brasil", handle: "grid_brasil", lang: "pt", fav: "bortoleto" },
+  { name: "Oranje Army", handle: "oranje_army", lang: "nl", fav: "verstappen" },
+  { name: "Papaya Rules", handle: "papaya_rules", lang: "en", fav: "norris" },
+  { name: "Oscar Fan AU", handle: "oscar_down_under", lang: "en", fav: "piastri" },
+  { name: "Silver Arrows Fan", handle: "silverarrows_sam", lang: "en", fav: "russell" },
+  { name: "Allez Pierre", handle: "allez_pierre10", lang: "fr", fav: "gasly" },
+  { name: "Hadjar Nation", handle: "hadjar_nation", lang: "fr", fav: "hadjar" },
+  { name: "Smooth Fan", handle: "smooth_operator55", lang: "es", fav: "sainz" }
+];
+const FANTXT = {
+  win: { es: ["¡¡¡{N}!!! 😭🏆", "{N} GANADOR, no me lo creo 🔥", "Qué carrera de {N}, madre mía 🏆", "{N} es otra cosa. OTRA COSA. 🏆"], it: ["{N} campione! 🔴🏆", "Che gara di {N}! 🔥"], pt: ["É DO {N}! 🇧🇷🏆", "Que corrida do {N}! 🔥"], en: ["{N} YOU BEAUTY 🏆", "What a drive from {N}! 🔥"], nl: ["Wat een coureur is {N}! 🧡🏆"], fr: ["{N} vainqueur ! Incroyable 🏆"] },
+  podium: { es: ["Podio para {N}, así sí 👏", "P{P} para {N}. Vamos creciendo 💪"], it: ["Podio per {N}. Ci siamo 🔴"], pt: ["{N} no pódio! 🇧🇷"], en: ["P{P} for {N}. We take those 🙌", "{N} on the podium, love to see it"], nl: ["Podium voor {N} 👏"], fr: ["Podium pour {N} ! 👏"] },
+  points: { es: ["P{P} para {N}. Algo es algo 🤷", "{N} suma. Sin más."], it: ["{N} P{P}. Serve di più 😤"], pt: ["{N} em {P}º. Dá para mais 😤"], en: ["P{P} for {N}. Solid, not spectacular", "{N} in the points. Fine."], nl: ["P{P} voor {N}. Volgende keer beter"], fr: ["P{P} pour {N}. Correct."] },
+  nopoints: { es: ["Hoy no ha sido el día de {N} 😔", "{N} fuera de los puntos… toca levantarse"], it: ["Giornata storta per {N}... 😩"], pt: ["Dia difícil para {N} 😔"], en: ["Tough one for {N} today 😬"], nl: ["Lastige dag voor {N} 😬"], fr: ["Journée difficile pour {N} 😬"] },
+  dnf: { es: ["NO, {N} NO 😭", "Abandono de {N}. Me voy a la cama 💔"], it: ["Ritiro per {N}. Che delusione 💔"], pt: ["Abandono do {N}... dói 💔"], en: ["Gutted for {N} 💔"], nl: ["Balen voor {N} 💔"], fr: ["Abandon de {N}... dur 💔"] }
+};
+const MOMENT_FAN = {
+  ultimavuelta: ["ESE ADELANTAMIENTO EN LA ÚLTIMA VUELTA 😱😱😱", "Arévalo en la última vuelta: 🏎️💨 {Xl}: 🧍", "Me ha dado un infarto con la última vuelta. Gracias Arévalo."],
+  remontada: ["Remontada de Arévalo, clip ya histórico 🚀", "Salió atrás y mira dónde acabó. Qué piloto.", "Esa remontada merece un documental 🚀"],
+  remontada_g: ["De P{grid} a P{pos}. Qué REMONTADA 🚀", "¿{gain} posiciones ganadas? Arévalo, eres un animal 🚀"],
+  toque: ["El toque entre Arévalo y {Xl}… ¿quién tiene la culpa? 👀", "Mañana solo se hablará del contacto con {Xl}", "Arévalo y {Xl}, esto va a traer cola 🍿"],
+  sc: ["El safety car nos ha dado la carrera 🟡🙌", "Safety car en el peor momento, cómo no"],
+  roja: ["Bandera roja. Mis nervios no aguantan 🔴", "Pausa para respirar, vaya carrera 🔴"],
+  lluvia: ["Carrera en mojado = carrera de pilotos 🌧️", "Con lluvia se ve quién sabe conducir 🌧️"],
+  duelo: ["Arévalo vs {Xl}, ese duelo merecía entrada doble ⚔️", "Qué batalla con {Xl}, limpia y al límite ⚔️"],
+  defensa: ["Arévalo defendiéndose de {Xl}: clase magistral 🛡️", "{Xl} lo intentó 40 veces y nada. Muro Arévalo 🧱"],
+  dominio: ["No ha habido carrera. Arévalo en otra liga 👑", "Arévalo desde la pole hasta la bandera, un paseo 👑"],
+  estrategia: ["El muro de Aurelia hoy, 10/10 🧠", "Esa parada ha ganado la carrera 🛞"],
+  sancion: ["La sanción me parece exagerada, no digo más 🙄", "Los comisarios, protagonistas otra vez 🙄"],
+  averia: ["La fiabilidad nos ha dejado tirados 😤🔧", "Avería. Lo que faltaba 🔧"],
+  orden: ["¿Orden de equipo en Aurelia? Esto se pone interesante 👀📻", "Radio de Aurelia: 📻 El garaje hoy: 🔥"]
+};
+function langOf(d) { return ES_DRIVERS.includes(d) ? "es" : "en"; }
+const DRVPOST = {
+  es: { win: ["P1 en {P}. ¡Qué día! Gracias, equipo 🏆 #{T}", "¡VICTORIA! {P}, no te olvidaré nunca 💙 #{T}", "Ganar así no tiene precio. Gracias a todos 🙏🏆", "Hoy toca celebrar. Mañana, a trabajar 🏆"], podium: ["P{N} hoy. Buenos puntos, seguimos empujando 💪 #{T}", "Podio en {P} 🍾 Seguimos", "P{N}. Contento con el trabajo del equipo 👏"], points: ["P{N}. Puntos en el bolsillo y mucho que aprender 📈", "Sumamos en {P}. A por la siguiente 👊"], nopoints: ["Hoy no ha sido nuestro día. Volveremos 👊", "Día duro. Cabeza fría y a por la siguiente."], dnf: ["Final de carrera decepcionante. Cabeza alta 🙏", "No ha podido ser. Nos levantaremos."], dsq: ["Día duro. Aprendemos y seguimos."] },
+  en: { win: ["P1 in {P}! What a day. Thank you team 🏆 #{T}", "WE WON IN {PU}! 🏆 #{T}", "Wins like this never get old. Thank you all 🙏", "What a race. What a team. 🏆", "Top step in {P}! 🥇", "Get in there!!! P1 🏆 #{T}"], podium: ["P{N} today. Good points, we keep pushing 💪 #{T}", "Podium in {P} 🍾 Onto the next one", "P{N}. Proud of the team 👏", "Trophy collected in {P} 🏆 Thanks for the support!", "Back on the podium. Feels good 🍾", "P{N} and big points. Let's keep this going 📈"], points: ["P{N}. Points on the board, lots to learn 📈", "Some points in {P}. We go again.", "Damage limitation today. P{N}.", "Every point counts. P{N} in {P}.", "Not the result we wanted, but we score. On to the next one."], nopoints: ["Not our day. We go again 👊", "Tough one. Head down, back to work.", "We'll analyse and come back stronger.", "Difficult Sunday in {P}. Thanks for the support as always."], dnf: ["Disappointing end to the race. Heads up, next one 🙏", "Not how we wanted it to end."], dsq: ["Tough day. We learn and move on."] }
+};
+const MOMENT_DRV = {
+  ultimavuelta: ["Última vuelta. Hueco. Adentro. 🏁😤", "Hay adelantamientos que se sueñan. Hoy lo he hecho 🏁"],
+  remontada: ["Desde atrás, pero nunca rendidos 🚀", "Remontar así no tiene precio. Vamos 🚀"],
+  toque: ["Contacto en carrera. Lo hablaremos en frío.", "Cosas de las carreras. Seguimos."],
+  lluvia: ["Bajo la lluvia se disfruta el doble 🌧️", "Vaya carrera en mojado 🌧️"],
+  dominio: ["Pole, victoria y vuelta rápida. Qué fin de semana 👑", "Un fin de semana perfecto 👑"],
+  defensa: ["Ni un hueco. Buena pelea hoy 🛡️"],
+  duelo: ["Qué pelea hoy. Así da gusto correr ⚔️"]
+};
+function buildSocial(vr, core, round, ctx, kind, moms, cc) {
+  const posts = [];
+  const seen = new Set();
+  const add = (p) => { if (!p || !p.text || seen.has(p.text)) return; seen.add(p.text); posts.push(Object.assign({ likes: 0, reposts: 0, replies: 0 }, p)); };
+  const R = (a, b) => ctx.g2.int(a, b);
+  const scale = (d) => (d === ME ? fameMult(core) * 1.2 : ["verstappen", "hamilton", "leclerc", "senna", "norris", "alonso"].includes(d) ? 1.5 : 0.7);
+  const vars = { P: ctx.place, PU: UP(ctx.place), T: ctx.tag };
+  const drvPost = (d, forceMoment) => {
+    const x = ctx.res[d];
+    const o = outcome(x);
+    if (o === "unknown") return;
+    const lg = langOf(d);
+    let text;
+    const mm = forceMoment && MOMENT_DRV[forceMoment.id];
+    if (mm && d === ME) text = vr.pick("dm-" + forceMoment.id, mm);
+    else text = vr.f(`dp-${lg}-${o}`, DRVPOST[lg][o] || DRVPOST.en.points, Object.assign({ N: finished(x) ? x.pos : "" }, vars));
+    if (d === ctx.mate) {
+      const ahead = finished(x) && (!finished(ctx.me) || x.pos < ctx.me.pos);
+      text = vr.pick(ahead ? "sen-ahead" : "sen-behind", ahead ? ["Hoy he hablado en la pista. 🇧🇷", "Sigo aquí. 🇧🇷", "Algunos ya me daban por muerto deportivamente. Aquí estoy. 🇧🇷", "Orgulloso de esta carrera. 🇧🇷"] : ["Seguimos. 🇧🇷", "El campeonato es largo. 🇧🇷", "Trabajo, trabajo y trabajo. 🇧🇷", "Mañana será otro día. 🇧🇷"]);
+    }
+    const s = scale(d);
+    add({ who: "driver", id: d, text, likes: Math.round(R(90000, 420000) * s), reposts: Math.round(R(6000, 40000) * s), replies: Math.round(R(2000, 15000) * s) });
+  };
+  const topMom = moms.find((m) => MOMENT_DRV[m.id]);
+  if (kind === "quali") {
+    [ME, ctx.pole, ctx.mate].filter((v, i, a) => v && a.indexOf(v) === i).forEach((d) => {
+      const q = ctx.qres[d];
+      if (!q) return;
+      const lg = langOf(d);
+      const text = q === 1 ? vr.f("qp-" + lg, lg === "es" ? ["POLE en {P} ⏱️💜 ¡Mañana, a por todas! #{T}", "Pole position 💜 Qué vuelta. #{T}", "Primera línea… y primera posición ⏱️ #{T}"] : ["POLE in {P} ⏱️💜 Let's go tomorrow! #{T}", "Pole position 💜 What a lap. #{T}"], vars)
+        : vr.f("qn-" + lg, lg === "es" ? ["P{Q} en la parrilla. Mañana hay carrera 💪 #{T}", "Saldremos {Q}.º. La carrera es mañana 👊"] : ["P{Q} on the grid. Race day tomorrow 💪 #{T}", "Starting P{Q}. Let's go 👊"], Object.assign({ Q: q }, vars));
+      add({ who: "driver", id: d, text, likes: R(60000, 260000), reposts: R(3000, 20000), replies: R(1000, 8000) });
+    });
+    add({ who: "journalist", id: "cronometro", text: ctx.qres[ME] === 1 ? vr.f("jq-pole", ["Pole de Arévalo en {P}. {extra}", "Arévalo, el más rápido del sábado en {P}. {extra}"], Object.assign({ extra: ctx.polesMe > 1 ? `Ya van ${ctx.polesMe} esta temporada.` : "Primera fila asegurada." }, vars)) : vr.f("jq-np", ["Arévalo saldrá {Q}.º en {P}. Mañana, a remontar.", "Sábado complicado para Arévalo: {Q}.º en {P}."], Object.assign({ Q: ctx.qres[ME] }, vars)), likes: R(2000, 16000), reposts: R(300, 3000), replies: R(100, 900) });
+    const f = FANS2.filter((x) => x.fav === ME)[Math.floor(ctx.g2.R() * 3)];
+    add({ who: "fan", name: f.name, handle: f.handle, text: ctx.qres[ME] === 1 ? vr.pick("fq-pole", ["POLE 😭💙 este chaval es otra cosa", "Sábado perfecto. Mañana, a rematar 💙", "Qué vuelta, madre mía 💜", "Pole y a dormir tranquilos 😌💜", "Ese último sector… 💜💜💜", "Mañana, victoria. Lo digo yo 💙"]) : vr.pick("fq-np", ["Mañana se remonta, confío 💙", "Queda la carrera, tranquilidad 🙏", "Sábado raro, domingo nuestro 💙", "No pasa nada, los puntos se dan el domingo 💙", "Con el ritmo de carrera que tiene, yo no me preocupo", "Mañana toca remontada, ya veréis 🚀"]), likes: R(200, 6000), reposts: R(10, 500), replies: R(5, 200) });
+    moms.slice(0, 1).forEach((m) => { if (MOMENT_TXT[m.id]) add({ who: "journalist", id: "pitwall", text: vr.f("jqm-" + m.id, ["{S}", "Saturday talking point: {S}"], { S: momentSentence(vr, m, vars) }), likes: R(800, 6000), reposts: R(100, 900), replies: R(50, 400) }); });
+    return posts;
+  }
+  drvPost(ME, topMom);
+  if (ctx.winner && ctx.winner !== ME) drvPost(ctx.winner);
+  if (ctx.mate) drvPost(ctx.mate);
+  ctx.podium.filter((d) => d !== ME && d !== ctx.winner && d !== ctx.mate).slice(0, 1).forEach((d) => drvPost(d));
+  moms.filter((m) => m.who && m.who !== ME).slice(0, 1).forEach((m) => { if (!seen.has(m.who)) drvPost(m.who); });
+  (cc ? cc.contendersOut : []).slice(0, 1).forEach((d) => drvPost(d));
+  if (ctx.me) add({ who: "team", id: teamOf(core, ME), text: vr.f("tp-aur", ["{A} para Andrés{B} en {P}. 💙 #AureliaRacing", "Resultado en {P}: {A} para Andrés{B}. Seguimos 💙", "📻 Andrés, {A}.{B2} Gracias a todo el equipo. 💙"], { P: ctx.place, A: finished(ctx.me) ? `P${ctx.me.pos}` : String(ctx.me.st).toUpperCase(), B: ctx.mateRes ? ` y ${finished(ctx.mateRes) ? `P${ctx.mateRes.pos}` : String(ctx.mateRes.st).toUpperCase()} para Ayrton` : "", B2: ctx.mateRes ? ` Ayrton, ${finished(ctx.mateRes) ? `P${ctx.mateRes.pos}` : String(ctx.mateRes.st).toUpperCase()}.` : "" }), likes: R(60000, 200000), reposts: R(4000, 15000), replies: R(1000, 6000) });
+  if (ctx.winner && teamOf(core, ctx.winner) !== teamOf(core, ME)) add({ who: "team", id: teamOf(core, ctx.winner), text: vr.f("tp-win", ["🏆 {W} WINS THE {G}!", "P1 for {W} in {P}! 🏆", "Victory! {W} takes the win in {P} 🏆"], { W: UP(fullName(ctx.winner)), G: UP(ctx.tag.replace("GP", " GP")), P: ctx.place }), likes: R(150000, 500000), reposts: R(10000, 40000), replies: R(3000, 12000) });
+  if (ctx.me && ctx.me.fl === true) add({ who: "team", id: teamOf(core, ME), text: vr.pick("tp-fl", ["💜 Vuelta rápida para Andrés.", "Y encima, la vuelta rápida 💜", "Purple sector, purple lap 💜"]), likes: R(30000, 90000), reposts: R(2000, 8000), replies: R(300, 2000) });
+  const facts = [];
+  if (ctx.myRow) facts.push(ctx.myRow.pos === 1 ? `Arévalo lidera el Mundial con ${fmt(ctx.myRow.pts)} puntos, ${fmt(ctx.myRow.pts - ctx.second.pts)} más que ${LN(ctx.second.id)}.` : `Arévalo es ${ctx.myRow.pos}.º del Mundial, a ${fmt(ctx.leader.pts - ctx.myRow.pts)} puntos de ${LN(ctx.leader.id)}.`);
+  const cs = careerStats(core, S.seasons, ME);
+  if (cs.winStreak.cur >= 2) facts.push(`${cs.winStreak.cur} victorias seguidas para Arévalo.`);
+  if (cs.wins) facts.push(`Arévalo suma ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"} en ${cs.races} carreras en la F1.`);
+  if (cs.podiumStreak.cur >= 3) facts.push(`${cs.podiumStreak.cur} podios seguidos para Arévalo.`);
+  if (cc && cc.streaks[0]) facts.push(`${fullName(cc.streaks[0].d)} encadena ${cc.streaks[0].n} podios seguidos.`);
+  if (cc && cc.pair && cc.pair.d <= 10) facts.push(`Solo ${fmt(cc.pair.d)} puntos separan a ${LN(cc.pair.a)} y ${LN(cc.pair.b)} en ${team(cc.pair.tm).name}.`);
+  if (facts.length) add({ who: "journalist", id: "cronometro", text: vr.pick("jc-lead", ["Dato: ", "📌 ", "Ojo al dato: ", ""]) + vr.pick("jc-fact", facts), likes: R(3000, 20000), reposts: R(500, 4000), replies: R(100, 1200) });
+  const brit = bestOf(ctx, OUTLET_FOCUS.pitwall());
+  if (brit) add({ who: "journalist", id: "pitwall", text: finished(brit[1]) ? vr.f("jp-b", ["{X} P{N} in {P}. {C}", "British hopes: {X} finishes P{N}. {C}", "{X} brings it home in P{N}. {C}"], { X: fullName(brit[0]), N: brit[1].pos, P: ctx.place, C: brit[1].pos <= 3 ? "Britain has a contender." : "Needs more than that." }) : vr.f("jp-dnf", ["DNF for {X}. Not what the fans wanted.", "Nightmare for {X}: out of the race."], { X: fullName(brit[0]) }), likes: R(1500, 12000), reposts: R(200, 2000), replies: R(100, 900) });
+  const ferr = bestOf(ctx, OUTLET_FOCUS.rettilineo(core));
+  if (ferr && ctx.g2.R() < 0.7) add({ who: "journalist", id: "rettilineo", text: finished(ferr[1]) ? vr.f("jr", ["Ferrari: P{N} con {X}. {C}", "{X} chiude P{N} a {P}. {C}"], { X: LN(ferr[0]), N: ferr[1].pos, P: ctx.place, C: ferr[1].pos === 1 ? "Che festa a Maranello!" : ferr[1].pos <= 3 ? "Si può sognare." : "Serve di più per il Mondiale." }) : vr.f("jr-dnf", ["Ritiro per {X}. Maranello si interroga.", "Giornata nera: fuori {X}."], { X: LN(ferr[0]) }), likes: R(1500, 14000), reposts: R(200, 2500), replies: R(100, 900) });
+  if (ctx.mateRes) add({ who: "journalist", id: "folha", text: finished(ctx.mateRes) ? vr.f("jf", ["Ayrton terminou em {N}º em {P}. {C}", "{N}º lugar para Ayrton em {P}. {C}"], { N: ctx.mateRes.pos, P: ctx.place, C: finished(ctx.me) && ctx.me.pos < ctx.mateRes.pos ? "O novato segue à frente." : "Hoje foi dele." }) : vr.pick("jf-dnf", ["Abandono do Ayrton. Um golpe duro.", "Ayrton fora da corrida. Que pena."]), likes: R(5000, 30000), reposts: R(800, 6000), replies: R(300, 2500) });
+  const max = ctx.res.verstappen;
+  if (max && ctx.g2.R() < 0.55) add({ who: "journalist", id: "circuit", text: finished(max) ? vr.f("jn", ["Max P{N}. {C}", "Verstappen eindigt als {N}e. {C}"], { N: max.pos, C: max.pos === 1 ? "Zo ken ik hem weer." : max.pos <= 3 ? "Hij blijft erbij." : "Dit is niet genoeg." }) : vr.pick("jn-dnf", ["Uitvalbeurt voor Max. Pijnlijk.", "Max valt uit. Slechte dag."]), likes: R(2000, 12000), reposts: R(300, 2000), replies: R(100, 800) });
+  if (ctx.mateRes && ctx.me) add({ who: "journalist", id: "confidencial", text: vr.pick("jconf", ["Me cuentan que en el motorhome de Aurelia no ha habido abrazos esta noche. 🤫", "Dos pilotos, dos caminos distintos para salir del circuito. Casualidad, seguro. 👀", "¿Cena de equipo en Aurelia? Dicen que faltaba alguien en la mesa. 🍽️👀", "Portazo en el garaje azul. No digo más. 🚪👀", "El ingeniero de Senna y el de Arévalo ya no se sientan juntos. 👀", "Aurelia prepara una reunión de urgencia. Oficialmente, rutina. 🤫"]), likes: R(10000, 40000), reposts: R(2000, 9000), replies: R(1000, 5000) });
+  moms.slice(0, 2).forEach((m) => {
+    const gain = gridOf(round, ME) && finished(ctx.me) ? gridOf(round, ME) - ctx.me.pos : 0;
+    const arr = m.id === "remontada" && gain > 0 ? MOMENT_FAN.remontada.concat(MOMENT_FAN.remontada_g) : MOMENT_FAN[m.id];
+    if (!arr) return;
+    const f = FANS2[Math.floor(ctx.g2.R() * FANS2.length)];
+    add({ who: "fan", name: f.lang === "es" ? f.name : "Fórmula Fan ES", handle: f.lang === "es" ? f.handle : "formulafan_es", text: vr.f("mf-" + m.id, arr, { Xl: m.who ? LN(m.who) : "su rival", grid: gridOf(round, ME) || "", pos: finished(ctx.me) ? ctx.me.pos : "", gain: gridOf(round, ME) && finished(ctx.me) ? gridOf(round, ME) - ctx.me.pos : "" }), likes: R(800, 25000), reposts: R(100, 5000), replies: R(50, 1500) });
+  });
+  const fans = ctx.g2.shuffle(FANS2);
+  let nf = 0;
+  fans.forEach((f) => {
+    if (nf >= 4) return;
+    let text = null;
+    if (f.skeptic && ctx.me) text = finished(ctx.me) && ctx.me.pos === 1 ? vr.pick("sk-win", ["Vale, vale... igual el chaval es bueno de verdad 🙄", "Bueno, reconozco que hoy lo ha hecho bien. Solo hoy. 🙄", "Con ese coche gano hasta yo. (Es broma. O no.) 🙄"]) : vr.pick("sk-lose", ["¿Veis? Ya os dije que no era para tanto 🙄", "Se acabó la magia, señores 🙄", "Os lo dije. Os lo dije. 🙄"]);
+    else if (f.stats && facts.length) text = "📊 " + vr.pick("fs-fact", facts);
+    else if (f.fav && ctx.res[f.fav]) {
+      const x = ctx.res[f.fav];
+      const o = outcome(x) === "dsq" ? "dnf" : outcome(x);
+      text = vr.f(`ft-${o}-${f.lang}`, FANTXT[o][f.lang] || FANTXT[o].es, { N: f.fav === ME ? "ARÉVALO" : UP(LN(f.fav)), P: finished(x) ? x.pos : "" });
+    }
+    if (text) { add({ who: "fan", name: f.name, handle: f.handle, text, likes: R(20, 9000), reposts: R(2, 900), replies: R(1, 300) }); nf++; }
+  });
+  if (cc && cc.t && ctx.g2.R() < 0.5) {
+    const a = cc.t[0], b = cc.t[1];
+    const pa = ctx.g2.int(38, 62);
+    add({ who: "journalist", id: "cronometro", text: `📊 ENCUESTA: ¿Quién ganará el Mundial?\n${LN(a.id)}: ${pa}%\n${LN(b.id)}: ${100 - pa - 6}%\nOtro: 6%`, likes: R(4000, 20000), reposts: R(500, 3000), replies: R(800, 5000) });
+  }
+  return posts.length ? [posts[0]].concat(ctx.g2.shuffle(posts.slice(1))).slice(0, 14) : posts;
+}
+function buildTrends(ctx, moms, kind) {
+  const t = trendsFor(ctx.g2, null, ctx, kind);
+  const tags = { ultimavuelta: "#UltimaVuelta", remontada: "#Remontada", toque: "#Polémica", sc: "#SafetyCar", roja: "#BanderaRoja", lluvia: "#LluviaF1", dominio: "#Arévalo" + ctx.tag, duelo: "#DueloÉpico", defensa: "#MuroArévalo", sancion: "#Comisarios" };
+  moms.slice(0, 2).forEach((m) => { if (tags[m.id] && !t.some((x) => x.tag === tags[m.id])) t.push({ tag: tags[m.id], posts: ctx.g2.int(12000, 70000) }); });
+  return t.sort((a, b) => b.posts - a.posts).slice(0, 6);
+}
+
+/* ---------- portadas según los momentos ---------- */
+function momentHeadline(vr, moms, ctx) {
+  const m = moms.find((x) => ["remontada", "ultimavuelta", "toque", "lluvia", "dominio", "roja", "sc"].includes(x.id));
+  if (!m) return null;
+  const X = m.who ? UP(LN(m.who)) : "";
+  const P = UP(ctx.place);
+  const map = {
+    remontada: ["¡REMONTADA HISTÓRICA!", "¡QUÉ REMONTADA, ARÉVALO!", "DESDE ATRÁS, COMO LOS GRANDES"],
+    ultimavuelta: [`¡EN LA ÚLTIMA VUELTA!`, `ARÉVALO FULMINA A ${X} AL FINAL`, "ADELANTAMIENTO DE INFARTO"],
+    toque: [`CHISPAS ENTRE ARÉVALO Y ${X}`, `POLÉMICA EN ${P}`, `ARÉVALO Y ${X}, CARA A CARA`],
+    lluvia: ["¡ARÉVALO DOMA LA LLUVIA!", `DILUVIO EN ${P}`, "BAILANDO BAJO LA LLUVIA"],
+    dominio: ["PASEO TRIUNFAL", "ARÉVALO, EN OTRA LIGA", "UN FIN DE SEMANA PERFECTO"],
+    roja: [`CAOS EN ${P}`, "CARRERA DE LOCOS", "BANDERA ROJA Y DRAMA"],
+    sc: [`LOCURA EN ${P}`, "EL SAFETY CAR LO CAMBIA TODO"]
+  };
+  if (m.id === "ultimavuelta" && !X) map.ultimavuelta = map.ultimavuelta.filter((h) => !h.includes("FULMINA"));
+  if (m.id === "toque" && !X) map.toque = [`POLÉMICA EN ${P}`];
+  return { headline: vr.pick("mh-" + m.id, map[m.id]), m };
+}
+
+/* ---------- piezas entre carreras según rivales y momentos ---------- */
+function extraCandidates(core, round, g, ctx) {
+  const vr = makeVary(core, g);
+  const moms = roundMoments(core, round, "race");
+  const cc = champCtx(core, round);
+  const out = [];
+  const tiny = (p) => Object.assign({ likes: g.int(500, 20000), reposts: g.int(50, 3000), replies: g.int(20, 1200) }, p);
+  const polemic = moms.find((m) => (m.id === "toque" || m.id === "sancion") && m.who);
+  if (polemic) {
+    const X = polemic.who === ME ? null : polemic.who;
+    out.push({ w: 42, key: "polemica", o: {
+      kicker: "La polémica", color: "#E10600",
+      title: X ? vr.pick("xp-t", [`ARÉVALO Y ${UP(LN(X))}: LA POLÉMICA DEL DÍA`, `EL TOQUE QUE ENCIENDE EL MUNDIAL`, `${UP(LN(X))} CONTRA ARÉVALO: DOS VERSIONES`]) : vr.pick("xp-t2", ["LA SANCIÓN QUE NADIE ENTIENDE", "LOS COMISARIOS, EN EL CENTRO DEL DEBATE"]),
+      subtitle: `Lo ocurrido en ${ctx.place} divide al paddock.`,
+      sections: [{ heading: "🔎 Lo que pasó", body: momentSentence(vr, polemic, { P: ctx.place }) }, { heading: "🗣️ Las dos versiones", body: vr.pick("xp-b", ["En el box de Aurelia lo ven como un lance de carrera. Al otro lado, no tanto.", "Las imágenes no aclaran del todo quién tuvo la culpa, y cada equipo defiende lo suyo.", "Los comisarios han tenido la última palabra, pero en el paddock el debate sigue abierto."]) }],
+      interviews: X ? [{ speaker: fullName(X), team: teamOf(core, X), by: outletFor(X), q: "¿Qué pasó con Arévalo?", a: vr.pick("ra-toque2", RIVAL_ANS.toque) }] : [],
+      social: [tiny({ who: "journalist", id: "confidencial", text: "La polémica de la semana ya está aquí. Palomitas. 🍿" })]
+    } });
+  }
+  const chaos = moms.filter((m) => ["sc", "vsc", "roja", "lluvia"].includes(m.id));
+  if (chaos.length) out.push({ w: 26 + chaos.length * 6, key: "caos", o: {
+    kicker: "Análisis", color: "#F59E0B",
+    title: vr.pick("xc-t", [`LA CARRERA MÁS LOCA DEL AÑO`, `${UP(ctx.place)}, UN CAOS PERFECTO`, "ASÍ SE VIVIÓ EL CAOS"]),
+    subtitle: chaos.map((m) => (MOMENTS.race.find((d) => d.id === m.id) || {}).label).join(", ") + ".",
+    sections: [{ heading: "🌪️ Lo que cambió la carrera", body: chaos.map((m) => momentSentence(vr, m, { P: ctx.place })).join("\n\n") }, { heading: "🧠 Quién supo aprovecharlo", body: ctx.winner ? `${fullName(ctx.winner)} fue quien mejor leyó una carrera llena de giros.${ctx.me && finished(ctx.me) ? ` Arévalo terminó ${ctx.me.pos}.º.` : ""}` : "Fue una carrera de las que premian la cabeza fría." }],
+    social: [tiny({ who: "fan", name: "Grid Nerd 📊", handle: "gridnerd_stats", text: vr.pick("xs-caos", ["Carrera de las que se recordarán. Qué locura.", "Necesito una tila después de esta carrera 😮‍💨", "Guion de película hoy. 🎬", "No me da la vida con esta carrera 🤯"]) })]
+  } });
+  const epic = moms.find((m) => ["remontada", "ultimavuelta", "defensa", "duelo"].includes(m.id));
+  if (epic && ctx.me) out.push({ w: 34, key: "epica", o: {
+    kicker: "El momento", color: "#8B3DFF",
+    title: { remontada: vr.pick("xe-r", ["LA REMONTADA, PASO A PASO", "ASÍ REMONTÓ ARÉVALO", "DE ATRÁS HACIA DELANTE", "LA TARDE EN QUE ARÉVALO NO SE RINDIÓ", "ANATOMÍA DE UNA REMONTADA"]), ultimavuelta: vr.pick("xe-u", ["EL ADELANTAMIENTO DEL AÑO", "UNA ÚLTIMA VUELTA PARA LA HISTORIA", "SANGRE FRÍA EN LA ÚLTIMA VUELTA", "EL MOVIMIENTO QUE NADIE VIO VENIR"]), defensa: vr.pick("xe-d", ["EL MURO ARÉVALO", "UNA LECCIÓN DE DEFENSA", "NI UN CENTÍMETRO", "RESISTIR ES GANAR"]), duelo: vr.pick("xe-du", ["EL DUELO QUE ENAMORÓ AL PADDOCK", "RUEDA A RUEDA", "UNA BATALLA DE LAS DE ANTES", "DOS PILOTOS, UNA CURVA"]) }[epic.id],
+    subtitle: momentSentence(vr, epic, { P: ctx.place, grid: gridOf(round, ME) || "", pos: finished(ctx.me) ? ctx.me.pos : "", gain: gridOf(round, ME) && finished(ctx.me) ? gridOf(round, ME) - ctx.me.pos : "" }),
+    sections: [{ heading: "🎬 La secuencia", body: vr.pick("xe-b", ["Los aficionados no dejan de compartir las imágenes. En redes, el momento ya acumula miles de reproducciones.", "En la retransmisión, el comentarista se quedó sin voz. En la grada, nadie se quedó sentado.", "Es de esos momentos que se repetirán en los resúmenes de fin de temporada."]) }],
+    social: [tiny({ who: "team", id: teamOf(core, ME), text: vr.pick("xs-ep", ["Esto hay que verlo en bucle. 🔁💙", "Guardad este clip. 🎬💙", "Momentazo. 💙", "Que alguien le ponga música épica a esto 🎵💙"]), likes: g.int(80000, 250000) })]
+  } });
+  if (cc.leaderChange) out.push({ w: 60, key: "lider", o: {
+    kicker: "Nuevo líder", color: "#F2C14E",
+    title: cc.leaderChange.to === ME ? vr.pick("xl-me", ["ARÉVALO, NUEVO LÍDER DEL MUNDIAL", "EL NOVATO SE PONE AL FRENTE"]) : `${UP(fullName(cc.leaderChange.to))}, NUEVO LÍDER`,
+    subtitle: `${fullName(cc.leaderChange.to)} supera a ${fullName(cc.leaderChange.from)} en la general.`,
+    sections: [{ heading: "🏆 La general", body: cc.t.slice(0, 5).map((x) => `${x.pos}. ${fullName(x.id)}: ${fmt(x.pts)} pts`).join("\n") }]
+  } });
+  if (cc.streaks[0] && cc.streaks[0].d !== ctx.mate) {
+    const s = cc.streaks[0];
+    out.push({ w: 22, key: "forma-" + s.d, o: {
+      kicker: "Momento de forma", color: tcolor(teamOf(core, s.d)),
+      title: vr.f("xf-t", ["{X}, IMPARABLE", "NADIE ESTÁ MÁS EN FORMA QUE {X}", "{X} ENCADENA {n} PODIOS"], { X: UP(LN(s.d)), n: s.n }),
+      subtitle: `${s.n} podios seguidos y ${fmt(core.standings[s.d])} puntos en el Mundial.`,
+      sections: [{ heading: "📈 La racha", body: `${fullName(s.d)} (${TNAME(core, s.d)}) suma ${s.n} podios consecutivos. Es ${cc.t.find((x) => x.id === s.d).pos}.º del Mundial.` }],
+      interviews: [{ speaker: fullName(s.d), team: teamOf(core, s.d), by: outletFor(s.d), q: "¿Cuál es el secreto de esta racha?", a: vr.pick("xf-a", ["Estamos trabajando muy bien como equipo.", "Confianza. Cuando el coche responde, todo es más fácil.", "No hay secretos: trabajo y más trabajo."]) + " " + tail(vr, s.d) }]
+    } });
+  }
+  const second = cc.t.find((x) => x.id !== ME && x.pos <= 3);
+  if (second && round.r % 2 === 0) out.push({ w: 16, key: "puede-" + second.id, o: {
+    kicker: "Opinión", color: "#D4001A",
+    title: vr.f("xo-t", ["¿PUEDE {X} GANAR EL MUNDIAL?", "{X}, LA GRAN AMENAZA", "EL PLAN DE {X}"], { X: UP(LN(second.id)) }),
+    subtitle: `Es ${second.pos}.º con ${fmt(second.pts)} puntos.`,
+    sections: [{ heading: "✍️ El análisis", body: `${fullName(second.id)} está ${second.pos}.º con ${fmt(second.pts)} puntos${cc.me.pos === 1 ? `, a ${fmt(cc.me.pts - second.pts)} de Arévalo` : ""}. ` + vr.pick("xo-b", ["Tiene coche y experiencia, pero necesita que el líder falle.", "Si mantiene la regularidad, la lucha llegará viva al final.", "La clave será no dejarse más puntos en carreras malas."]) }]
+  } });
+  if (cc.pair && cc.pair.d <= 8) out.push({ w: 14, key: "pair-" + cc.pair.tm, o: {
+    kicker: "Duelo interno", color: team(cc.pair.tm).color,
+    title: vr.f("xd-t", ["{T}: GUERRA EN CASA", "{A} CONTRA {B}", "EL OTRO DUELO FRATRICIDA"], { T: UP(team(cc.pair.tm).name), A: UP(LN(cc.pair.a)), B: UP(LN(cc.pair.b)) }),
+    subtitle: `Solo ${fmt(cc.pair.d)} puntos separan a los dos pilotos de ${team(cc.pair.tm).name}.`,
+    sections: [{ heading: "⚔️ Los números", body: `${fullName(cc.pair.a)}: ${fmt(core.standings[cc.pair.a])} puntos. ${fullName(cc.pair.b)}: ${fmt(core.standings[cc.pair.b])} puntos.` }]
+  } });
+  if (cc.contendersOut[0]) out.push({ w: 18, key: "negro-" + cc.contendersOut[0], o: {
+    kicker: "Día negro", color: "#64748B",
+    title: vr.f("xn-t", ["EL DÍA MÁS NEGRO DE {X}", "{X}, CERO PUNTOS Y MUCHAS DUDAS"], { X: UP(LN(cc.contendersOut[0])) }),
+    subtitle: `El abandono de ${fullName(cc.contendersOut[0])} en ${ctx.place} complica su temporada.`,
+    sections: [{ heading: "📉 El golpe", body: `${fullName(cc.contendersOut[0])} no terminó en ${ctx.place} y se queda con ${fmt(core.standings[cc.contendersOut[0]])} puntos.` }]
+  } });
+  return out;
+}
+
+/* ---------- crónica enriquecida ---------- */
+function enrichChronicle(base, core, round, kind, g) {
+  const vr = makeVary(core, g);
+  const moms = roundMoments(core, round, kind);
+  const gr = kind === "race" ? gridOf(round, ME) : null;
+  if (kind === "quali") {
+    const res = (round.quali && round.quali.res) || {};
+    const pole = Object.keys(res).find((d) => res[d] === 1) || null;
+    const ctx = { g2: g, qres: res, pole, place: circuit(round.gp) ? circuit(round.gp).place : "", tag: GP_TAG[round.gp] || "F1", mate: teammatesOf(core, ME)[0], polesMe: seasonStats(core, ME).poles, table: driverTable(core), res: {} };
+    if (moms.length) base.sections.push({ heading: "🔥 Las claves del sábado", body: moms.map((m) => momentSentence(vr, m, { P: ctx.place })).filter(Boolean).join("\n\n") });
+    const iv = [];
+    const q = res[ME];
+    const tq = moms.find((m) => m.id.startsWith("q_"));
+    if (q) iv.push({ speaker: fullName(ME), team: teamOf(core, ME), by: "cronometro", q: tq ? vr.f("qq-" + tq.id, { q_ultima: ["¿Cómo fue esa vuelta en el último intento?"], q_milesimas: ["Por milésimas con {Xl}. ¿Cómo se vive eso?"], q_lluvia: ["¿Cómo fue clasificar con lluvia?"], q_roja: ["¿Cómo gestionaste la bandera roja?"], q_error: ["¿Qué pasó en tu vuelta buena?"], q_trafico: ["¿Te molestó el tráfico?"] }[tq.id], { Xl: tq.who ? LN(tq.who) : "tu rival" }) : vr.pick(q === 1 ? "qq-pole" : "qq-np", q === 1 ? ["¿Cómo ha sido la vuelta de la pole?", "¿Esperabas la pole?", "¿Dónde has marcado la diferencia?"] : ["¿Qué ha faltado hoy?", "¿Cómo ves la carrera de mañana desde ahí?", "¿Estás contento con la posición?"]),
+      a: vr.pick(q === 1 ? "qa-pole" : "qa-np", q === 1 ? ["Una vuelta muy limpia. Mañana es lo que cuenta, pero salir delante ayuda muchísimo.", "He sacado todo lo que tenía el coche. Estoy orgulloso del equipo.", "Me ha salido la vuelta perfecta. Ahora, a rematar mañana."] : ["Nos ha faltado un poco en el último sector. Mañana hay carrera.", "No es donde queríamos estar, pero la carrera es larga.", "Desde ahí se puede remontar. Confío en el ritmo de carrera."]) + " " + tail(vr, ME) });
+    if (pole && pole !== ME) iv.push({ speaker: fullName(pole), team: teamOf(core, pole), by: outletFor(pole), q: vr.pick("qq-pole2", ["¿Te esperabas la pole?", "¿Qué ha tenido de especial esta vuelta?"]), a: vr.pick("qa-pole2", ["Hemos trabajado mucho para esto. Mañana, a convertirla en victoria.", "Qué vuelta. El coche iba sobre raíles.", "Ganarle la pole a Arévalo tiene su mérito."]) + " " + tail(vr, pole) });
+    if (ctx.mate && res[ctx.mate]) iv.push({ speaker: fullName(ctx.mate), team: teamOf(core, ctx.mate), by: "folha", q: vr.pick("qq-mate", ["¿Cómo ves la carrera de mañana?", "¿Qué te ha faltado para estar por delante?"]), a: (res[ctx.mate] < (q || 99) ? vr.pick("qa-mate-a", ["Mañana saldré por delante de mi compañero. Eso ya dice algo.", "Hoy he sido más rápido. Mañana, más.", "El sábado es mío. El domingo, ya veremos."]) : vr.pick("qa-mate-b", ["La carrera no se gana el sábado.", "Tenemos ritmo para remontar.", "Mañana es otro día."])) + " " + tail(vr, ctx.mate) });
+    base.interviews = iv;
+    base.social = buildSocial(vr, core, round, ctx, "quali", moms, null);
+    return base;
+  }
+  const ctx = Object.assign(raceCtx(core, round, kind), { g2: g });
+  const cc = kind === "race" ? champCtx(core, round) : null;
+  const vars = { P: ctx.place, grid: gr || "", pos: finished(ctx.me) ? ctx.me.pos : "", gain: gr && finished(ctx.me) ? gr - ctx.me.pos : "" };
+  if (moms.length) base.sections.splice(1, 0, { heading: "🔥 Las claves de la carrera", body: moms.slice(0, 5).map((m) => momentSentence(vr, m, vars)).filter(Boolean).join("\n\n") });
+  if (cc) {
+    const lines = champSentences(vr, core, round, cc);
+    if (lines.length) base.sections.push({ heading: "🏆 El campeonato", body: lines.join("\n\n") });
+    const others = [];
+    ctx.podium.filter((d) => d !== ME).forEach((d) => others.push(vr.f("oth-pod", ["{X} ({T}) completó el podio con un {N}.º puesto.", "Buen día para {X}: {N}.º y a casa con puntos importantes.", "{X} subió al cajón en la {N}.ª posición."], { X: fullName(d), T: TNAME(core, d), N: ctx.res[d].pos })));
+    const best = ctx.fin.find((f) => f.pos > 3 && gridOf(round, f.id) && gridOf(round, f.id) - f.pos >= 6 && f.id !== ME);
+    if (best) others.push(vr.f("oth-rem", ["{X} firmó la otra gran remontada del día: de {G}.º a {N}.º.", "Ojo a {X}, que salió {G}.º y terminó {N}.º."], { X: fullName(best.id), G: gridOf(round, best.id), N: best.pos }));
+    const rook = ctx.fin.filter((f) => ROOKIES.includes(f.id) && f.id !== ME)[0];
+    if (rook && rook.pos <= 10) others.push(vr.f("oth-rook", ["Entre los novatos, el mejor fue {X}, {N}.º.", "{X} fue el novato más destacado, con un {N}.º puesto."], { X: fullName(rook.id), N: rook.pos }));
+    if (others.length) base.sections.push({ heading: "👀 Más allá de Arévalo", body: others.slice(0, 3).join(" ") });
+  }
+  base.interviews = buildInterviews(vr, core, round, Object.assign(ctx, { g: g }), kind, moms, cc);
+  base.social = buildSocial(vr, core, round, ctx, kind, moms, cc).slice(0, kind === "race" ? 14 : 5);
+  if (kind === "race") {
+    base.trending = buildTrends(ctx, moms, kind);
+    const mh = momentHeadline(vr, moms, ctx);
+    const fp = (base.frontPages || []).find((f) => f.outlet === "cronometro");
+    if (mh && fp) { fp.headline = mh.headline; fp.deck = momentSentence(vr, mh.m, vars); }
+    if (mh && g.R() < 0.6) base.title = mh.headline;
+  }
+  return base;
 }
 
 /* ============================================================
@@ -3132,6 +3759,19 @@ function pressQuestions(core, round) {
   const c = careerView(core);
   const qs = [];
   const by = (o) => o;
+  const moms = roundMoments(core, round, "race");
+  const mt = moms.find((m) => ["toque", "ultimavuelta", "sancion", "orden", "remontada"].includes(m.id) && (m.id !== "sancion" || m.who === ME));
+  if (mt) {
+    const X = mt.who && mt.who !== ME ? LN(mt.who) : "";
+    const bank = {
+      toque: { q: `¿Quién tuvo la culpa del toque con ${X || "tu rival"}?`, target: mt.who, opts: [{ tone: "humilde", a: "Seguramente pude dejar más espacio. Son cosas de las carreras." }, { tone: "diplomático", a: "Lo veremos con calma con las imágenes. No voy a buscar culpables." }, { tone: "provocador", a: `Que ${X || "él"} aprenda a dejar espacio. Yo iba por mi línea.` }] },
+      ultimavuelta: { q: `Ese adelantamiento a ${X || "tu rival"} en la última vuelta… ¿lo tenías planeado?`, target: mt.who, opts: [{ tone: "humilde", a: "Salió bien, pero también podía haber salido mal. Tuve suerte." }, { tone: "diplomático", a: "Vi la oportunidad y la aproveché. Así son las carreras." }, { tone: "provocador", a: `Lo tenía clarísimo. ${X || "Él"} no podía hacer nada.` }] },
+      sancion: { q: "¿Estás de acuerdo con la sanción?", target: null, opts: [{ tone: "humilde", a: "Los comisarios deciden y lo acepto." }, { tone: "diplomático", a: "No la comparto del todo, pero toca pasar página." }, { tone: "provocador", a: "Me parece una vergüenza. No entiendo nada.", trust: -1 }] },
+      orden: { q: "¿Cómo te sienta la orden de equipo?", target: teammatesOf(core, ME)[0], opts: [{ tone: "humilde", a: "El equipo está por encima de todo." }, { tone: "diplomático", a: "Lo hablaremos dentro. No voy a entrar ahora." }, { tone: "provocador", a: "No me gusta que me digan cómo tengo que correr.", trust: -3 }] },
+      remontada: { q: "Qué remontada. ¿Te sientes ya entre los mejores?", target: null, opts: [{ tone: "humilde", a: "Me queda muchísimo por aprender. Hoy ha salido bien." }, { tone: "diplomático", a: "Estoy contento, pero cada carrera es diferente." }, { tone: "provocador", a: "Hoy he demostrado que puedo ganar desde cualquier sitio." }] }
+    }[mt.id];
+    if (bank) qs.push(Object.assign({ id: "mom-" + mt.id, by: mt.who ? (NAT_OUTLET[DRIVERS[mt.who].nat] || "pitwall") : "chicane" }, bank));
+  }
   if (!finished(x)) qs.push({ id: "dnf", by: by("cronometro"), q: "¿Qué ha pasado hoy?", target: null, opts: [
     { tone: "humilde", a: "Duele, pero son cosas de las carreras. Volveremos más fuertes." },
     { tone: "diplomático", a: "Lo analizaremos con el equipo antes de sacar conclusiones." },
@@ -3158,6 +3798,26 @@ function pressQuestions(core, round) {
     { tone: "diplomático", a: "Si seguimos sumando, estaremos ahí al final." },
     { tone: "provocador", a: "No he venido a la F1 a ser segundo. He venido a ganar el Mundial." }] });
   return qs.slice(0, 3);
+}
+/* Revisa los logros con los datos actuales (tras importar, restaurar o corregir). */
+function refreshAchievements(core, quiet) {
+  const c = careerOf(core);
+  const got = checkAchievements(core);
+  const fresh = Object.keys(got).filter((id) => !c.achievements[id]);
+  fresh.forEach((id) => { c.achievements[id] = Object.assign({ t: Date.now() }, got[id]); });
+  if (!quiet && fresh.length) {
+    const r = doneRounds(core).length;
+    addMail(c, fresh.length === 1
+      ? (() => { const a = ACHIEVEMENTS.find((x) => x.id === fresh[0]); return { id: `ach-${core.season}-${r}-${fresh[0]}`, key: "ach", season: core.season, r, type: "achievement", from: "Paddock", subject: `${a.icon} Logro desbloqueado: ${a.name}`, body: a.desc }; })()
+      : { id: `ach-${core.season}-${r}-${fresh.join("-")}`, key: "ach", season: core.season, r, type: "achievement", from: "Paddock", subject: `🏅 Has desbloqueado ${fresh.length} logros`, body: fresh.map((id) => { const a = ACHIEVEMENTS.find((x) => x.id === id); return `${a.icon} ${a.name}: ${a.desc}`; }).join("\n") });
+  }
+  return fresh.length;
+}
+function liveAchievements(core) {
+  const c = careerView(core);
+  const got = Object.assign({}, c.achievements || {});
+  Object.entries(checkAchievements(core)).forEach(([id, v]) => { if (!got[id]) got[id] = v; });
+  return got;
 }
 const TONE_FX = { humilde: { fame: 0.4, trust: 1, heat: -3 }, "diplomático": { fame: 0.6, trust: 0, heat: 0 }, provocador: { fame: 1.8, trust: -2, heat: 8 } };
 
@@ -3186,6 +3846,7 @@ function careerAfterSession(core, session, r) {
   const key = `${core.season}-${r}-${session}`;
   if (c.processed[key] && c.processed[key].legacy) {
     if (session === "race") { core.progress = core.progress || {}; core.progress[r] = Object.assign({}, core.standings); }
+    refreshAchievements(core);
     return { press: false };
   }
   revertProcessed(core, c, key);
@@ -3197,6 +3858,7 @@ function careerAfterSession(core, session, r) {
     if (q === 1) p.fame += addFame(c, 1);
     else if (q && q <= 3) p.fame += addFame(c, 0.3);
     c.processed[key] = p;
+    refreshAchievements(core);
     return { press: false };
   }
   if (session !== "race") { c.processed[key] = p; return { press: false }; }
@@ -3209,6 +3871,7 @@ function careerAfterSession(core, session, r) {
   if (o === "win" && cs.winStreak.cur >= 3) fd += 1;
   if (o === "win" && round.gp === "esp") fd += 2;
   if (qOf(round, ME) === 1 && o === "win") fd += 0.5;
+  fd += Math.min(1.2, roundMoments(core, round, "race").filter((m) => ["remontada", "ultimavuelta", "dominio", "defensa"].includes(m.id)).length * 0.6);
   p.fame += addFame(c, fd);
   const fol = Math.round(c.fame * (700 + g.R() * 500) * cmMult(c) + (o === "win" ? 60000 : o === "podium" ? 25000 : 0));
   c.followers += fol; p.followers = fol;
@@ -4211,6 +4874,9 @@ function raceScreen(arg) {
   }
   if (round.sprint) out.push(sec(round.sprint.full ? "Sprint completo" : "Sprint: resultados conocidos", resultsTable(core, round.sprint, "race")));
   if (round.quali && (round.quali.full || Object.keys(round.quali.res).length > 1)) out.push(sec(round.quali.full ? "Parrilla de clasificación" : "Clasificación: posiciones conocidas", resultsTable(core, round.quali, "quali")));
+  const momTxt = (kind) => { const src = kind === "quali" ? round.quali : round.race; if (!src) return ""; const ms = roundMoments(core, round, kind); return ms.length ? `${kind === "quali" ? "Clasificación" : "Carrera"}: ` + ms.map((m) => { const d = MOMENTS.race.concat(MOMENTS.quali).find((y) => y.id === m.id); return d ? `${d.icon} ${d.label}${m.who && d.pick ? ` (${LN(m.who)})` : ""}` : ""; }).filter(Boolean).join(", ") : ""; };
+  const moms = [momTxt("quali"), momTxt("race")].filter(Boolean);
+  if (moms.length) out.push(sec("✨ Momentos", `<div class="group" style="padding:12px 14px">${moms.map((t) => `<p style="margin:0 0 6px">${esc(t)}</p>`).join("")}</div>`));
   const notes = [round.quali && round.quali.notes, round.race && round.race.notes].filter(Boolean);
   if (notes.length) out.push(sec("Notas del fin de semana", `<div class="group" style="padding:12px 14px">${notes.map((n) => `<p style="margin:0 0 8px">${esc(n)}</p>`).join("")}</div>`));
 
@@ -5102,6 +5768,7 @@ async function doRestore() {
     for (const a of news) await Store.saveArticle(a);
     S.core = core;
     await Store.saveCore();
+    await mutateCore((k) => { refreshAchievements(k); }).catch(() => null);
     stopBusy();
     closeSheet();
     toast("Copia restaurada");
@@ -5137,6 +5804,7 @@ function entryFromRound(round, session) {
     if (!round.quali) return st;
     Object.entries(round.quali.res).forEach(([id, p]) => { if (p >= 1) order[p - 1] = id; });
     st.notes = round.quali.notes || "";
+    st.mom = momMap(round.quali.moments);
   } else {
     const src = session === "sprint" ? round.sprint : round.race;
     if (!src) return st;
@@ -5145,9 +5813,24 @@ function entryFromRound(round, session) {
       if (x.fl === true) st.fl = id;
     });
     st.notes = src.notes || "";
+    st.mom = momMap(src.moments);
   }
   st.order = Array.from({ length: order.length }, (_, i) => order[i] || null);
+  st.mom = st.mom || {};
   return st;
+}
+function momMap(list) {
+  const m = {};
+  (list || []).forEach((x) => { const d = MOMENTS.race.concat(MOMENTS.quali).find((y) => y.id === x.id); if (d) m[x.id] = d.pick ? x.who || "" : true; });
+  return m;
+}
+function momentsBlock(st, race) {
+  const defs = MOMENTS[race ? "race" : "quali"];
+  const mom = st.mom || {};
+  const picks = defs.filter((d) => d.pick && d.id in mom).map((d) => `<div class="field mpick"><label>${d.icon} ${esc(d.label)}: ${esc(d.pick)}</label><select class="sel" data-bind="mom.${d.id}"><option value="">Sin concretar</option>${driverOptions(mom[d.id] || "", d.def ? [] : [ME])}</select></div>`).join("");
+  return `<h4 class="eh">✨ ¿Qué pasó${race ? " en la carrera" : " en la clasificación"}?<small>Opcional</small></h4>
+<p class="note" style="margin:0 0 8px">Marca lo que quieras: la prensa, las entrevistas, las redes y la rueda de prensa hablarán de ello.</p>
+<div class="chips mchips">${defs.map((d) => `<button class="chip${d.id in mom ? " on" : ""}" data-act="e-mom" data-arg="${d.id}">${d.icon} ${esc(d.label)}</button>`).join("")}</div>${picks}`;
 }
 function openEntry(o) {
   const round = roundOf(S.core, o.r);
@@ -5227,7 +5910,8 @@ ${pool.length ? `<div class="pool-h"><span class="lbl">${hint}</span>${jump}</di
 ${st.order.length || st.out.length ? `<button class="btn btn-ghost btn-sm" data-act="e-undo">${ICON.back}Deshacer</button><button class="btn btn-ghost btn-sm" data-act="e-reset">${ICON.trash}Vaciar</button>` : ""}</div>
 ${st.order.length ? `<h4 class="eh">${race ? "Clasificación final" : "Parrilla"}${race ? `<small>Toca ⏱ para la vuelta rápida</small>` : ""}</h4><div class="tower">${st.order.map((id, i) => towerRow(st, id, i, table, race)).join("")}</div>` : `<div class="tip">${race ? "Toca los pilotos en el orden en que cruzaron la meta: el primero será P1. Si solo sabes algunos puestos, usa «Saltar a»." : "Toca los pilotos en el orden de la parrilla: el primero será la pole."}</div>`}
 ${st.out.length ? `<h4 class="eh">No terminaron<small>Toca el motivo para cambiarlo</small></h4><div class="tower">${outs}</div>` : ""}
-<div class="field" style="margin-top:18px"><label for="e-notes">Apuntes del fin de semana</label><textarea id="e-notes" class="inp" data-bind="notes" placeholder="Opcional: toques, sanciones, órdenes de equipo…">${esc(st.notes || "")}</textarea></div>`,
+${momentsBlock(st, race)}
+<div class="field" style="margin-top:14px"><label for="e-notes">Cuéntalo con tus palabras (opcional)</label><textarea id="e-notes" class="inp" data-bind="notes" placeholder="${race ? "Ej.: remonté desde la P12, hubo dos safety cars y adelanté a Leclerc en la última vuelta" : "Ej.: pole en el último intento, por milésimas con Norris"}">${esc(st.notes || "")}</textarea><small>La app detecta momentos y pilotos en lo que escribas.</small></div>`,
     foot: `${note}${aiReady()
       ? `<button class="btn btn-red btn-block" data-act="e-save" data-arg="ai" ${err ? "disabled" : ""}>${ICON.spark}Guardar y escribir la crónica</button><button class="btn btn-ghost btn-block" data-act="e-save" data-arg="plain" ${err ? "disabled" : ""}>Guardar sin crónica de IA</button>`
       : `<button class="btn btn-red btn-block" data-act="e-save" data-arg="plain" ${err ? "disabled" : ""}>Guardar resultados</button>`}`
@@ -5247,13 +5931,13 @@ async function commitEntry(mode) {
   if (st.session === "quali") {
     const res = {};
     st.order.forEach((id, i) => { if (id) res[id] = i + 1; });
-    applyQuali(core, st.r, { res, full: k.placed === DRIVER_IDS.length && !k.gaps, notes: st.notes || "" });
+    applyQuali(core, st.r, { res, full: k.placed === DRIVER_IDS.length && !k.gaps, notes: st.notes || "", moments: momList(st) });
   } else {
     const res = {};
     const fl = st.fl && st.order.includes(st.fl) ? st.fl : null;
     st.order.forEach((id, i) => { if (id) res[id] = { pos: i + 1, st: "fin", fl: fl ? id === fl : null, pts: null, grid: null }; });
     st.out.forEach((o) => { res[o.id] = { pos: null, st: o.st, fl: fl ? false : null, pts: null, grid: null }; });
-    applyRace(core, st.r, { res, full: k.full, notes: st.notes || "" }, st.session);
+    applyRace(core, st.r, { res, full: k.full, notes: st.notes || "", moments: momList(st) }, st.session);
   }
   S.core = core;
   try { await Store.saveCore(); } catch (e) { return; }
@@ -5284,6 +5968,10 @@ async function careerFlow(session, r) {
 
 async function careerProcessOnly(session, r) {
   try { await mutateCore((core) => { careerAfterSession(core, session, r); }); } catch (e) { /* se reintenta en la siguiente sesión */ }
+}
+
+function momList(st) {
+  return Object.entries(st.mom || {}).map(([id, v]) => ({ id, who: typeof v === "string" && v ? v : null }));
 }
 
 /* ============================================================
@@ -5549,7 +6237,8 @@ ${fameBar(c.fame)}
 <button class="mtile" data-act="push" data-arg="shop:"><span class="mi">🛍️</span><b>Tienda</b><small>Patrimonio ${fmtMoney(netWorth(core))}</small></button></div>`);
   const obj = c.objectives && c.objectives.season === core.season ? c.objectives : makeObjectives(core, c);
   out.push(sec(`Objetivos de la temporada ${core.season}`, `<div class="group objs">${obj.list.map((o) => { const p = objectiveProgress(core, o); return `<div class="obj${p.ok ? " ok" : ""}"><div class="obj-t"><span>${p.ok ? "✅" : "🎯"} ${esc(o.text)}</span><b>${esc(p.value)}</b></div><div class="obj-bar"><i style="width:${p.pct}%"></i></div></div>`; }).join("")}</div><p class="note">Cada objetivo cumplido al cerrar la temporada da una prima de 300.000 € y más confianza del equipo.</p>`));
-  const got = Object.keys(c.achievements || {});
+  const got = Object.keys(liveAchievements(core));
+  if (S.canWrite && got.length > Object.keys(c.achievements || {}).length && !S.achSync) { S.achSync = true; setTimeout(() => mutateCore((k) => refreshAchievements(k)).catch(() => null), 0); }
   out.push(sec("Logros", `<button class="group badges-row" data-act="push" data-arg="achievements:">${ACHIEVEMENTS.slice(0, 8).map((a) => `<span class="bdg${got.includes(a.id) ? " on" : ""}" title="${esc(a.name)}">${a.icon}</span>`).join("")}<span class="bdg-more">${got.length}/${ACHIEVEMENTS.length} ${ICON.chev}</span></button>`));
   const links = [
     ["palmares:", ICON.trophy, "Palmarés", "Mundiales, victorias, rachas y circuitos"],
@@ -5726,8 +6415,7 @@ SHEETS.helmet = helmetSheet;
 
 /* ---------- logros ---------- */
 function achievementsScreen() {
-  const c = careerView(S.core);
-  const got = c.achievements || {};
+  const got = liveAchievements(S.core);
   const n = Object.keys(got).length;
   return { title: "Logros", html: `<div class="money-hero sm"><span>Desbloqueados</span><b class="num">${n}/${ACHIEVEMENTS.length}</b></div>
 <div class="achs">${ACHIEVEMENTS.map((a) => { const g = got[a.id]; const where = g && g.r ? (() => { const rd = g.season === S.core.season ? roundOf(S.core, g.r) : null; const ci = rd && circuit(rd.gp); return `Temporada ${g.season}${ci ? ", " + ci.name : ""}`; })() : g ? `Temporada ${g.season}` : ""; return `<div class="ach${g ? " on" : ""}"><span class="ai">${a.icon}</span><b>${esc(a.name)}</b><small>${esc(g ? where : a.desc)}</small></div>`; }).join("")}</div>` };
@@ -6239,7 +6927,7 @@ const ACTIONS = {
     if (bad) { toast(`Revisa los puntos de ${fullName(bad.id)}`); return; }
     const rows = st.rows.map((r, i) => ({ id: r.id, pts: Number(String(r.pts).replace(",", ".")), i })).sort((a, b) => b.pts - a.pts || a.i - b.i);
     closeSheet();
-    await mutateCore((core) => applyStandings(core, rows)).catch(() => null);
+    await mutateCore((core) => { applyStandings(core, rows); refreshAchievements(core); }).catch(() => null);
     toast("Puntos oficiales guardados");
   },
 
@@ -6286,6 +6974,13 @@ const ACTIONS = {
     else if (st.mode === "out" && st.out.length) st.out.pop();
     else if (st.order.length) { const id = st.order.pop(); if (id && st.fl === id) st.fl = null; trimOrder(st); }
     else st.out.pop();
+    renderSheet();
+  },
+  "e-mom": (a) => {
+    const st = S.sheet;
+    st.mom = st.mom || {};
+    const d = MOMENTS.race.concat(MOMENTS.quali).find((x) => x.id === a);
+    if (a in st.mom) delete st.mom[a]; else st.mom[a] = d && d.pick ? d.def || "" : true;
     renderSheet();
   },
   "e-reset": () => { Object.assign(S.sheet, { order: [], out: [], fl: null, target: null }); renderSheet(); },
