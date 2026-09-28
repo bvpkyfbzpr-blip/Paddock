@@ -1,6 +1,6 @@
 /* Paddock: funciona sin conexión y siempre busca la última versión.
    Sube el número de versión al cambiar la app. */
-const CACHE = "paddock-v12";
+const CACHE = "paddock-v14";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./datos-iniciales.json",
   "./icons/icon-180.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/favicon-32.png"];
 
@@ -18,6 +18,9 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   const url = new URL(req.url);
   if (req.method !== "GET" || url.hostname === "api.anthropic.com") return;
+  const own0 = url.origin === self.location.origin;
+  /* Firebase (base de datos y acceso) siempre va directo a internet, sin caché. */
+  if (!own0 && !["fonts.gstatic.com", "fonts.googleapis.com", "www.gstatic.com"].includes(url.hostname)) return;
   const own = url.origin === self.location.origin;
   if (req.mode === "navigate" || (own && /\.(html|json|webmanifest)$|\/$/.test(url.pathname))) {
     /* La app y sus datos: siempre de internet si hay conexión; si no, la copia guardada. */
@@ -28,7 +31,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => {
-    if (res.ok && (own || url.hostname.endsWith("gstatic.com") || url.hostname.endsWith("googleapis.com"))) {
+    if (res.ok && (own || url.hostname === "fonts.gstatic.com" || url.hostname === "fonts.googleapis.com" || (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")))) {
       const copy = res.clone();
       caches.open(CACHE).then((c) => c.put(req, copy));
     }

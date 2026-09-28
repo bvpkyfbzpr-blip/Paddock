@@ -949,6 +949,24 @@ b.up { color: var(--green); font-size: 13px; } b.down { color: var(--red); font-
 .rv-hero .vs { font-family: var(--font-d); font-style: italic; font-weight: 900; font-size: 34px; color: var(--red); }
 .backup-cta { width: 100%; box-shadow: var(--shadow), inset 0 0 0 1.5px #F2C14E; }
 
+/* ---------- menú inicial ---------- */
+body.in-menu #topbar, body.in-menu #tabbar, body.in-menu #fab { display: none !important; }
+.menu { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 20px 4px; }
+.menu-logo { display: flex; align-items: center; gap: 12px; justify-content: center; }
+.menu-logo b { font-family: var(--font-d); font-style: italic; font-weight: 900; font-size: 48px; letter-spacing: .01em; }
+.menu-logo .slashes { display: inline-flex; gap: 4px; }
+.menu-logo .slashes i { width: 10px; height: 34px; background: var(--red); transform: skewX(-22deg); display: block; }
+.menu .lede { text-align: center; margin: 0 0 10px; }
+.mcard { display: flex; align-items: center; gap: 14px; width: 100%; padding: 18px; border-radius: 22px; background: var(--card); box-shadow: var(--shadow); text-align: left; }
+.mcard .mc-i { font-size: 36px; }
+.mcard b { display: block; font-family: var(--font-d); font-size: 26px; line-height: 1; }
+.mcard small { color: var(--muted); font-size: 14px; }
+.mcard > span:nth-child(2) { flex: 1; }
+.mcard > svg { width: 22px; height: 22px; color: var(--faint); }
+.mcard.cur { box-shadow: var(--shadow), inset 0 0 0 2px var(--red); }
+.mcard em { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .06em; }
+.menu .link { font-size: 13.5px; color: var(--muted); }
+
 </style>
 </head>
 <body>
@@ -998,7 +1016,7 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "12";
+const APP_VERSION = "14";
 const APP_DATE = "28 de septiembre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
@@ -1180,7 +1198,7 @@ const CIRCUIT_INFO = {
    ============================================================ */
 const clone = (o) => (typeof structuredClone === "function" ? structuredClone(o) : JSON.parse(JSON.stringify(o)));
 const r1 = (n) => Math.round(Number(n || 0) * 10) / 10;
-const ME = "arevalo";
+let ME = "arevalo";
 
 function blankCore(season, carry) {
   carry = carry || {};
@@ -1502,6 +1520,8 @@ function closeSeason(core) {
   const history = (core.history || []).concat([entry]);
   const next = blankCore(core.season + 1, { roster: clone(core.roster || {}), narrative: clone(core.narrative || {}), history });
   if (core.distance) next.distance = core.distance;
+  /* Lo que pertenece a la partida y no a la temporada se conserva. */
+  ["coop", "grid", "identity", "f2", "friends", "settings"].forEach((k) => { if (core[k] != null) next[k] = clone(core[k]); });
   return { seasonDoc, next, entry };
 }
 
@@ -1530,11 +1550,12 @@ const S = {
 
 const LOCAL_KEY = "paddock.universe.v1";
 const Local = {
+  key() { return window.PADDOCK_STANDALONE && typeof Mode !== "undefined" && Mode.get() === "coop" ? "paddock.coop.v1" : LOCAL_KEY; },
   read() {
-    try { const raw = localStorage.getItem(LOCAL_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+    try { const raw = localStorage.getItem(this.key()); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
   },
   write() {
-    try { localStorage.setItem(LOCAL_KEY, JSON.stringify({ core: S.core, news: S.news, seasons: S.seasons, at: Date.now() })); return true; }
+    try { localStorage.setItem(this.key(), JSON.stringify({ core: S.core, news: S.news, seasons: S.seasons, at: Date.now() })); return true; }
     catch (e) {
       if (typeof archiveOldNews === "function" && !this.retrying && S.mode === "local") {
         this.retrying = true;
@@ -1551,6 +1572,8 @@ const Store = {
   db: null,
   queue: {},
   async init() {
+    if (window.PADDOCK_STANDALONE && typeof Coop !== "undefined" && Coop.enabled()) return Coop.start();
+    if (window.PADDOCK_STANDALONE && typeof Mode !== "undefined" && !Mode.get()) { S.mode = "local"; S.loaded = { core: true, news: true, seasons: true }; render(); return; }
     const cached = Local.read();
     if (cached && cached.core) {
       S.core = normalizeCore(cached.core);
@@ -1602,7 +1625,16 @@ const Store = {
     this.unsubs.push(db.doc("universe/core").onSnapshot((snap) => {
       S.loaded.core = true;
       S.core = snap.exists ? normalizeCore(clone(snap.data())) : null;
+      if (S.core && S.careers) { if (S.careers.p1) S.core.career = S.careers.p1; if (S.careers.p2) S.core.career2 = S.careers.p2; }
       S.mode = "db";
+      Local.write();
+      render();
+      if (typeof Coop !== "undefined" && Coop.ready) setTimeout(() => Coop.check(), 400);
+    }, (e) => this.onError(e)));
+    if (typeof Coop !== "undefined" && Coop.ready) this.unsubs.push(db.collection("careers").onSnapshot((qs) => {
+      S.careers = {};
+      qs.docs.forEach((d) => { const v = d.data(); if (v && v.slot) S.careers[v.slot] = v.career; });
+      if (S.core) { if (S.careers.p1) S.core.career = S.careers.p1; if (S.careers.p2) S.core.career2 = S.careers.p2; }
       Local.write();
       render();
     }, (e) => this.onError(e)));
@@ -1655,6 +1687,15 @@ const Store = {
   async saveCore() {
     S.core.updatedAt = new Date().toISOString();
     render();
+    if (typeof Coop !== "undefined" && Coop.ready && S.core.coop) {
+      const shared = Object.assign({}, S.core);
+      delete shared.career; delete shared.career2;
+      const mine = S.core[CK()];
+      S.careers = Object.assign({}, S.careers || {}, mine ? { [mySlot()]: mine } : {});
+      await this.write("universe/core", shared);
+      if (mine) await this.write("careers/" + mySlot(), { slot: mySlot(), career: mine });
+      return;
+    }
     await this.write("universe/core", S.core);
   },
   async saveArticle(a) {
@@ -2429,7 +2470,7 @@ function socialFor(g, core, ctx, kind) {
       add({ who: "driver", id, text, likes: big(60000, 260000), reposts: big(3000, 20000), replies: big(1000, 8000) });
     });
     add({ who: "journalist", id: "cronometro", text: ctx.qres[ME] === 1 ? `Pole de Arévalo en ${ctx.place}. ${ctx.polesMe > 1 ? `Ya van ${ctx.polesMe} esta temporada.` : "Primera fila asegurada."}` : `Arévalo saldrá ${ctx.qres[ME]}.º en ${ctx.place}. Mañana, a remontar.`, likes: big(2000, 16000), reposts: big(300, 3000), replies: big(100, 900) });
-    const f = g.pick(FANS.filter((x) => x.fav === ME));
+    const f = g.pick(FANS.filter((x) => x.fav === ME).length ? FANS.filter((x) => x.fav === ME) : FANS.filter((x) => x.fav === "arevalo"));
     add({ who: "fan", name: f.name, handle: f.handle, text: ctx.qres[ME] === 1 ? g.pick(["POLE 😭💙 este chaval es otra cosa", "Sábado perfecto. Mañana, a rematar 💙"]) : g.pick(["Mañana se remonta, confío 💙", "Queda la carrera, tranquilidad 🙏"]), likes: big(200, 6000), reposts: big(10, 500), replies: big(5, 200) });
     return posts;
   }
@@ -2518,7 +2559,7 @@ function updateRivalries(core, round) {
   });
   if (ctx.second && ctx.myRow && ctx.myRow.pos === 1) bump(ctx.second.id, 2, ctx.second.id === ctx.mate ? null : `${fullName(ctx.second.id)} es su perseguidor más directo en el Mundial.`);
   list.forEach((r) => { if (r.b !== ctx.mate && r.a !== ctx.mate && !ctx.res[r.a === ME ? r.b : r.a]) r.heat = Math.max(5, r.heat - 1); });
-  core.narrative.rivalries = list.sort((a, b) => b.heat - a.heat).slice(0, 6);
+  core.narrative.rivalries = keepTop(list, 6);
   analyzeRivalries(core, round);
 }
 
@@ -2840,8 +2881,8 @@ async function publishAutoNews(session, r, edit) {
   const now = Date.now();
   const keep = (id) => { const a = S.news.find((x) => x.id === id); return !a || a.auto; };
   const writes = [];
-  if (session === "race") updateRivalries(core, round);
-  const main = autoChronicle(core, round, session);
+  if (session === "race") hostDo(() => updateRivalries(core, round));
+  const main = hostDo(() => autoChronicle(core, round, session));
   const legacy = findArticle(core.season, r, session);
   if (legacy && legacy.auto && legacy.id !== main.id) await Store.deleteArticle(legacy.id).catch(() => null);
   if (legacy && !legacy.auto) {
@@ -2852,16 +2893,16 @@ async function publishAutoNews(session, r, edit) {
     writes.push(main);
   }
   if (session === "race") {
-    core.narrative.storyline = storyline(core);
+    core.narrative.storyline = hostDo(() => storyline(core));
     S.core = core;
     await Store.saveCore().catch(() => null);
     const old = S.news.filter((a) => a.auto && a.season === core.season && a.r === r && a.kind === "flash");
     for (const a of old) await Store.deleteArticle(a.id).catch(() => null);
     const base = edit && S.news.find((x) => x.id === main.id) ? S.news.find((x) => x.id === main.id).t : now;
-    extraPieces(core, round, base).forEach((a) => writes.push(a));
+    hostDo(() => extraPieces(core, round, base)).forEach((a) => writes.push(a));
     const nx = core.rounds.find((x) => x.r > r && !x.race);
     if (nx && nx.gp) {
-      const pv = autoPrevia(core, nx, base - 10);
+      const pv = hostDo(() => autoPrevia(core, nx, base - 10));
       const existing = findArticle(core.season, nx.r, "previa");
       if (pv && (!existing || existing.auto)) {
         if (existing && existing.id !== pv.id) await Store.deleteArticle(existing.id).catch(() => null);
@@ -3044,7 +3085,8 @@ function parseMoments(text, kind) {
 function roundMoments(core, round, kind) {
   const src = kind === "quali" ? round.quali : kind === "sprint" ? round.sprint : round.race;
   if (!src) return [];
-  const list = (src.moments || []).slice();
+  const slot = ME === "jugador2" ? "p2" : "p1";
+  const list = (src.moments || []).filter((m) => !m.by || m.by === slot).slice();
   parseMoments(src.notes, kind).forEach((m) => { if (!list.some((x) => x.id === m.id)) list.push(m); });
   if (kind !== "quali") {
     const x = src.res[ME];
@@ -3337,7 +3379,7 @@ function buildSocial(vr, core, round, ctx, kind, moms, cc) {
     const mm = forceMoment && MOMENT_DRV[forceMoment.id];
     if (mm && d === ME) text = vr.pick("dm-" + forceMoment.id, mm);
     else text = vr.f(`dp-${lg}-${o}`, DRVPOST[lg][o] || DRVPOST.en.points, Object.assign({ N: finished(x) ? x.pos : "" }, vars));
-    if (d === ctx.mate) {
+    if (d === ctx.mate && d === "senna") {
       const ahead = finished(x) && (!finished(ctx.me) || x.pos < ctx.me.pos);
       text = vr.pick(ahead ? "sen-ahead" : "sen-behind", ahead ? ["Hoy he hablado en la pista. 🇧🇷", "Sigo aquí. 🇧🇷", "Algunos ya me daban por muerto deportivamente. Aquí estoy. 🇧🇷", "Orgulloso de esta carrera. 🇧🇷"] : ["Seguimos. 🇧🇷", "El campeonato es largo. 🇧🇷", "Trabajo, trabajo y trabajo. 🇧🇷", "Mañana será otro día. 🇧🇷"]);
     }
@@ -3355,7 +3397,8 @@ function buildSocial(vr, core, round, ctx, kind, moms, cc) {
       add({ who: "driver", id: d, text, likes: R(60000, 260000), reposts: R(3000, 20000), replies: R(1000, 8000) });
     });
     add({ who: "journalist", id: "cronometro", text: ctx.qres[ME] === 1 ? vr.f("jq-pole", ["Pole de Arévalo en {P}. {extra}", "Arévalo, el más rápido del sábado en {P}. {extra}"], Object.assign({ extra: ctx.polesMe > 1 ? `Ya van ${ctx.polesMe} esta temporada.` : "Primera fila asegurada." }, vars)) : vr.f("jq-np", ["Arévalo saldrá {Q}.º en {P}. Mañana, a remontar.", "Sábado complicado para Arévalo: {Q}.º en {P}."], Object.assign({ Q: ctx.qres[ME] }, vars)), likes: R(2000, 16000), reposts: R(300, 3000), replies: R(100, 900) });
-    const f = FANS2.filter((x) => x.fav === ME)[Math.floor(ctx.g2.R() * 3)];
+    const favs = FANS2.filter((x) => x.fav === ME).length ? FANS2.filter((x) => x.fav === ME) : FANS2.filter((x) => x.fav === "arevalo");
+    const f = favs[Math.floor(ctx.g2.R() * favs.length)];
     add({ who: "fan", name: f.name, handle: f.handle, text: ctx.qres[ME] === 1 ? vr.pick("fq-pole", ["POLE 😭💙 este chaval es otra cosa", "Sábado perfecto. Mañana, a rematar 💙", "Qué vuelta, madre mía 💜", "Pole y a dormir tranquilos 😌💜", "Ese último sector… 💜💜💜", "Mañana, victoria. Lo digo yo 💙"]) : vr.pick("fq-np", ["Mañana se remonta, confío 💙", "Queda la carrera, tranquilidad 🙏", "Sábado raro, domingo nuestro 💙", "No pasa nada, los puntos se dan el domingo 💙", "Con el ritmo de carrera que tiene, yo no me preocupo", "Mañana toca remontada, ya veréis 🚀"]), likes: R(200, 6000), reposts: R(10, 500), replies: R(5, 200) });
     moms.slice(0, 1).forEach((m) => { if (MOMENT_TXT[m.id]) add({ who: "journalist", id: "pitwall", text: vr.f("jqm-" + m.id, ["{S}", "Saturday talking point: {S}"], { S: momentSentence(vr, m, vars) }), likes: R(800, 6000), reposts: R(100, 900), replies: R(50, 400) }); });
     return posts;
@@ -3382,7 +3425,7 @@ function buildSocial(vr, core, round, ctx, kind, moms, cc) {
   if (brit) add({ who: "journalist", id: "pitwall", text: finished(brit[1]) ? vr.f("jp-b", ["{X} P{N} in {P}. {C}", "British hopes: {X} finishes P{N}. {C}", "{X} brings it home in P{N}. {C}"], { X: fullName(brit[0]), N: brit[1].pos, P: ctx.place, C: brit[1].pos <= 3 ? "Britain has a contender." : "Needs more than that." }) : vr.f("jp-dnf", ["DNF for {X}. Not what the fans wanted.", "Nightmare for {X}: out of the race."], { X: fullName(brit[0]) }), likes: R(1500, 12000), reposts: R(200, 2000), replies: R(100, 900) });
   const ferr = bestOf(ctx, OUTLET_FOCUS.rettilineo(core));
   if (ferr && ctx.g2.R() < 0.7) add({ who: "journalist", id: "rettilineo", text: finished(ferr[1]) ? vr.f("jr", ["Ferrari: P{N} con {X}. {C}", "{X} chiude P{N} a {P}. {C}"], { X: LN(ferr[0]), N: ferr[1].pos, P: ctx.place, C: ferr[1].pos === 1 ? "Che festa a Maranello!" : ferr[1].pos <= 3 ? "Si può sognare." : "Serve di più per il Mondiale." }) : vr.f("jr-dnf", ["Ritiro per {X}. Maranello si interroga.", "Giornata nera: fuori {X}."], { X: LN(ferr[0]) }), likes: R(1500, 14000), reposts: R(200, 2500), replies: R(100, 900) });
-  if (ctx.mateRes) add({ who: "journalist", id: "folha", text: finished(ctx.mateRes) ? vr.f("jf", ["Ayrton terminou em {N}º em {P}. {C}", "{N}º lugar para Ayrton em {P}. {C}"], { N: ctx.mateRes.pos, P: ctx.place, C: finished(ctx.me) && ctx.me.pos < ctx.mateRes.pos ? "O novato segue à frente." : "Hoje foi dele." }) : vr.pick("jf-dnf", ["Abandono do Ayrton. Um golpe duro.", "Ayrton fora da corrida. Que pena."]), likes: R(5000, 30000), reposts: R(800, 6000), replies: R(300, 2500) });
+  if (ctx.mateRes && ctx.mate === "senna") add({ who: "journalist", id: "folha", text: finished(ctx.mateRes) ? vr.f("jf", ["Ayrton terminou em {N}º em {P}. {C}", "{N}º lugar para Ayrton em {P}. {C}"], { N: ctx.mateRes.pos, P: ctx.place, C: finished(ctx.me) && ctx.me.pos < ctx.mateRes.pos ? "O novato segue à frente." : "Hoje foi dele." }) : vr.pick("jf-dnf", ["Abandono do Ayrton. Um golpe duro.", "Ayrton fora da corrida. Que pena."]), likes: R(5000, 30000), reposts: R(800, 6000), replies: R(300, 2500) });
   const max = ctx.res.verstappen;
   if (max && ctx.g2.R() < 0.55) add({ who: "journalist", id: "circuit", text: finished(max) ? vr.f("jn", ["Max P{N}. {C}", "Verstappen eindigt als {N}e. {C}"], { N: max.pos, C: max.pos === 1 ? "Zo ken ik hem weer." : max.pos <= 3 ? "Hij blijft erbij." : "Dit is niet genoeg." }) : vr.pick("jn-dnf", ["Uitvalbeurt voor Max. Pijnlijk.", "Max valt uit. Slechte dag."]), likes: R(2000, 12000), reposts: R(300, 2000), replies: R(100, 800) });
   if (ctx.mateRes && ctx.me) add({ who: "journalist", id: "confidencial", text: vr.pick("jconf", ["Me cuentan que en el motorhome de Aurelia no ha habido abrazos esta noche. 🤫", "Dos pilotos, dos caminos distintos para salir del circuito. Casualidad, seguro. 👀", "¿Cena de equipo en Aurelia? Dicen que faltaba alguien en la mesa. 🍽️👀", "Portazo en el garaje azul. No digo más. 🚪👀", "El ingeniero de Senna y el de Arévalo ya no se sientan juntos. 👀", "Aurelia prepara una reunión de urgencia. Oficialmente, rutina. 🤫"]), likes: R(10000, 40000), reposts: R(2000, 9000), replies: R(1000, 5000) });
@@ -3824,6 +3867,12 @@ function moreSocial(vr, core, round, ctx, moms, add, drvPost, R) {
    ============================================================ */
 
 function rvKey(a, b) { return [a, b].sort().join("~"); }
+/* La rivalidad entre los dos jugadores del cooperativo nunca sale de la lista. */
+function keepTop(list, n) {
+  const pinned = list.filter((r) => r.a === "jugador2" || r.b === "jugador2");
+  const rest = list.filter((r) => !pinned.includes(r)).sort((a, b) => b.heat - a.heat);
+  return pinned.concat(rest).slice(0, Math.max(n, pinned.length)).sort((a, b) => b.heat - a.heat);
+}
 function rvOther(rv) { return rv.a === ME ? rv.b : rv.a; }
 function lastRaces(core, n, uptoR) { return core.rounds.filter((x) => x.race && (!uptoR || x.r <= uptoR)).slice(-n); }
 
@@ -3904,7 +3953,7 @@ function analyzeRivalries(core, round) {
     }
     rv.heat = Math.round(rv.heat);
   });
-  nar.rivalries = list.sort((a, b) => b.heat - a.heat).slice(0, 8);
+  nar.rivalries = keepTop(list, 8);
   analyzeFeuds(core, round);
 }
 
@@ -4262,13 +4311,13 @@ function legacyProcessed(core) {
   return p;
 }
 function careerView(core) {
-  const c = (core && core.career) || blankCareer(core);
+  const c = (core && core[CK()]) || blankCareer(core);
   const cap = core ? fameCap(core) : 100;
   return c.fame > cap ? Object.assign({}, c, { fame: cap }) : c;
 }
 function careerOf(core) {
-  if (!core.career) core.career = blankCareer(core);
-  const c = core.career;
+  if (!core[CK()]) core[CK()] = blankCareer(core);
+  const c = core[CK()];
   c._cap = fameCap(core);
   c._fm = { lenta: 0.7, normal: 1, rapida: 1.4 }[diffOf(core).fame] || 1;
   if (c.fame > c._cap) c.fame = c._cap;
@@ -4338,6 +4387,7 @@ function addFame(c, d) {
 }
 function addTrust(c, d) { c.trust = Math.round(Math.max(0, Math.min(100, c.trust + d))); }
 function addMail(c, m) {
+  m = Object.assign({}, m, { from: persp(m.from), subject: persp(m.subject), body: persp(m.body) });
   c.inbox.unshift(Object.assign({ status: "new", t: Date.now() + c.inbox.length }, m));
   if (c.inbox.length > 60) c.inbox = c.inbox.filter((x, i) => i < 45 || x.status === "new").slice(0, 60);
 }
@@ -4395,6 +4445,7 @@ const ACHIEVEMENTS = [
   { id: "champion", icon: "🌍", name: "Campeón del mundo", desc: "Gana el Mundial de pilotos." },
   { id: "double", icon: "🏛️", name: "Doblete", desc: "Mundial de pilotos y de constructores en la misma temporada." },
   { id: "dotd3", icon: "🗳️", name: "El favorito", desc: "Sé elegido Piloto del día 3 veces." },
+  { id: "f2champ", icon: "🥈", name: "Campeón de F2", desc: "Gana el título de Fórmula 2 antes de llegar a la F1." },
   { id: "millionaire", icon: "💰", name: "Millonario", desc: "Ten 10 millones en el banco." },
   { id: "rich50", icon: "💎", name: "Rico", desc: "Llega a 50 millones de patrimonio." },
   { id: "tycoon", icon: "🏦", name: "Magnate", desc: "Llega a 100 millones de patrimonio." },
@@ -4434,6 +4485,7 @@ function checkAchievements(core) {
   if ((core.history || []).some((h) => h.champion === ME && h.constructorsChampion === h.team)) hit("double");
   if (Object.values(c.dotd || {}).filter((v) => v && v.winner === ME).length >= 3) hit("dotd3");
   if (c.money >= 10000000) hit("millionaire");
+  if (core.f2 && core.f2.done && core.f2.champion === ME) hit("f2champ");
   const nw = netWorthOf(core, Object.assign({ investments: {} }, c));
   if (nw >= 50000000) hit("rich50");
   if (nw >= 100000000) hit("tycoon");
@@ -4547,7 +4599,7 @@ function pressQuestions(core, round) {
     { tone: "diplomático", a: "Nos ha faltado un poco de ritmo. Lo analizaremos." },
     { tone: "provocador", a: `Con el mismo coche, ${LN(winner)} no me habría ganado.` }] });
   if (mate) qs.push({ id: "mate", by: by("folha"), q: "¿Quién es el primer piloto de Aurelia?", target: mate, opts: [
-    { tone: "humilde", a: "Somos dos pilotos empujando al equipo. Ayrton tiene tres títulos y yo aprendo cada día." },
+    { tone: "humilde", a: (() => { const t = (DRIVERS[mate].real || {}).titles || 0; return `Somos dos pilotos empujando al equipo. ${DRIVERS[mate].first} ${t ? `tiene ${t === 1 ? "un título" : t + " títulos"}` : "tiene mucha experiencia"} y yo aprendo cada día.`; })() },
     { tone: "diplomático", a: "Eso lo decide la pista. Yo me centro en mi coche." },
     { tone: "provocador", a: "Mira la clasificación. Ahí tienes la respuesta." }] });
   const offers = c.inbox.filter((m) => m.type === "offer" && m.status === "new");
@@ -4559,7 +4611,7 @@ function pressQuestions(core, round) {
     { tone: "humilde", a: "Voy carrera a carrera. Todavía tengo mucho que aprender." },
     { tone: "diplomático", a: "Si seguimos sumando, estaremos ahí al final." },
     { tone: "provocador", a: "No he venido a la F1 a ser segundo. He venido a ganar el Mundial." }] });
-  return qs.slice(0, 3);
+  return qs.slice(0, 3).map((q) => Object.assign({}, q, { q: persp(q.q), opts: q.opts.map((o) => Object.assign({}, o, { a: persp(o.a) })) }));
 }
 /* Revisa los logros con los datos actuales (tras importar, restaurar o corregir). */
 function refreshAchievements(core, quiet) {
@@ -4598,12 +4650,12 @@ function revertProcessed(core, c, key) {
   delete c.processed[key];
 }
 function careerAfterSession(core, session, r) {
-  if (!core.career) {
+  if (!core[CK()]) {
     /* Primera vez: el punto de partida no incluye la sesión que se acaba de guardar. */
     const tmp = clone(core);
     const rr = roundOf(tmp, r);
     if (rr) { if (session === "race") delete rr.race; else if (session === "quali") delete rr.quali; else delete rr.sprint; }
-    core.career = blankCareer(tmp);
+    core[CK()] = blankCareer(tmp);
   }
   const c = careerOf(core);
   const round = roundOf(core, r);
@@ -4928,7 +4980,7 @@ function careerSeasonClose(core, next, entry) {
   n.renewalAsked = null;
   n.processed = {};
   addMail(n, { id: `gala-${core.season}`, key: "close", season: core.season + 1, r: 0, type: "info", from: "Gala de la Fórmula 1", subject: `🏅 Premios de la temporada ${core.season}`, body: awards.map((a) => `${a.name}: ${a.who ? fullName(a.who) : a.team ? team(a.team).name : a.text}`).join("\n") + (lines.length ? `\n\nTus objetivos:\n${lines.join("\n")}` : "") });
-  next.career = n;
+  next[CK()] = n;
   return { awards, lines, transfer };
 }
 
@@ -5129,6 +5181,13 @@ function uploadLabel(what) { return PHOTO() ? `${ICON.camera}Subir ${what}` : `$
 function render() {
   const view = $("#view");
   if (!view) return;
+  if (window.PADDOCK_STANDALONE && typeof Mode !== "undefined" && (!Mode.get() || !Menu.shown())) {
+    document.body.classList.add("in-menu");
+    view.innerHTML = menuHtml();
+    return;
+  }
+  document.body.classList.remove("in-menu");
+  if (S.core && typeof applyPlayers === "function") applyPlayers(S.core);
   if (S.core && typeof syncGrid === "function") syncGrid(S.core);
   if (typeof applyIdentity === "function") applyIdentity(S.core);
   const scr = currentScreen();
@@ -5389,6 +5448,8 @@ function rivalryList(core, onlyWith, feuds) {
 function homeScreen() {
   const core = S.core;
   const out = [heroPoster(core)];
+  if (f2Active(core)) out.unshift(`<div class="sec"><button class="group weekcard" data-act="goto-f2"><span class="wf">🏎️</span><span class="t"><small>Prólogo: Fórmula 2</small><b>${f2NextRound(core) <= core.f2.n ? `Carrera ${f2NextRound(core)} de ${core.f2.n}` : "¡Última bandera! Cierra la F2"}</b><em>Tu camino hacia la Fórmula 1 empieza aquí.</em></span>${ICON.chev}</button></div>`);
+  if (isCoop() && otherPlayer()) { const o = otherPlayer(); const t = driverTable(core); const a = t.find((x) => x.id === ME), b = t.find((x) => x.id === o); if (a && b) out.push(`<div class="sec"><button class="group weekcard" data-act="push" data-arg="rivalry:${rvKey(ME, o)}"><span class="wf">👥</span><span class="t"><small>Cooperativo</small><b>Tú P${a.pos}, ${esc(LN(o))} P${b.pos}</b><em>${fmt(Math.abs(a.pts - b.pts))} puntos entre vosotros. ${S.coopOffline ? "Sin conexión." : "En directo."}</em></span>${ICON.chev}</button></div>`); }
   if (core.stale) out.push(`<div class="sec">${staleBanner(core)}</div>`);
   if (S.mode === "local" && S.canWrite && S.downloads) {
     const total = careerStats(core, S.seasons, ME).races;
@@ -5606,9 +5667,10 @@ function racesScreen() {
   const core = S.core;
   const done = doneRounds(core).length;
   const seg = S.ui.racesSeg || "cal";
-  const bar = `<div class="seg" role="tablist">${[["cal", "Calendario"], ["standings", "Mundial"], ["circuits", "Circuitos"]].map(([k, l]) => `<button data-act="seg" data-arg="racesSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`;
+  const bar = `<div class="seg" role="tablist">${[["cal", "Calendario"], ["standings", "Mundial"], ["circuits", "Circuitos"]].concat(core.f2 ? [["f2", "F2"]] : []).map(([k, l]) => `<button data-act="seg" data-arg="racesSeg:${k}" aria-pressed="${seg === k}">${l}</button>`).join("")}</div>`;
   if (seg === "circuits") return { html: bar + circuitsBody(core) };
   if (seg === "standings") return { html: bar + standingsScreen().html };
+  if (seg === "f2" && core.f2) return { html: bar + f2Body(core) };
   return {
     html: `${bar}<div class="sec-h" style="margin-top:4px"><h2>Temporada ${core.season}</h2>${S.canWrite ? `<button class="link" data-act="cal-open">Editar calendario</button>` : `<span class="muted">${done} de ${core.totalRounds}</span>`}</div>
 <p class="note" style="margin:-4px 0 8px">${done} de ${core.totalRounds} carreras disputadas, al ${core.distance || 50}% de distancia.</p>
@@ -5846,13 +5908,15 @@ function teamScreen(id) {
 
 /* ---------- PALMARÉS ---------- */
 function palmaresBody(core) {
+  const f2line = core.f2 && core.f2.done ? `<div class="banner" style="margin-bottom:12px">🥈<div>${core.f2.champion === ME ? "<b>Campeón de Fórmula 2</b> antes de llegar a la F1." : `Fórmula 2: <b>${((core.f2.final || []).find((x) => x.id === ME) || {}).pos || "?"}.º</b> en el prólogo antes de la F1.`}</div></div>` : "";
   const c = careerStats(core, S.seasons, ME);
   const out = [];
-  out.push(`<button class="storycard" style="margin-bottom:14px" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>Capítulos, hitos y rivalidades de tu carrera</small></span>${ICON.chev}</button>`);
-  out.push(`<section class="poster" style="--tc:#F2C14E"><span class="flag-bg">🏆</span><div class="kick">Andrés Arévalo, archivo histórico</div>
+  out.push(`<button class="storycard" style="margin-bottom:14px" data-act="push" data-arg="story:">${crest(teamOf(S.core, ME), 54)}<span><b>Mi historia</b><small>Capítulos, hitos y rivalidades de tu carrera</small></span>${ICON.chev}</button>`);
+  out.push(`<section class="poster" style="--tc:#F2C14E"><span class="flag-bg">🏆</span><div class="kick">${esc(fullName(ME))}, archivo histórico</div>
 <h1 class="gp-name" style="font-size:clamp(40px,12vw,58px)">${c.titles} ${c.titles === 1 ? "Mundial" : "Mundiales"}</h1>
 <p class="gp-sub">${plural(c.seasons, "temporada", "temporadas")} en la F1, ${plural(c.races, "carrera", "carreras")} disputadas.</p>
 <div class="facts"><div><b>${c.wins}</b><span>victorias</span></div><div><b>${c.poles}</b><span>poles</span></div><div><b>${c.podiums}</b><span>podios</span></div><div><b>${fmt(c.pts)}</b><span>puntos</span></div></div></section>`);
+  if (f2line) out.push(f2line);
   out.push(sec("En cifras", tiles([
     { k: "Mundiales de pilotos", v: c.titles, cls: "gold" }, { k: "Mundiales de constructores", v: c.constructorTitles, cls: "gold" }, { k: "Carreras", v: c.races },
     { k: "Segundos puestos", v: c.p2 }, { k: "Terceros puestos", v: c.p3 }, { k: "Abandonos", v: c.dnf },
@@ -6281,8 +6345,9 @@ async function commitUpload(mode, rowsOverride) {
   const existing = findArticle(core.season, st.r, st.session);
   if (mode === "ai" && aiReady()) { await careerProcessOnly(st.session, st.r); await writeChronicle(st, existing && st.edit ? existing : null); return; }
   if (!existing || existing.auto) {
-    const id = await publishAutoNews(st.session, st.r, st.edit);
+    let id = await publishAutoNews(st.session, st.r, st.edit);
     closeSheet();
+    if (isCoop() && ME === P2 && (st.session === "race" || st.session === "quali")) id = (await publishP2Chronicle(st.r, st.session)) || id;
     if (S.pendingSummary) S.pendingSummary.main = id;
     const pressed = await careerFlow(st.session, st.r);
     if (!pressed && !openSummary() && id) openArticle(id);
@@ -6382,6 +6447,8 @@ function settingsSheet() {
     body: `${core ? `<div class="group">
 <button class="list-btn" data-act="driver-edit" data-arg="${ME}">${ICON.edit}<span class="t">Tu dorsal y escudería<small>${me.num != null ? "#" + me.num : "Sin dorsal"} en ${esc(team(me.team).name)}</small></span>${ICON.chev}</button>
 ${S.canWrite ? `<button class="list-btn" data-act="cal-open">${ICON.flag}<span class="t">Calendario de la temporada<small>${core.totalRounds} carreras. Cambia circuitos o su número</small></span>${ICON.chev}</button>
+${window.PADDOCK_STANDALONE ? `<button class="list-btn" data-act="mode-switch"><span class="li-ic">${isCoop() ? "👥" : "👤"}</span><span class="t">Modo de juego: ${isCoop() ? "cooperativo" : "un jugador"}<small>Volver al menú para cambiar de modo. Tus datos se conservan.</small></span>${ICON.chev}</button>` : ""}
+${isCoop() ? `<button class="list-btn" data-act="coop-invite"><span class="li-ic">🔗</span><span class="t">Invitar a tu amigo<small>${S.core.coop.players.p2 ? `Juegas con ${esc(fullName(otherPlayer()))}` : "Todavía no se ha unido nadie"}</small></span>${ICON.chev}</button>` : ""}
 <button class="list-btn" data-act="id-open"><span class="li-ic">🪪</span><span class="t">Tu piloto<small>Nombre, nacionalidad, dorsal y escudería</small></span>${ICON.chev}</button>
 <button class="list-btn" data-act="diff-open"><span class="li-ic">🎚️</span><span class="t">Dificultad<small>Exigencia del equipo y crecimiento de la fama</small></span>${ICON.chev}</button>
 <button class="list-btn" data-act="bk-open"><span class="li-ic">💾</span><span class="t">Copias automáticas<small>Se guardan solas después de cada carrera</small></span>${ICON.chev}</button>
@@ -6507,6 +6574,14 @@ async function doCloseSeason() {
   const { seasonDoc, next, entry } = closeSeason(core);
   const cr = careerSeasonClose(core, next, entry);
   seasonDoc.awards = cr.awards;
+  /* En cooperativo se cierra también la temporada del otro jugador. */
+  const other = isCoop() ? otherPlayer() : null;
+  let otherCr = null;
+  if (other && core[other === P2 ? "career2" : "career"]) {
+    const prevMe = ME;
+    ME = other;
+    try { otherCr = careerSeasonClose(core, next, entry); } finally { ME = prevMe; }
+  }
   let narr = null;
   if (aiReady()) {
     const st = { type: "working", title: "Escribiendo el cierre de temporada", msgs: AI_BUSY.write, ctl: new AbortController() };
@@ -6541,6 +6616,7 @@ async function doCloseSeason() {
     await Store.saveArticle(art);
     S.core = normalizeCore(next);
     await Store.saveCore();
+    if (other && otherCr) { const k = other === P2 ? "career2" : "career"; if (S.core[k]) await Store.write("careers/" + slotOf(other), { slot: slotOf(other), career: S.core[k] }); }
   } catch (e) { return; }
   if (market.length) {
     const rum = makeArticle(S.core, null, "flash", null, { id: `s${S.core.season}-mercado-auto`, auto: true, color: "#F59E0B", stats: null, kicker: "Mercado", title: "EL MERCADO SE MUEVE", subtitle: "Los rumores del verano sacuden el paddock.", sections: [{ heading: "🔁 Los rumores", body: market.map((m) => `${fullName(m.a)} podría dejar ${team(m.ta).name} por ${team(m.tb).name}, y ${fullName(m.b)} haría el camino inverso.`).join("\n\n") }], social: [{ who: "journalist", id: "confidencial", text: "Verano movido. Muy movido. 👀🔁", likes: 30000, reposts: 6000, replies: 3000 }] });
@@ -6651,7 +6727,7 @@ function entryFromRound(round, session) {
 }
 function momMap(list) {
   const m = {};
-  (list || []).forEach((x) => { const d = MOMENTS.race.concat(MOMENTS.quali).find((y) => y.id === x.id); if (d) m[x.id] = d.pick ? x.who || "" : true; });
+  (list || []).filter((x) => !isCoop() || !x.by || x.by === mySlot()).forEach((x) => { const d = MOMENTS.race.concat(MOMENTS.quali).find((y) => y.id === x.id); if (d) m[x.id] = d.pick ? x.who || "" : true; });
   return m;
 }
 function momentsBlock(st, race) {
@@ -6679,7 +6755,8 @@ function entryUsed(st) { return new Set(st.order.filter(Boolean).concat(st.out.m
 function trimOrder(st) { while (st.order.length && !st.order[st.order.length - 1]) st.order.pop(); }
 function entryValidate(st) {
   if (!st.order.filter(Boolean).length) return st.session === "quali" ? "Coloca al menos a un piloto." : "Coloca al menos a un piloto que terminara.";
-  if (!entryUsed(st).has(ME)) return "Falta Arévalo.";
+  const miss = playersIn(S.core).filter((p) => !entryUsed(st).has(p));
+  if (miss.length) return `Falta ${miss.map((p) => LN(p)).join(" y ")}.`;
   return "";
 }
 function towerRow(st, id, i, table, race) {
@@ -6784,8 +6861,9 @@ async function commitEntry(mode) {
     await writeChronicle(st, existing && st.edit ? existing : null);
     return;
   }
-  const id = await publishAutoNews(st.session, st.r, st.edit);
+  let id = await publishAutoNews(st.session, st.r, st.edit);
   closeSheet();
+  if (isCoop() && ME === P2 && (st.session === "race" || st.session === "quali")) id = (await publishP2Chronicle(st.r, st.session)) || id;
   if (S.pendingSummary) S.pendingSummary.main = id;
   const pressed = await careerFlow(st.session, st.r);
   if (!pressed && !openSummary() && id) openArticle(id);
@@ -6809,7 +6887,12 @@ async function careerProcessOnly(session, r) {
 }
 
 function momList(st) {
-  return Object.entries(st.mom || {}).map(([id, v]) => ({ id, who: typeof v === "string" && v ? v : null }));
+  const mine = Object.entries(st.mom || {}).map(([id, v]) => Object.assign({ id, who: typeof v === "string" && v ? v : null }, isCoop() ? { by: mySlot() } : {}));
+  if (!isCoop()) return mine;
+  const rd = roundOf(S.core, st.r);
+  const src = rd && (st.session === "quali" ? rd.quali : st.session === "sprint" ? rd.sprint : rd.race);
+  const others = ((src && src.moments) || []).filter((m) => m.by && m.by !== mySlot());
+  return others.concat(mine);
 }
 
 /* ============================================================
@@ -6932,7 +7015,7 @@ function storyScreen() {
   const out = [];
   out.push(`<header class="story-hero"><span class="flag-bg">${DRIVERS[ME].flag}</span><div class="kick">La historia de</div><h1>Andrés<br>Arévalo</h1>
 <p>Piloto de Aurelia Racing. ${cs.titles} ${cs.titles === 1 ? "Mundial" : "Mundiales"}, ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.</p></header>`);
-  out.push(`<div class="prologue"><p>Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.</p></div>`);
+  out.push(`<div class="prologue"><p>Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.</p>${core.f2 && core.f2.done ? `<p>Antes, en la Fórmula 2, ${core.f2.champion === ME ? "se proclamó campeón en su primer y único intento" : `terminó ${((core.f2.final || []).find((x) => x.id === ME) || {}).pos || "?"}.º en un breve pero intenso prólogo`}.</p>` : ""}</div>`);
   if (st.miles.length) out.push(sec("Hitos", `<ol class="miles">${st.miles.map((m) => `<li><span class="mi">${m.icon}</span><div><b>${esc(m.title)}</b><small>${esc(m.text)}</small></div></li>`).join("")}</ol>`));
   out.push(sec("Capítulos", st.chapters.map((c) => `<article class="chapter${c.current ? " now" : ""}"><span class="cn num">${c.season}</span><div><span class="ck">Temporada ${c.season}${c.current ? ", en curso" : ""}</span><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p></div></article>`).join("")));
   const riv = rivalryList(core, ME);
@@ -7069,7 +7152,7 @@ function meScreen() {
   const pendingPress = c.press && c.press[pressKey] && !c.press[pressKey].done && doneRounds(core).length;
   const out = [];
   out.push(`<header class="mehero" style="--tc:${t.color}"><div class="me-h">${drvHelmet(ME, 96)}</div>
-<div class="me-n"><span class="first">Andrés</span><span class="last">Arévalo</span><small>${crest(d.team, 16)} ${esc(t.name)}${d.num != null ? " #" + d.num : ""}</small></div>
+<div class="me-n"><span class="first">${esc(DRIVERS[ME].first)}</span><span class="last">${esc(DRIVERS[ME].last)}</span><small>${crest(d.team, 16)} ${esc(t.name)}${d.num != null ? " #" + d.num : ""}</small></div>
 ${fameBar(c.fame)}
 <div class="me-kpis"><div><b class="num">${cfmt(c.followers)}</b><span>seguidores</span></div><div><b class="num">${fmtMoney(marketValue(core))}</b><span>valor de mercado</span></div><div><b class="num">${c.trust}</b><span>confianza</span></div></div></header>`);
   if (pendingPress) out.push(`<button class="group list-btn press-cta" data-act="press-open" data-arg="${(doneRounds(core).slice(-1)[0] || {}).r}">🎙️<span class="t">Rueda de prensa pendiente<small>Los periodistas te esperan tras la última carrera</small></span>${ICON.chev}</button>`);
@@ -7137,11 +7220,11 @@ function mailScreen(id) {
     actions.push(`<div class="row-btns"><button class="btn btn-red" data-act="mail-accept" data-arg="${esc(id)}">Firmar el patrocinio</button><button class="btn btn-ghost" data-act="mail-reject" data-arg="${esc(id)}">Rechazar</button></div>`);
   } else if (m.type === "dilemma") {
     const d = DILEMMAS.find((x) => x.id === m.data.id);
-    if (open && d) actions.push(`<div class="choices">${d.choices.map((ch, i) => `<button class="btn btn-ghost btn-block" data-act="mail-choice" data-arg="${esc(id)}|${i}">${esc(ch.label)}</button>`).join("")}</div>`);
+    if (open && d) actions.push(`<div class="choices">${d.choices.map((ch, i) => `<button class="btn btn-ghost btn-block" data-act="mail-choice" data-arg="${esc(id)}|${i}">${esc(persp(ch.label))}</button>`).join("")}</div>`);
     if (m.result) actions.push(`<div class="tip">➡️ ${esc(m.result)}</div>`);
   }
   if (!open && MAIL_STATUS[m.status] && m.type !== "dilemma") actions.push(`<div class="tip">Estado: ${MAIL_STATUS[m.status]}.</div>`);
-  return { title: "Correo", html: `<article class="mailview"><div class="mv-h"><span class="mail-ic big">${MAIL_ICON[m.type] || "✉️"}</span><div><b>${esc(m.from)}</b><small>Para: Andrés Arévalo</small></div></div>
+  return { title: "Correo", html: `<article class="mailview"><div class="mv-h"><span class="mail-ic big">${MAIL_ICON[m.type] || "✉️"}</span><div><b>${esc(m.from)}</b><small>Para: ${esc(fullName(ME))}</small></div></div>
 <h2>${esc(m.subject)}</h2>${paras(m.body)}</article>${actions.join("")}` };
 }
 async function markRead(id) {
@@ -7172,7 +7255,7 @@ function negotiationPanel(m) {
 <div class="field"><span class="lbl">Rol</span><div class="chips"><button class="chip${d.role !== "primer" ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|role|igualdad">Igualdad</button><button class="chip${d.role === "primer" ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|role|primer">Primer piloto</button></div></div>
 ${levs.length ? `<div class="field"><span class="lbl">Presionar con otra oferta</span><div class="chips"><button class="chip${!d.leverage ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|leverage|">No</button>${levs.map((x) => `<button class="chip${d.leverage === x.id ? " on" : ""}" data-act="neg-set" data-arg="${esc(m.id)}|leverage|${esc(x.id)}">${esc(team(x.data.team).short)}: ${fmtMoney(x.data.salary)}</button>`).join("")}</div></div>` : ""}
 <button class="btn btn-ghost btn-block" data-act="neg-send" data-arg="${esc(m.id)}">Enviar contraoferta</button>
-<p class="note">Cada contraoferta gasta paciencia. Si pides demasiado, pueden retirar la oferta${m.type === "renewal" ? " (Aurelia no la retira, pero la confianza baja)" : ""}.</p></div>`;
+<p class="note">Cada contraoferta gasta paciencia. Si pides demasiado, pueden retirar la oferta${m.type === "renewal" ? ` (${esc(team(teamOf(S.core, ME)).short)} no la retira, pero la confianza baja)` : ""}.</p></div>`;
 }
 
 /* ---------- contrato y dinero ---------- */
@@ -7243,7 +7326,7 @@ function shopScreen() {
     const cant = c.money < it.price;
     const bits = [it.desc, it.fame ? `+${NF.format(it.fame)} de fama` : "", it.income ? `ingresos ${fmtMoney(it.income)}${it.famescale ? " (según fama)" : ""}` : "", it.upkeep ? `mantenimiento ${fmtMoney(it.upkeep)}` : ""].filter(Boolean).join(". ");
     const sell = owned && it.asset && S.canWrite ? `<button class="btn btn-sm btn-ghost" data-act="sell-item" data-arg="${it.id}">Vender ${fmtMoney(Math.round(it.price * it.asset * 0.9))}</button>` : "";
-    return `<div class="shop-it${owned ? " owned" : ""}"><span class="si-ic">${it.icon}</span><span class="si-t"><b>${esc(it.name)}</b><small>${esc(bits)}</small></span>
+    return `<div class="shop-it${owned ? " owned" : ""}"><span class="si-ic">${it.icon}</span><span class="si-t"><b>${esc(persp(it.name))}</b><small>${esc(persp(bits))}</small></span>
 ${owned ? (sell || `<span class="badge q">Tuyo</span>`) : `<button class="btn btn-sm ${cant || locked ? "btn-ghost" : "btn-red"}" data-act="shop-buy" data-arg="${it.id}" ${cant || locked || !S.canWrite ? "disabled" : ""}>${locked ? "Bloqueado" : fmtMoney(it.price)}</button>`}</div>`;
   };
   const lux = c.owned.map((id) => SHOP.find((x) => x.id === id)).filter((x) => x && ["casa", "coche", "extremo"].includes(x.cat));
@@ -7304,7 +7387,7 @@ function achievementsScreen() {
   const got = liveAchievements(S.core);
   const n = Object.keys(got).length;
   return { title: "Logros", html: `<div class="money-hero sm"><span>Desbloqueados</span><b class="num">${n}/${ACHIEVEMENTS.length}</b></div>
-<div class="achs">${ACHIEVEMENTS.map((a) => { const g = got[a.id]; const where = g && g.r ? (() => { const rd = g.season === S.core.season ? roundOf(S.core, g.r) : null; const ci = rd && circuit(rd.gp); return `Temporada ${g.season}${ci ? ", " + ci.name : ""}`; })() : g ? `Temporada ${g.season}` : ""; return `<div class="ach${g ? " on" : ""}"><span class="ai">${a.icon}</span><b>${esc(a.name)}</b><small>${esc(g ? where : a.desc)}</small></div>`; }).join("")}</div>` };
+<div class="achs">${ACHIEVEMENTS.map((a) => { const g = got[a.id]; const where = g && g.r ? (() => { const rd = g.season === S.core.season ? roundOf(S.core, g.r) : null; const ci = rd && circuit(rd.gp); return `Temporada ${g.season}${ci ? ", " + ci.name : ""}`; })() : g ? `Temporada ${g.season}` : ""; return `<div class="ach${g ? " on" : ""}"><span class="ai">${a.icon}</span><b>${esc(a.name)}</b><small>${esc(g ? where : persp(a.desc))}</small></div>`; }).join("")}</div>` };
 }
 
 /* ---------- gráficas ---------- */
@@ -7414,7 +7497,7 @@ async function sendPress(skip) {
   const r = st.r;
   const core0 = S.core;
   const key = `${core0.season}-${r}`;
-  const main = S.news.find((a) => a.id === `s${core0.season}-r${r}-race-auto`) || findArticle(core0.season, r, "race");
+  const main = (ME === P2 && S.news.find((a) => a.id === p2ChronicleId(core0, r))) || S.news.find((a) => a.id === `s${core0.season}-r${r}-race-auto`) || findArticle(core0.season, r, "race");
   let hot = null;
   await mutateCore((core) => {
     const c = careerOf(core);
@@ -7446,7 +7529,7 @@ async function sendPress(skip) {
         sections: [{ heading: "🎙️ Lo que dijo", body: `Preguntado por ${MEDIA[hot.q.by] ? MEDIA[hot.q.by].journalist : "la prensa"} («${hot.q.q}»), Andrés Arévalo respondió sin rodeos: «${hot.o.a}»` }, { heading: "🔥 La reacción", body: tgt ? `En el entorno de ${fullName(tgt)} no ha sentado nada bien. La rivalidad sube de temperatura.` : "Las redes se han dividido entre quienes aplauden su personalidad y quienes le piden más humildad." }],
         social: [tgt ? { who: "driver", id: tgt, text: g() < 0.5 ? "Hablar es fácil. Nos vemos en la pista." : "Respeto a todo el mundo. En la pista se verá.", likes: 300000, reposts: 30000, replies: 12000 } : null, { who: "fan", name: "Pepe Box Box", handle: "boxbox_pepe", text: "Se le está subiendo a la cabeza 🙄", likes: 2400, reposts: 200, replies: 600 }, { who: "fan", name: "Aurelia Ultras", handle: "aurelia_ultras", text: "ASÍ SE HABLA 🔥💙", likes: 5200, reposts: 800, replies: 300 }].filter(Boolean)
       });
-      await Store.saveArticle(art).catch(() => null);
+      await Store.saveArticle(ME === P2 ? asPlayer2(() => art) : art).catch(() => null);
     }
   }
   closeSheet();
@@ -7614,7 +7697,7 @@ const CAREER_ACTIONS = {
   "ask-raise": async () => {
     let ok = false;
     await mailAction((core) => { ok = askRaise(core); });
-    toast(ok ? "Aurelia te ha enviado una propuesta: mira el correo" : "Tu equipo no quiere hablar de dinero ahora");
+    toast(ok ? "Tu equipo te ha enviado una propuesta: mira el correo" : "Tu equipo no quiere hablar de dinero ahora");
   },
   "agent-search": async () => {
     let n = 0;
@@ -7631,11 +7714,11 @@ const CAREER_ACTIONS = {
       const d = DILEMMAS.find((x) => x.id === m.data.id);
       const ch = d.choices[i];
       applyFx(core, c, Object.assign({ label: d.subject }, ch.fx), m.data.rival);
-      m.status = "answered"; m.result = ch.res;
+      m.status = "answered"; m.result = persp(ch.res);
       if (ch.news) news = { d, ch, m };
     });
     if (news) {
-      const art = makeArticle(S.core, null, "flash", null, { id: `s${S.core.season}-dil-${news.d.id}-${Date.now().toString(36)}`, auto: true, color: "#FF3EA5", stats: null, kicker: "Última hora", title: news.ch.news.title, subtitle: news.ch.news.sub, sections: [{ heading: "📰 Lo que se sabe", body: news.ch.res }], social: [{ who: "journalist", id: "confidencial", text: "Lo dijimos antes que nadie. 👀", likes: 12000, reposts: 3000, replies: 1500 }] });
+      const art = makeArticle(S.core, null, "flash", null, { id: `s${S.core.season}-dil-${news.d.id}-${Date.now().toString(36)}`, auto: true, color: "#FF3EA5", stats: null, kicker: "Última hora", title: persp(news.ch.news.title), subtitle: persp(news.ch.news.sub), sections: [{ heading: "📰 Lo que se sabe", body: persp(news.ch.res) }], social: [{ who: "journalist", id: "confidencial", text: "Lo dijimos antes que nadie. 👀", likes: 12000, reposts: 3000, replies: 1500 }] });
       await Store.saveArticle(art).catch(() => null);
     }
   }
@@ -7652,7 +7735,7 @@ async function transferNews(m) {
     sections: [{ heading: renewal ? "📝 El acuerdo" : "🔁 El fichaje", body: renewal ? `Andrés Arévalo seguirá en ${team(o.team).name}. Rol: ${o.role === "primer" ? "primer piloto" : "igualdad de trato"}.` : `Andrés Arévalo ha firmado con ${team(o.team).name} y cambiará de equipo al terminar la temporada. En Aurelia, la noticia ha caído como un jarro de agua fría.` }],
     social: renewal ? [{ who: "team", id: o.team, text: "¡Seguimos juntos! 💙✍️", likes: 250000, reposts: 20000, replies: 8000 }] : [{ who: "team", id: o.team, text: `Welcome, Andrés! 🤝 #${S.core.season + 1}`, likes: 600000, reposts: 80000, replies: 40000 }, { who: "journalist", id: "confidencial", text: "Os lo avisamos. 😏", likes: 30000, reposts: 8000, replies: 3000 }]
   });
-  await Store.saveArticle(art).catch(() => null);
+  await Store.saveArticle(ME === P2 ? asPlayer2(() => art) : art).catch(() => null);
 }
 
 Object.assign(SCREENS, { me: meScreen, inbox: inboxScreen, mail: mailScreen, contract: contractScreen, finance: financeScreen, shop: shopScreen, achievements: achievementsScreen, charts: chartsScreen, legends: legendsScreen, gallery: galleryScreen });
@@ -7969,6 +8052,7 @@ function quickBlock(st, race) {
   return `<div class="quick">${f(`Tu posición${race ? "" : " en parrilla"}`, "me", posOpts(q.me, race))}
 ${race ? f("Ganador", "p1", drvOpts(q.p1)) + f("Segundo", "p2", drvOpts(q.p2)) + f("Tercero", "p3", drvOpts(q.p3)) : f("Pole", "p1", drvOpts(q.p1))}
 ${mate ? f(esc(fullName(mate)), "mate", posOpts(q.mate, race)) : ""}
+${isCoop() && otherPlayer() && otherPlayer() !== mate ? f(esc(fullName(otherPlayer())), "other", posOpts(q.other, race)) : ""}
 ${race ? f("Vuelta rápida", "fl", drvOpts(q.fl)) : ""}
 <p class="note">El resto de la parrilla queda sin anotar: el Mundial de los demás se quedará pendiente hasta que lo actualices.</p></div>`;
 }
@@ -7992,6 +8076,7 @@ function quickApply(st) {
   if (race) { errs.push(place(q.p1, q.p1 ? 1 : null)); errs.push(place(q.p2, q.p2 ? 2 : null)); errs.push(place(q.p3, q.p3 ? 3 : null)); }
   else errs.push(place(q.p1, q.p1 ? 1 : null));
   if (mate) errs.push(place(mate, q.mate));
+  if (isCoop() && otherPlayer() && otherPlayer() !== mate) errs.push(place(otherPlayer(), q.other));
   const e = errs.find(Boolean);
   st.order = Array.from({ length: order.length }, (_, i) => order[i] || null);
   st.out = out;
@@ -8088,7 +8173,7 @@ SHEETS.wrapped = wrappedSheet;
 function marketProposals(core) {
   const g = newsRng(`market-${core.season}`);
   const myT = teamOf(core, ME), mate = teammatesOf(core, ME)[0];
-  const t = driverTable(core).filter((r) => r.id !== ME && r.id !== mate);
+  const t = driverTable(core).filter((r) => r.id !== ME && r.id !== mate && !(typeof playersIn === "function" && playersIn(core).includes(r.id)) && !teammatesOf(core, otherPlayer() || ME).includes(r.id));
   const teams = teamTable(core).map((x) => x.id).filter((x) => x !== myT);
   const out = [];
   const used = new Set();
@@ -8115,13 +8200,13 @@ const NATIONS = [
   ["Portugal", "portugués", "🇵🇹"], ["Italia", "italiano", "🇮🇹"], ["Francia", "francés", "🇫🇷"], ["Reino Unido", "británico", "🇬🇧"], ["Alemania", "alemán", "🇩🇪"], ["Países Bajos", "neerlandés", "🇳🇱"], ["Bélgica", "belga", "🇧🇪"], ["Suiza", "suizo", "🇨🇭"], ["Austria", "austriaco", "🇦🇹"], ["Mónaco", "monegasco", "🇲🇨"],
   ["Brasil", "brasileño", "🇧🇷"], ["Estados Unidos", "estadounidense", "🇺🇸"], ["Canadá", "canadiense", "🇨🇦"], ["Australia", "australiano", "🇦🇺"], ["Japón", "japonés", "🇯🇵"], ["Finlandia", "finlandés", "🇫🇮"], ["Dinamarca", "danés", "🇩🇰"], ["Polonia", "polaco", "🇵🇱"]
 ];
-const ORIG = { first: DRIVERS[ME].first, last: DRIVERS[ME].last, code: DRIVERS[ME].code, flag: DRIVERS[ME].flag, nat: DRIVERS[ME].nat, team: Object.assign({}, TEAMS.aurelia) };
+const ORIG = { first: DRIVERS.arevalo.first, last: DRIVERS.arevalo.last, code: DRIVERS.arevalo.code, flag: DRIVERS.arevalo.flag, nat: DRIVERS.arevalo.nat, team: Object.assign({}, TEAMS.aurelia) };
 function applyIdentity(core) {
   const id = core && core.identity;
   const sig = JSON.stringify(id || null);
   if (applyIdentity.sig === sig) return;
   applyIdentity.sig = sig;
-  const d = DRIVERS[ME];
+  const d = DRIVERS.arevalo;
   if (!id) {
     Object.assign(d, { first: ORIG.first, last: ORIG.last, code: ORIG.code, flag: ORIG.flag, nat: ORIG.nat });
     Object.assign(TEAMS.aurelia, ORIG.team);
@@ -8129,7 +8214,7 @@ function applyIdentity(core) {
     return;
   }
   Object.assign(d, { first: id.first, last: id.last, code: (id.code || id.last.slice(0, 3)).toUpperCase(), flag: id.flag, nat: id.nat });
-  if (id.num != null && core.roster) core.roster[ME] = Object.assign({}, core.roster[ME] || {}, { num: id.num });
+  if (id.num != null && core.roster) core.roster.arevalo = Object.assign({}, core.roster.arevalo || {}, { num: id.num });
   TEAMS.aurelia.name = id.teamName || ORIG.team.name;
   TEAMS.aurelia.short = id.teamShort || (id.teamName ? id.teamName.split(" ")[0] : ORIG.team.short);
   if (id.color) TEAMS.aurelia.color = id.color;
@@ -8148,6 +8233,10 @@ const TEAM_COLORS = ["#7DD3FC", "#0284C7", "#E10600", "#F2C14E", "#0E9F6E", "#8B
 function identitySheet(st) {
   const f = st.f;
   const inp = (k, label, ph) => `<div class="field"><label>${label}</label><input class="inp" data-bind="f.${k}" value="${esc(f[k] || "")}" placeholder="${esc(ph || "")}" maxlength="24"></div>`;
+  if (st.p2) return { title: "Tu piloto", body: `${inp("first", "Nombre", "")}${inp("last", "Apellido", "")}
+<div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
+<div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}"></div>
+<div class="field"><label>Jefe de tu equipo (opcional)</label><input class="inp" data-bind="f.boss" value="${esc(f.boss || "")}" placeholder="Nombre para los correos del equipo"></div>`, foot: `<button class="btn btn-red btn-block" data-act="id-save">Guardar</button>` };
   return { title: st.fresh ? "Crea tu piloto" : "Tu piloto",
     body: `<p class="lede" style="margin:0 0 12px">${st.fresh ? "Empieza tu propia carrera en la F1. Podrás cambiarlo después en Ajustes." : "Cambia tus datos. Las noticias ya publicadas se adaptarán solas."}</p>
 ${inp("first", "Nombre", "Andrés")}${inp("last", "Apellido", "Arévalo")}
@@ -8230,6 +8319,461 @@ function contextLines(vr, core, round, ctx) {
 }
 
 Object.assign(SCREENS, { week: weekScreen, archive: archiveScreen, newsSeason: newsSeasonScreen, friends: friendsScreen, rivalry: rivalryScreen });
+
+/* ============================================================
+   MODOS DE JUEGO Y COOPERATIVO
+   Un jugador: el universo de siempre, guardado en el dispositivo.
+   Cooperativo: una partida compartida con otro jugador en tiempo real
+   (Firebase). Cada uno controla su piloto y su carrera.
+   ============================================================ */
+
+const P2 = "jugador2";
+const MODE_KEY = "paddock.mode";
+const COOP_KEY = "paddock.coop.cfg";
+const Mode = {
+  get() { try { return localStorage.getItem(MODE_KEY) || ""; } catch (e) { return ""; } },
+  set(m) { try { if (m) localStorage.setItem(MODE_KEY, m); else localStorage.removeItem(MODE_KEY); } catch (e) { /* sin almacenamiento */ } },
+  coop() { try { return JSON.parse(localStorage.getItem(COOP_KEY) || "null"); } catch (e) { return null; } },
+  setCoop(c) { try { if (c) localStorage.setItem(COOP_KEY, JSON.stringify(c)); else localStorage.removeItem(COOP_KEY); } catch (e) { /* sin almacenamiento */ } }
+};
+function isCoop() { return !!(S.core && S.core.coop); }
+function slotOf(id) { return id === P2 ? "p2" : "p1"; }
+function mySlot() { return slotOf(ME); }
+function CK() { return ME === P2 ? "career2" : "career"; }
+function otherPlayer() { return ME === P2 ? "arevalo" : isCoop() && S.core.coop.players.p2 ? P2 : null; }
+function playersIn(core) { return core && core.coop && core.coop.players.p2 ? ["arevalo", P2] : ["arevalo"]; }
+
+/* ---------- el segundo piloto en el universo ---------- */
+function applyPlayers(core) {
+  const p = core && core.coop && core.coop.players.p2;
+  if (!p) {
+    if (DRIVERS[P2]) { const i = ALL_DRIVER_IDS.indexOf(P2); if (i >= 0) ALL_DRIVER_IDS.splice(i, 1); }
+    return;
+  }
+  DRIVERS[P2] = Object.assign(DRIVERS[P2] || {}, { id: P2, first: p.first, last: p.last, code: (p.code || p.last.slice(0, 3)).toUpperCase(), num: p.num != null ? Number(p.num) : null, nat: p.nat, flag: p.flag, team: p.team, player: true, real: null });
+  if (!ALL_DRIVER_IDS.includes(P2)) ALL_DRIVER_IDS.push(P2);
+  if (!ROOKIES.includes(P2)) ROOKIES.push(P2);
+  if (NATIONS.find((n) => n[0] === p.nat && n[1] === "español") && !ES_DRIVERS.includes(P2)) ES_DRIVERS.push(P2);
+  const want = Mode.coop() && Mode.coop().slot === "p2" ? P2 : "arevalo";
+  if (ME !== want) ME = want;
+}
+function bossOf(id) {
+  if (id !== P2) return AURELIA_BOSS;
+  const p = S.core && S.core.coop && S.core.coop.players.p2;
+  return (p && p.boss) || `Dirección de ${team(teamOf(S.core, P2)).short}`;
+}
+
+/* Textos del modo carrera desde el punto de vista de quien juega. */
+function persp(s) {
+  if (s == null || ME !== P2 || !S.core) return s;
+  const d = DRIVERS[P2];
+  const tm = team(teamOf(S.core, P2));
+  const mate = teammatesOf(S.core, P2)[0];
+  const init = (d.first[0] || "") + (d.last[0] || "");
+  const pairs = [
+    ["Andrés Arévalo", `${d.first} ${d.last}`], ["ANDRÉS ARÉVALO", UP(`${d.first} ${d.last}`)], ["Arévalo", d.last], ["ARÉVALO", UP(d.last)], ["Andrés", d.first], ["«AA»", `«${init}»`],
+    ["#AureliaRacing", "#" + tm.name.replace(/\s+/g, "")], ["Aurelia Racing", tm.name], ["AURELIA RACING", UP(tm.name)], ["Aurelia", tm.short], ["AURELIA", UP(tm.short)],
+    [AURELIA_BOSS, bossOf(P2)]
+  ];
+  if (mate) pairs.push(["Ayrton Senna", fullName(mate)], ["Ayrton", DRIVERS[mate].first], ["Senna", DRIVERS[mate].last], ["SENNA", UP(DRIVERS[mate].last)]);
+  let out = String(s);
+  const re = new RegExp(pairs.map(([a]) => a.replace(/[.*+?^${}()|[\]\\#«»]/g, "\\$&")).join("|"), "g");
+  const map = Object.fromEntries(pairs);
+  const b = bossOf(P2);
+  return out.replace(re, (m) => (map[m] != null ? map[m] : m)).split(`${b} (${tm.name})`).join(b).split(`${b}, jefe de equipo`).join(b);
+}
+
+/* Ejecuta la redacción de las noticias generales desde el punto de vista del jugador 1. */
+function hostDo(fn) {
+  const prev = ME;
+  const prevIdent = IDENT;
+  ME = "arevalo";
+  try { return fn(); } finally { ME = prev; IDENT = prevIdent; }
+}
+
+/* Genera algo como si el protagonista fuera el jugador 2: los textos fijos
+   ("Arévalo", "Aurelia", "Senna"...) pasan a ser los suyos y las menciones
+   reales a Arévalo o Senna se conservan. */
+function asPlayer2(fn) {
+  const d = DRIVERS.arevalo, sn = DRIVERS.senna, tm = TEAMS.aurelia;
+  const saved = { me: ME, af: d.first, al: d.last, sf: sn && sn.first, sl: sn && sn.last, tn: tm.name, ts: tm.short };
+  ME = P2;
+  d.first = "\u2460AF"; d.last = "\u2460AL";
+  if (sn) { sn.first = "\u2460SF"; sn.last = "\u2460SL"; }
+  tm.name = "\u2460TN"; tm.short = "\u2460TS";
+  let out;
+  try { out = fn(); } finally {
+    d.first = saved.af; d.last = saved.al;
+    if (sn) { sn.first = saved.sf; sn.last = saved.sl; }
+    tm.name = saved.tn; tm.short = saved.ts;
+  }
+  const fix = (s) => {
+    let t = persp(s);
+    return t.replace(/\u2460AF/g, saved.af).replace(/\u2460AL/g, saved.al).replace(/\u2460SF/g, saved.sf || "").replace(/\u2460SL/g, saved.sl || "").replace(/\u2460TN/g, saved.tn).replace(/\u2460TS/g, saved.ts);
+  };
+  const walk = (o) => {
+    if (typeof o === "string") return fix(o);
+    if (Array.isArray(o)) return o.map(walk);
+    if (o && typeof o === "object") { const r = {}; Object.keys(o).forEach((k) => { r[k] = k === "id" || k === "who" || k === "team" || k === "gp" || k === "outlet" || k === "kind" ? o[k] : walk(o[k]); }); return r; }
+    return o;
+  };
+  ME = saved.me;
+  return walk(out);
+}
+function p2ChronicleId(core, r, ses) { return `s${core.season}-r${r}-${ses || "race"}-p2`; }
+async function publishP2Chronicle(r, ses) {
+  ses = ses || "race";
+  if (!isCoop() || !S.core.coop.players.p2) return null;
+  const core = clone(S.core);
+  const round = roundOf(core, r);
+  const src = round && round[ses];
+  if (!src || !src.res || src.res[P2] === undefined) return null;
+  let art;
+  try { art = asPlayer2(() => autoChronicle(core, round, ses)); } catch (e) { return null; }
+  art.id = p2ChronicleId(core, r, ses);
+  art.kicker = ses === "quali" ? `Sábado de ${DRIVERS[P2].last}` : `Crónica de ${DRIVERS[P2].last}`;
+  art.frontPages = [];
+  art.t = (S.news.find((a) => a.id === `s${core.season}-r${r}-${ses}-auto`) || { t: Date.now() }).t + 2;
+  art.auto = true;
+  await Store.saveArticle(art).catch(() => null);
+  return art.id;
+}
+
+/* ---------- Firebase ---------- */
+const FB_VER = "10.12.2";
+const Coop = {
+  app: null, fs: null, ready: false,
+  enabled() { return !!window.PADDOCK_STANDALONE && Mode.get() === "coop" && !!(Mode.coop() && Mode.coop().gid); },
+  loadScript(src) { return new Promise((res, rej) => { if ([...document.scripts].some((s) => s.src === src)) return res(); const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("sdk")); document.head.appendChild(s); }); },
+  async sdk() {
+    if (window.firebase && window.firebase.firestore) return;
+    const base = `https://www.gstatic.com/firebasejs/${FB_VER}/`;
+    await this.loadScript(base + "firebase-app-compat.js");
+    await this.loadScript(base + "firebase-auth-compat.js");
+    await this.loadScript(base + "firebase-firestore-compat.js");
+  },
+  async connect(fb) {
+    await this.sdk();
+    const fbx = window.firebase;
+    this.app = fbx.apps.find((a) => a.name === "paddock") || fbx.initializeApp(fb, "paddock");
+    await this.app.auth().signInAnonymously();
+    this.fs = this.app.firestore();
+    this.ready = true;
+    return this.fs;
+  },
+  /* Misma forma que la base de datos de Claude: doc(path) y collection(path). Se guarda JSON para evitar límites de tipos. */
+  adapter(gid) {
+    const fs = this.fs, base = `games/${gid}/`;
+    const wrapSnap = (s) => ({ exists: s.exists, data: () => { const d = s.data(); return d && d.j ? JSON.parse(d.j) : d; } });
+    return {
+      doc: (p) => {
+        const ref = fs.doc(base + p);
+        return {
+          set: (data) => ref.set({ j: JSON.stringify(data), t: Date.now() }),
+          delete: () => ref.delete(),
+          get: () => ref.get().then(wrapSnap),
+          onSnapshot: (cb, err) => ref.onSnapshot((s) => cb(wrapSnap(s)), err)
+        };
+      },
+      collection: (p) => {
+        const ref = fs.collection(base + p);
+        return { onSnapshot: (cb, err) => ref.onSnapshot((qs) => cb({ docs: qs.docs.map(wrapSnap) }), err), get: () => ref.get().then((qs) => ({ docs: qs.docs.map(wrapSnap) })) };
+      }
+    };
+  },
+  async start() {
+    const cfg = Mode.coop();
+    ME = cfg.slot === "p2" ? P2 : "arevalo";
+    const cached = Local.read();
+    if (cached && cached.core) {
+      S.core = normalizeCore(cached.core);
+      S.news = sortNews(cached.news || []);
+      S.seasons = cached.seasons || [];
+      S.mode = "cache";
+      render();
+    }
+    try {
+      await this.connect(cfg.fb);
+      Store.db = this.adapter(cfg.gid);
+      Store.subscribe();
+    } catch (e) {
+      S.mode = "cache";
+      S.coopOffline = true;
+      S.loaded = { core: true, news: true, seasons: true };
+      toast("Sin conexión con la partida. Verás los últimos datos guardados.");
+      render();
+    }
+  },
+  inviteLink() {
+    const cfg = Mode.coop();
+    if (!cfg) return "";
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify({ fb: cfg.fb, g: cfg.gid }))));
+    return `${location.origin}${location.pathname}#coop=${code}`;
+  },
+  readInvite(text) {
+    try {
+      const s = String(text || "").trim();
+      const m = /coop=([A-Za-z0-9+/=_-]+)/.exec(s);
+      const code = m ? m[1] : s;
+      const o = JSON.parse(decodeURIComponent(escape(atob(code))));
+      return o && o.fb && o.g ? o : null;
+    } catch (e) { return null; }
+  },
+  /* Procesa las carreras que ha anotado el otro jugador: tu carrera, tu crónica y tu rueda de prensa. */
+  busy: false,
+  async check() {
+    if (!isCoop() || this.busy || S.sheet || !S.canWrite || S.mode !== "db") return;
+    const core = S.core;
+    if (!core[CK()]) return;
+    const c = core[CK()];
+    const pend = [];
+    core.rounds.forEach((rd) => ["quali", "race"].forEach((ses) => { if (rd[ses] && rd[ses].res && rd[ses].res[ME] !== undefined && !(c.processed || {})[`${core.season}-${rd.r}-${ses}`]) pend.push({ r: rd.r, ses }); }));
+    if (!pend.length) return;
+    this.busy = true;
+    try {
+      const last = pend[pend.length - 1];
+      for (const p of pend.slice(0, -1)) await mutateCore((k) => { careerAfterSession(k, p.ses, p.r); }).catch(() => null);
+      if (last.ses === "race") S.pendingSummary = { r: last.r, before: snapshotFor(S.core) };
+      if (ME === P2 && !S.news.some((a) => a.id === p2ChronicleId(S.core, last.r, last.ses))) await publishP2Chronicle(last.r, last.ses);
+      toast(`${fullName(otherPlayer())} ha anotado la ${last.ses === "race" ? "carrera" : "clasificación"} de la ronda ${last.r}`);
+      const pressed = await careerFlow(last.ses, last.r);
+      if (!pressed && last.ses === "race") openSummary();
+    } finally { this.busy = false; }
+  }
+};
+
+/* ---------- menú inicial ---------- */
+const Menu = {
+  shown() { try { return sessionStorage.getItem("paddock.menu") === "1"; } catch (e) { return true; } },
+  done() { try { sessionStorage.setItem("paddock.menu", "1"); } catch (e) { /* sin almacenamiento */ } }
+};
+function menuHtml() {
+  const cur = Mode.get();
+  return `<div class="menu"><div class="menu-logo"><span class="slashes"><i></i><i></i><i></i></span><b>PADDOCK</b></div>
+<p class="lede">Tu carrera en la Fórmula 1, contada como si fuera de verdad.</p>
+<button class="mcard${cur === "solo" ? " cur" : ""}" data-act="menu-solo"><span class="mc-i">👤</span><span>${cur === "solo" ? `<em>Continuar</em>` : ""}<b>Un jugador</b><small>Tu carrera y tu universo, guardados en este dispositivo.</small></span>${ICON.chev}</button>
+<button class="mcard${cur === "coop" ? " cur" : ""}" data-act="menu-coop"><span class="mc-i">👥</span><span>${cur === "coop" ? `<em>Continuar</em>` : ""}<b>Cooperativo</b><small>${Mode.coop() && Mode.coop().gid ? "Volver a tu partida compartida." : "Jugad dos en la misma partida. Cada uno lleva su piloto y todo se ve en tiempo real."}</small></span>${ICON.chev}</button>
+${Mode.coop() && Mode.coop().gid ? `<button class="link" style="display:block;margin:0 auto 10px" data-act="coop-forget">Olvidar la partida cooperativa de este dispositivo</button>` : ""}
+<p class="note" style="text-align:center">Puedes cambiar de modo cuando quieras desde Ajustes. Cada modo guarda sus datos por separado.</p></div>`;
+}
+const TEAM_CHOICES = () => ALL_TEAM_IDS.filter((t) => t !== "aurelia");
+function coopSheet(st) {
+  const tab = st.tab || (st.invite ? "join" : "create");
+  const seg = `<div class="seg"><button data-act="coop-tab" data-arg="create" aria-pressed="${tab === "create"}">Crear partida</button><button data-act="coop-tab" data-arg="join" aria-pressed="${tab === "join"}">Unirme</button></div>`;
+  if (tab === "create") {
+    return { title: "Cooperativo", body: `${seg}
+<p class="lede" style="margin:0 0 10px">Tú serás el jugador 1 (Andrés Arévalo, en Aurelia Racing). Necesitas pegar la configuración de tu proyecto de Firebase una sola vez.</p>
+<div class="field"><label>Configuración de Firebase</label><textarea class="inp code" rows="6" data-bind="fbText" placeholder='const firebaseConfig = { apiKey: "…", authDomain: "…", projectId: "…", appId: "…" };'>${esc(st.fbText || "")}</textarea><small>Firebase → Configuración del proyecto → Tus apps → Web → firebaseConfig.</small></div>
+<div class="field"><label>¿Empezáis en la Fórmula 2?</label><div class="chips">${[[0, "No, directos a la F1"], [2, "2 carreras de F2"], [3, "3 carreras de F2"]].map(([n, l]) => `<button class="chip${Number(st.f2 || 0) === n ? " on" : ""}" data-act="coop-f2" data-arg="${n}">${l}</button>`).join("")}</div></div>
+${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
+      foot: `<button class="btn btn-red btn-block" data-act="coop-create" ${st.working ? "disabled" : ""}>${st.working ? "Conectando…" : "Crear la partida"}</button>` };
+  }
+  const f = st.f;
+  const t = f.team || TEAM_CHOICES()[0];
+  const seats = ALL_DRIVER_IDS.filter((d) => d !== P2 && d !== "arevalo" && DRIVERS[d].team === t);
+  return { title: "Cooperativo", body: `${seg}
+<div class="field"><label>Invitación</label><textarea class="inp code" rows="3" data-bind="inviteText" placeholder="Pega aquí el enlace que te ha pasado tu amigo">${esc(st.inviteText || "")}</textarea></div>
+<h4 class="eh">Tu piloto</h4>
+<div class="field"><label>Nombre</label><input class="inp" data-bind="f.first" value="${esc(f.first || "")}" placeholder="Isma"></div>
+<div class="field"><label>Apellido</label><input class="inp" data-bind="f.last" value="${esc(f.last || "")}" placeholder="Apellido"></div>
+<div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
+<div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}"></div>
+<div class="field"><label>Tu escudería en F1 25</label><select class="sel" data-bind="f.team" data-rerender="1">${TEAM_CHOICES().map((x) => `<option value="${x}" ${t === x ? "selected" : ""}>${esc(team(x).name)}</option>`).join("")}</select></div>
+<div class="field"><label>Piloto al que sustituyes</label><select class="sel" data-bind="f.replace">${seats.map((d) => `<option value="${d}" ${f.replace === d ? "selected" : ""}>${esc(fullName(d))}</option>`).join("")}</select></div>
+${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
+    foot: `<button class="btn btn-red btn-block" data-act="coop-join" ${st.working ? "disabled" : ""}>${st.working ? "Conectando…" : "Unirme a la partida"}</button>` };
+}
+function parseFbConfig(text) {
+  const s = String(text || "");
+  const get = (k) => { const m = new RegExp(`${k}\\s*["']?\\s*:\\s*["']([^"']+)["']`).exec(s); return m ? m[1] : null; };
+  const o = { apiKey: get("apiKey"), authDomain: get("authDomain"), projectId: get("projectId"), storageBucket: get("storageBucket"), messagingSenderId: get("messagingSenderId"), appId: get("appId") };
+  Object.keys(o).forEach((k) => { if (!o[k]) delete o[k]; });
+  return o.apiKey && o.projectId && o.appId ? o : null;
+}
+function newGameId() { const a = new Uint8Array(12); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => { a[i] = Math.floor(Math.random() * 256); }); return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join(""); }
+function inviteSheet() {
+  const link = Coop.inviteLink();
+  return { title: "Invita a tu amigo", body: `<p class="lede" style="margin:0 0 10px">Pásale este enlace. Al abrirlo podrá crear su piloto y unirse a vuestra partida.</p><textarea class="inp code" rows="4" readonly>${esc(link)}</textarea>
+<div class="row-btns" style="margin-top:10px"><button class="btn btn-red" data-act="coop-copy">Copiar</button>${navigator.share ? `<button class="btn btn-ghost" data-act="coop-share">Compartir</button>` : ""}</div>
+<p class="note">El enlace da acceso a vuestra partida: compártelo solo con él.</p>`, foot: `<button class="btn btn-ghost btn-block" data-act="close-sheet">Hecho</button>` };
+}
+
+/* ============================================================
+   PRÓLOGO DE FÓRMULA 2
+   2 o 3 carreras antes de la primera temporada de F1. Tú anotas tu
+   resultado (y el de tu compañero de partida en cooperativo); la app
+   simula al resto de la parrilla. El título se guarda en el palmarés.
+   Los equipos son los reales de la F2; los pilotos rivales son ficticios.
+   ============================================================ */
+
+const F2_TEAMS = [
+  { id: "prema", name: "Prema Racing", color: "#E10600", s: 88 }, { id: "art", name: "ART Grand Prix", color: "#8A8D93", s: 86 },
+  { id: "campos", name: "Campos Racing", color: "#F2C14E", s: 85 }, { id: "mp", name: "MP Motorsport", color: "#FF8000", s: 84 },
+  { id: "hitech", name: "Hitech", color: "#C0C7D1", s: 83 }, { id: "dams", name: "DAMS", color: "#0284C7", s: 81 },
+  { id: "invicta", name: "Invicta Virtuosi", color: "#B45309", s: 82 }, { id: "rodin", name: "Rodin Motorsport", color: "#111114", s: 80 },
+  { id: "aix", name: "AIX Racing", color: "#0E9F6E", s: 77 }, { id: "trident", name: "Trident", color: "#1D4ED8", s: 78 },
+  { id: "var", name: "Van Amersfoort Racing", color: "#FF3EA5", s: 76 }
+];
+const F2_NAMES = [
+  ["Luca", "Moretti", "🇮🇹"], ["Oliver", "Bennett", "🇬🇧"], ["Théo", "Laurent", "🇫🇷"], ["Mateus", "Ribeiro", "🇧🇷"], ["Kenta", "Morimoto", "🇯🇵"], ["Noah", "Fischer", "🇩🇪"],
+  ["Daan", "Visser", "🇳🇱"], ["Liam", "Callaghan", "🇮🇪"], ["Rafael", "Duarte", "🇵🇹"], ["Jonas", "Lindqvist", "🇸🇪"], ["Arjun", "Mehta", "🇮🇳"], ["Ethan", "Walsh", "🇦🇺"],
+  ["Nicolás", "Paredes", "🇦🇷"], ["Sebastián", "Rojas", "🇨🇱"], ["Maxime", "Girard", "🇫🇷"], ["Federico", "Bianchi", "🇮🇹"], ["Hugo", "Martens", "🇧🇪"], ["Kai", "Hoffmann", "🇩🇪"],
+  ["Tomás", "Villar", "🇪🇸"], ["Ryan", "Mitchell", "🇺🇸"], ["Aleksander", "Nowak", "🇵🇱"], ["Emil", "Sørensen", "🇩🇰"]
+];
+const F2_GPS = ["bhr", "sau", "aus"];
+function f2Team(id) { return F2_TEAMS.find((t) => t.id === id) || F2_TEAMS[0]; }
+function f2Name(core, id) { if (DRIVERS[id]) return fullName(id); const d = (core.f2.grid || []).find((x) => x.id === id); return d ? `${d.first} ${d.last}` : id; }
+function f2Last(core, id) { if (DRIVERS[id]) return LN(id); const d = (core.f2.grid || []).find((x) => x.id === id); return d ? d.last : id; }
+
+/* Crea la parrilla: los jugadores en los equipos elegidos y el resto, pilotos ficticios. */
+function makeF2(core, n, teams) {
+  const g = newsRng(`f2-${core.season}-${Date.now()}`);
+  const seats = [];
+  F2_TEAMS.forEach((t) => { seats.push(t.id, t.id); });
+  const grid = [];
+  Object.entries(teams).forEach(([pid, tid]) => { const i = seats.indexOf(tid); if (i >= 0) seats.splice(i, 1); grid.push({ id: pid, team: tid, player: true, skill: 0 }); });
+  const names = F2_NAMES.slice().sort(() => g() - 0.5);
+  seats.forEach((tid, i) => { const nm = names[i % names.length]; grid.push({ id: "f2_" + i, first: nm[0], last: nm[1], flag: nm[2], team: tid, skill: Math.round(60 + g() * 35) }); });
+  return { n, grid, races: [], done: false, champion: null };
+}
+function f2Points(pos) { return pos && pos <= 10 ? POINTS_RACE[pos - 1] : 0; }
+/* Simula una carrera respetando las posiciones que han anotado los jugadores. */
+function simulateF2(core, r, fixed, extra) {
+  const f2 = core.f2;
+  const g = newsRng(`f2race-${core.season}-${r}-${JSON.stringify(fixed)}`);
+  const n = f2.grid.length;
+  const others = f2.grid.filter((d) => !d.player).map((d) => ({ id: d.id, score: f2Team(d.team).s * 0.55 + d.skill * 0.45 + g() * 28 })).sort((a, b) => b.score - a.score);
+  const dnfN = g() < 0.6 ? 1 + Math.floor(g() * 2) : 0;
+  const outs = [];
+  for (let i = 0; i < dnfN && others.length > 4; i++) outs.push(others.splice(4 + Math.floor(g() * (others.length - 4)), 1)[0].id);
+  const res = {};
+  const taken = new Set();
+  Object.entries(fixed).forEach(([pid, p]) => { if (p === "out") res[pid] = "out"; else { res[pid] = Number(p); taken.add(Number(p)); } });
+  let pos = 1;
+  others.forEach((o) => { while (taken.has(pos)) pos++; if (pos > n) { res[o.id] = "out"; return; } res[o.id] = pos; taken.add(pos); pos++; });
+  outs.forEach((id) => { res[id] = "out"; });
+  const finishers = Object.entries(res).filter(([, p]) => p !== "out").sort((a, b) => a[1] - b[1]);
+  const pole = extra.pole || (finishers[Math.floor(g() * Math.min(4, finishers.length))] || [])[0];
+  const fl = extra.fl || (finishers[Math.floor(g() * Math.min(8, finishers.length))] || [])[0];
+  return { r, gp: F2_GPS[(r - 1) % F2_GPS.length], res, pole, fl };
+}
+function f2Standings(core) {
+  const pts = {};
+  (core.f2.grid || []).forEach((d) => { pts[d.id] = 0; });
+  (core.f2.races || []).forEach((rc) => {
+    Object.entries(rc.res).forEach(([id, p]) => { if (p !== "out") pts[id] = (pts[id] || 0) + f2Points(p); });
+    if (rc.pole) pts[rc.pole] = (pts[rc.pole] || 0) + 2;
+    if (rc.fl && rc.res[rc.fl] !== "out" && rc.res[rc.fl] <= 10) pts[rc.fl] = (pts[rc.fl] || 0) + 1;
+  });
+  const wins = (id) => (core.f2.races || []).filter((rc) => rc.res[id] === 1).length;
+  return Object.entries(pts).map(([id, p]) => ({ id, pts: p, wins: wins(id) })).sort((a, b) => b.pts - a.pts || b.wins - a.wins).map((x, i) => Object.assign(x, { pos: i + 1 }));
+}
+function f2Active(core) { return !!(core && core.f2 && !core.f2.done); }
+function f2NextRound(core) { return core.f2 ? (core.f2.races || []).length + 1 : null; }
+
+/* ---------- anotar ---------- */
+function f2EntrySheet(st) {
+  const core = S.core;
+  const n = core.f2.grid.length;
+  const opts = (sel) => `<option value="">Elige</option>` + Array.from({ length: n }, (_, i) => `<option value="${i + 1}" ${String(sel) === String(i + 1) ? "selected" : ""}>P${i + 1}</option>`).join("") + `<option value="out" ${sel === "out" ? "selected" : ""}>No terminó</option>`;
+  const c = circuit(F2_GPS[(st.r - 1) % F2_GPS.length]);
+  const players = playersIn(core).filter((p) => core.f2.grid.some((d) => d.id === p));
+  return { title: `Fórmula 2: carrera ${st.r} de ${core.f2.n}`, body: `<div class="entry-sum"><div><b>${c ? c.flag + " " + esc(c.name) : "Carrera " + st.r}</b><small>Anota ${players.length > 1 ? "vuestras posiciones" : "tu posición"}. La app simula al resto.</small></div></div>
+${players.map((p) => `<div class="field"><label>${esc(f2Name(core, p))}</label><select class="sel" data-bind="pos.${p}">${opts(st.pos[p])}</select></div>`).join("")}
+<div class="field"><label>Pole (opcional)</label><select class="sel" data-bind="pole"><option value="">La simula la app</option>${players.map((p) => `<option value="${p}" ${st.pole === p ? "selected" : ""}>${esc(f2Name(core, p))}</option>`).join("")}</select></div>
+<div class="field"><label>Vuelta rápida (opcional)</label><select class="sel" data-bind="fl"><option value="">La simula la app</option>${players.map((p) => `<option value="${p}" ${st.fl === p ? "selected" : ""}>${esc(f2Name(core, p))}</option>`).join("")}</select></div>
+${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
+    foot: `<button class="btn btn-red btn-block" data-act="f2-save">Guardar y simular la carrera</button>` };
+}
+async function f2Save() {
+  const st = S.sheet;
+  const core0 = S.core;
+  const players = playersIn(core0).filter((p) => core0.f2.grid.some((d) => d.id === p));
+  const fixed = {};
+  for (const p of players) { const v = st.pos[p]; if (!v) { st.error = `Falta la posición de ${f2Name(core0, p)}.`; renderSheet(); return; } fixed[p] = v; }
+  const nums = Object.values(fixed).filter((v) => v !== "out");
+  if (new Set(nums).size !== nums.length) { st.error = "Dos pilotos no pueden terminar en la misma posición."; renderSheet(); return; }
+  if (st.fl && fixed[st.fl] === "out") { st.error = "Quien no terminó no puede hacer la vuelta rápida."; renderSheet(); return; }
+  closeSheet();
+  let race = null;
+  await mutateCore((core) => {
+    race = simulateF2(core, st.r, fixed, { pole: st.pole || null, fl: st.fl || null });
+    core.f2.races = (core.f2.races || []).filter((x) => x.r !== st.r).concat([race]).sort((a, b) => a.r - b.r);
+  }).catch(() => null);
+  if (race) { const id = await f2News(race); if (id) openArticle(id); }
+  toast("Carrera de F2 guardada");
+}
+async function f2News(race) {
+  const core = S.core;
+  const g = NG(core, { r: 900 + race.r }, "f2");
+  const vr = makeVary({ narrative: {} }, g);
+  const c = circuit(race.gp);
+  const st = f2Standings(core);
+  const me = race.res[ME];
+  const winner = Object.keys(race.res).find((k) => race.res[k] === 1);
+  const top = Object.entries(race.res).filter(([, p]) => p !== "out").sort((a, b) => a[1] - b[1]).slice(0, 5);
+  const my = st.find((x) => x.id === ME);
+  const title = me === 1 ? vr.f("f2t-w", ["¡{L} GANA EN {P}!", "¡VICTORIA DE {L} EN LA F2!", "{L} YA SABE LO QUE ES GANAR"], { L: UP(LN(ME)), P: UP(c ? c.name : "") })
+    : me === "out" ? vr.f("f2t-d", ["ABANDONO DE {L} EN {P}", "TARDE PARA OLVIDAR PARA {L}"], { L: UP(LN(ME)), P: UP(c ? c.name : "") })
+    : me <= 3 ? vr.f("f2t-p", ["{L}, AL PODIO EN {P}", "{L} SUBE AL CAJÓN EN LA F2"], { L: UP(LN(ME)), P: UP(c ? c.name : "") })
+    : vr.f("f2t-n", ["{L}, P{N} EN {P}", "{L} SUMA EXPERIENCIA EN {P}"], { L: UP(LN(ME)), P: UP(c ? c.name : ""), N: me });
+  const other = otherPlayer();
+  const secs = [
+    { heading: "🏁 Resultado", body: `Ganó ${f2Name(core, winner)} (${f2Team((core.f2.grid.find((d) => d.id === winner) || {}).team).name}). ${me === "out" ? `${fullName(ME)} no terminó.` : `${fullName(ME)} terminó ${me}.º${f2Points(me) ? ` y sumó ${f2Points(me)} puntos` : ""}.`}${race.pole === ME ? " Además, salió desde la pole." : ""}${race.fl === ME ? " Y firmó la vuelta rápida." : ""}` },
+    { heading: "📋 Los cinco primeros", body: top.map(([id, p]) => `${p}. ${f2Name(core, id)}`).join("\n") }
+  ];
+  if (other && race.res[other] !== undefined) secs.push({ heading: `👥 ${LN(other)}`, body: race.res[other] === "out" ? `${fullName(other)} no terminó.` : `${fullName(other)} terminó ${race.res[other]}.º.` });
+  secs.push({ heading: "🏆 La general de F2", body: st.slice(0, 5).map((x) => `${x.pos}. ${f2Name(core, x.id)}: ${x.pts} pts`).join("\n") + (my && my.pos > 5 ? `\n…\n${my.pos}. ${fullName(ME)}: ${my.pts} pts` : "") + `\n\nQuedan ${core.f2.n - core.f2.races.length} ${core.f2.n - core.f2.races.length === 1 ? "carrera" : "carreras"} para dar el salto a la F1.` });
+  const art = makeArticle(core, null, "flash", null, { id: `f2-r${race.r}-${ME}-auto`, auto: true, color: "#0284C7", stats: null, kicker: "Fórmula 2", title, subtitle: `Carrera ${race.r} de ${core.f2.n} del prólogo en F2.`, sections: secs,
+    interviews: [{ speaker: fullName(ME), team: null, by: "cronometro", q: vr.pick("f2q", ["¿Cómo ha ido la carrera?", "¿Estás listo para la F1?", "¿Qué te llevas de hoy?"]), a: vr.pick("f2a-" + (me === 1 ? "w" : me === "out" ? "d" : me <= 3 ? "p" : "n"), me === 1 ? ["Increíble. Ganar en F2 era un sueño.", "Hemos hecho una carrera perfecta. Esto me da mucha confianza."] : me === "out" ? ["Duele, pero aprendo de todo.", "No era el día. La próxima, a por todas."] : me <= 3 ? ["Un podio en la F2 sabe muy bien.", "Buen resultado. Seguimos creciendo."] : ["Seguimos aprendiendo. Cada vuelta cuenta.", "No es lo que quería, pero sumo experiencia."]) }],
+    social: [{ who: "fan", name: "F2 Datos", handle: "f2datos", text: `📊 ${f2Name(core, winner)} gana en ${c ? c.name : ""}. ${fullName(ME)}: ${me === "out" ? "abandono" : "P" + me}.`, likes: 3000, reposts: 400, replies: 120 }] });
+  art.t = Date.now();
+  await Store.saveArticle(art).catch(() => null);
+  return art.id;
+}
+/* Cierra la F2: campeón, palmarés, fama y salto a la F1. */
+async function f2Close() {
+  const core0 = S.core;
+  const st = f2Standings(core0);
+  const champ = st[0].id;
+  const my = st.find((x) => x.id === ME);
+  await mutateCore((core) => {
+    core.f2.done = true;
+    core.f2.champion = champ;
+    core.f2.final = st.map((x) => ({ id: x.id, pos: x.pos, pts: x.pts, wins: x.wins, name: f2Name(core, x.id) }));
+    const c = careerOf(core);
+    if (my && !c.f2bonus) { addFame(c, my.pos === 1 ? 8 : my.pos <= 3 ? 4 : 1.5); c.f2bonus = true; }
+  }).catch(() => null);
+  const g = NG(S.core, { r: 999 }, "f2close");
+  const vr = makeVary({ narrative: {} }, g);
+  const art = makeArticle(S.core, null, "flash", null, { id: `f2-final-${ME}-auto`, auto: true, color: "#F2C14E", stats: null, kicker: "Fórmula 2",
+    title: champ === ME ? vr.pick("f2c-w", [`¡${UP(LN(ME))}, CAMPEÓN DE F2!`, `${UP(LN(ME))} CONQUISTA LA F2 Y SALTA A LA F1`]) : `${UP(LN(ME))} CIERRA LA F2 EN LA ${my ? my.pos : "?"}.ª POSICIÓN`,
+    subtitle: champ === ME ? "El título de Fórmula 2 ya es suyo. Próxima parada: la Fórmula 1." : `El campeón es ${f2Name(S.core, champ)}. Ahora empieza lo de verdad: la Fórmula 1.`,
+    sections: [{ heading: "🏆 La clasificación final", body: st.slice(0, 8).map((x) => `${x.pos}. ${f2Name(S.core, x.id)}: ${x.pts} pts`).join("\n") }, { heading: "🚀 El salto", body: `${fullName(ME)} debutará en la Fórmula 1 con ${team(teamOf(S.core, ME)).name}.` }] });
+  art.t = Date.now();
+  await Store.saveArticle(art).catch(() => null);
+  openArticle(art.id);
+  if (champ === ME) setTimeout(() => confetti("big"), 300);
+}
+
+/* ---------- pantalla ---------- */
+function f2Body(core) {
+  const f2 = core.f2;
+  const st = f2Standings(core);
+  const next = f2NextRound(core);
+  const out = [];
+  out.push(`<div class="week-hero"><span class="wf">🏎️</span><div><small>Prólogo: Fórmula 2</small><b>${f2.done ? (f2.champion === ME ? "¡Campeón de F2!" : `Terminaste ${(st.find((x) => x.id === ME) || {}).pos || "?"}.º`) : `Carrera ${Math.min(next, f2.n)} de ${f2.n}`}</b><span>${f2.done ? `Campeón: ${esc(f2Name(core, f2.champion))}` : "Antes de tu debut en la F1"}</span></div></div>`);
+  if (!f2.done && S.canWrite) out.push(next <= f2.n ? `<div class="row-btns sec"><button class="btn btn-red" data-act="f2-open" data-arg="${next}">Anotar la carrera ${next} de F2</button></div>` : `<div class="row-btns sec"><button class="btn btn-red" data-act="f2-close">Cerrar la F2 y saltar a la F1</button></div>`);
+  if (f2.races.length) out.push(sec("Carreras", `<div class="group">${f2.races.map((rc) => { const c = circuit(rc.gp); const w = Object.keys(rc.res).find((k) => rc.res[k] === 1); return `<div class="led"><span>${c ? c.flag + " " + esc(c.name) : "Carrera " + rc.r}<small>Ganó ${esc(f2Name(core, w))}${rc.pole === ME ? ". Tu pole" : ""}</small></span><b>${rc.res[ME] === "out" ? "DNF" : "P" + rc.res[ME]}</b></div>`; }).join("")}</div>${S.canWrite && !f2.done ? `<p class="note">Para corregir una carrera, vuelve a anotarla desde aquí: <button class="link" data-act="f2-open" data-arg="${f2.races.length}">corregir la última</button>.</p>` : ""}`));
+  out.push(sec("Clasificación de F2", `<div class="group">${st.map((x) => { const d = f2.grid.find((y) => y.id === x.id) || {}; return `<div class="srow${x.id === ME ? " me" : ""}" style="cursor:default"><span class="pos num">${x.pos}</span><span class="lg-f">${DRIVERS[x.id] ? DRIVERS[x.id].flag : d.flag || ""}</span><span class="who"><span class="dname"><span class="ln">${esc(f2Name(core, x.id))}</span></span><small>${esc(f2Team(d.team).name)}</small></span><span class="val"><b class="num">${x.pts}</b><small>pts</small></span></div>`; }).join("")}</div><p class="note">Los equipos son los reales de la F2; los pilotos rivales son ficticios.</p>`));
+  return out.join("");
+}
+function f2SetupSheet(st) {
+  return { title: "¿Empiezas en la Fórmula 2?", body: `<p class="lede" style="margin:0 0 12px">Antes de tu debut en la F1 puedes disputar un prólogo en la F2. Tú anotas tu resultado y la app simula al resto. El título se guarda en tu palmarés.</p>
+<div class="field"><label>Carreras</label><div class="chips">${[[0, "No, directo a la F1"], [2, "2 carreras"], [3, "3 carreras"]].map(([n, l]) => `<button class="chip${Number(st.n) === n ? " on" : ""}" data-act="f2-n" data-arg="${n}">${l}</button>`).join("")}</div></div>
+${Number(st.n) ? `<div class="field"><label>Tu equipo de F2</label><select class="sel" data-bind="team">${F2_TEAMS.map((t) => `<option value="${t.id}" ${st.team === t.id ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select></div>` : ""}`,
+    foot: `<button class="btn btn-red btn-block" data-act="f2-start">${Number(st.n) ? "Empezar en la F2" : "Ir directo a la F1"}</button>` };
+}
 
 /* ============================================================
    ACCIONES Y ARRANQUE
@@ -8467,18 +9011,29 @@ const ACTIONS = {
   "restore-go": () => doRestore(),
   "reset-all": () => confirmReset(),
   "start-blank": () => openSheet({ type: "identity", fresh: true, f: { first: "", last: "", nat: "España", num: "", teamName: "", boss: "", color: "#7DD3FC" } }),
-  "id-open": () => { const id = (S.core && S.core.identity) || {}; openSheet({ type: "identity", fresh: false, f: Object.assign({ first: DRIVERS[ME].first, last: DRIVERS[ME].last, nat: DRIVERS[ME].nat, num: drv(S.core, ME).num || "", teamName: TEAMS.aurelia.name, boss: "Marco Valenti", color: TEAMS.aurelia.color }, id) }); },
+  "id-open": () => {
+    if (isCoop() && ME === P2) { const p = S.core.coop.players.p2; openSheet({ type: "identity", p2: true, f: { first: p.first, last: p.last, nat: p.nat, num: p.num || "", boss: p.boss || "" } }); return; }
+    const id = (S.core && S.core.identity) || {}; openSheet({ type: "identity", fresh: false, f: Object.assign({ first: DRIVERS[ME].first, last: DRIVERS[ME].last, nat: DRIVERS[ME].nat, num: drv(S.core, ME).num || "", teamName: TEAMS.aurelia.name, boss: "Marco Valenti", color: TEAMS.aurelia.color }, id) }); },
   "id-color": (c) => { S.sheet.f.color = c; renderSheet(); },
   "id-save": async () => {
     const st = S.sheet;
     const f = st.f;
+    if (st.p2) {
+      const first = String(f.first || "").trim(), last = String(f.last || "").trim();
+      if (!first || !last) { toast("Escribe nombre y apellido"); return; }
+      const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
+      closeSheet();
+      await mutateCore((core) => { Object.assign(core.coop.players.p2, { first, last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, boss: String(f.boss || "").trim() || null }); }).catch(() => null);
+      applyPlayers(S.core); render(); toast("Piloto actualizado");
+      return;
+    }
     f.first = String(f.first || "").trim(); f.last = String(f.last || "").trim();
     if (!f.first || !f.last) { toast("Escribe nombre y apellido"); return; }
     const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
     const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || "Marco Valenti", color: f.color || "#7DD3FC" };
     const isDefault = idn.first === ORIG.first && idn.last === ORIG.last && idn.nat === ORIG.nat && idn.teamName === ORIG.team.name && idn.boss === "Marco Valenti" && idn.color === ORIG.team.color;
     closeSheet();
-    if (st.fresh) { const core = blankCore(1); if (!isDefault) core.identity = idn; S.core = core; applyIdentity(core); await Store.saveCore().catch(() => null); toast(`¡Bienvenido a la F1, ${idn.first}!`); render(); return; }
+    if (st.fresh) { const core = blankCore(1); if (!isDefault) core.identity = idn; S.core = core; applyIdentity(core); await Store.saveCore().catch(() => null); render(); openSheet({ type: "f2setup", n: 0, team: "campos" }); return; }
     await mutateCore((core) => { if (isDefault) delete core.identity; else core.identity = idn; if (idn.num != null) core.roster = Object.assign({}, core.roster, { [ME]: Object.assign({}, (core.roster || {})[ME], { num: idn.num }) }); }).catch(() => null);
     applyIdentity(S.core); render(); toast("Piloto actualizado");
   },
@@ -8509,6 +9064,100 @@ const ACTIONS = {
 Object.assign(ACTIONS, CAREER_ACTIONS, {
   "goto-inbox": () => { S.nav.tab = "me"; S.nav.stacks.me = [{ screen: "inbox", arg: "" }]; S.anim = "enter"; render(); window.scrollTo(0, 0); }
 });
+
+Object.assign(ACTIONS, {
+  "menu-solo": () => { Menu.done(); if (Mode.get() === "solo") { render(); return; } Mode.set("solo"); location.reload(); },
+  "menu-coop": () => {
+    const cfg = Mode.coop();
+    if (cfg && cfg.gid) { Menu.done(); if (Mode.get() === "coop") { render(); return; } Mode.set("coop"); location.reload(); return; }
+    const inv = /coop=/.test(location.hash) ? location.hash.slice(1) : "";
+    openSheet({ type: "coop", tab: inv ? "join" : "create", inviteText: inv ? location.href : "", f2: 0, f: { first: "", last: "", nat: "España", num: "", team: TEAM_CHOICES()[0], replace: "" } });
+  },
+  "coop-tab": (t) => { S.sheet.tab = t; S.sheet.error = ""; renderSheet(); },
+  "coop-f2": (n) => { S.sheet.f2 = Number(n); renderSheet(); },
+  "coop-create": async () => {
+    const st = S.sheet;
+    const fb = parseFbConfig(st.fbText);
+    if (!fb) { st.error = "No encuentro apiKey, projectId y appId en lo que has pegado."; renderSheet(); return; }
+    st.working = true; st.error = ""; renderSheet();
+    try { await Coop.connect(fb); } catch (e) { st.working = false; st.error = "No se ha podido conectar con Firebase. Revisa la configuración, que la base de datos Firestore esté creada y que el acceso anónimo esté activado."; renderSheet(); return; }
+    const gid = newGameId();
+    Mode.setCoop({ fb, gid, slot: "p1" }); Mode.set("coop");
+    ME = "arevalo";
+    const core = blankCore(1);
+    core.coop = { players: { p1: { since: Date.now() } }, created: Date.now() };
+    if (st.f2) core.f2 = makeF2(core, st.f2, { arevalo: "campos" });
+    S.core = normalizeCore(core); S.news = []; S.seasons = [];
+    careerOf(S.core);
+    Store.db = Coop.adapter(gid); S.mode = "db";
+    try { await Store.saveCore(); } catch (e) { st.working = false; st.error = "Conectado, pero no se ha podido guardar. Revisa las reglas de Firestore."; renderSheet(); return; }
+    Store.subscribe();
+    Menu.done();
+    closeSheet(); render();
+    openSheet({ type: "invite" });
+  },
+  "coop-join": async () => {
+    const st = S.sheet;
+    const inv = Coop.readInvite(st.inviteText);
+    const f = st.f;
+    if (!inv) { st.error = "Ese enlace de invitación no es válido."; renderSheet(); return; }
+    f.first = String(f.first || "").trim(); f.last = String(f.last || "").trim();
+    if (!f.first || !f.last) { st.error = "Escribe tu nombre y apellido."; renderSheet(); return; }
+    const t = f.team || TEAM_CHOICES()[0];
+    const rep = f.replace || ALL_DRIVER_IDS.find((d) => d !== "arevalo" && d !== P2 && DRIVERS[d].team === t);
+    st.working = true; st.error = ""; renderSheet();
+    try { await Coop.connect(inv.fb); } catch (e) { st.working = false; st.error = "No se ha podido conectar con la partida. Revisa tu conexión."; renderSheet(); return; }
+    const ad = Coop.adapter(inv.g);
+    let snap;
+    try { snap = await ad.doc("universe/core").get(); } catch (e) { snap = null; }
+    if (!snap || !snap.exists) { st.working = false; st.error = "No encuentro esa partida."; renderSheet(); return; }
+    const core = normalizeCore(snap.data());
+    const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
+    core.coop = core.coop || { players: {} };
+    core.coop.players.p2 = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, team: t, replaced: rep, since: Date.now() };
+    core.roster = Object.assign({}, core.roster, { [P2]: { team: t } });
+    core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
+    core.grid.removedDrivers = (core.grid.removedDrivers || []).filter((x) => x !== rep).concat([rep]);
+    core.narrative = core.narrative || {};
+    core.narrative.rivalries = (core.narrative.rivalries || []).filter((r) => !(r.a === "arevalo" && r.b === P2)).concat([{ a: "arevalo", b: P2, heat: 35, note: "Amigos fuera de la pista, rivales dentro.", born: { s: core.season, r: doneRounds(core).length, gp: null, why: "Dos amigos llegan juntos a la Fórmula 1." }, log: [] }]);
+    if (core.f2 && !core.f2.done && !core.f2.grid.some((d) => d.id === P2)) {
+      const mine = (core.f2.grid.find((d) => d.id === "arevalo") || {}).team;
+      const seat = core.f2.grid.find((d) => !d.player && d.team !== mine);
+      if (seat) { seat.id = P2; seat.player = true; delete seat.first; delete seat.last; delete seat.flag; }
+    }
+    Mode.setCoop({ fb: inv.fb, gid: inv.g, slot: "p2" }); Mode.set("coop");
+    ME = P2;
+    Store.db = ad; S.mode = "db";
+    S.core = core; applyPlayers(core);
+    careerOf(S.core);
+    try { await Store.saveCore(); } catch (e) { st.working = false; st.error = "No se ha podido guardar tu piloto en la partida."; renderSheet(); return; }
+    Store.subscribe();
+    try { history.replaceState(null, "", location.pathname); } catch (e) { /* sin historial */ }
+    Menu.done();
+    closeSheet(); render();
+    toast(`¡Bienvenido a la partida, ${f.first}!`);
+  },
+  "coop-invite": () => openSheet({ type: "invite" }),
+  "coop-forget": () => { Mode.setCoop(null); try { localStorage.removeItem("paddock.coop.v1"); } catch (e) { /* sin almacenamiento */ } render(); toast("Partida olvidada en este dispositivo"); },
+  "coop-copy": async () => { try { await navigator.clipboard.writeText(Coop.inviteLink()); toast("Enlace copiado"); } catch (e) { toast("Mantén pulsado el enlace para copiarlo"); } },
+  "coop-share": async () => { try { await navigator.share({ text: "Únete a mi partida de Paddock:", url: Coop.inviteLink() }); } catch (e) { /* cancelado */ } },
+  "mode-switch": () => { closeSheet(); try { sessionStorage.removeItem("paddock.menu"); } catch (e) { /* sin almacenamiento */ } render(); },
+  "goto-f2": () => { S.ui.racesSeg = "f2"; switchTab("races"); },
+  "f2-open": (r) => { const rc = (S.core.f2.races || []).find((x) => x.r === Number(r)); const pos = {}; if (rc) playersIn(S.core).forEach((p) => { if (rc.res[p] !== undefined) pos[p] = String(rc.res[p]); }); openSheet({ type: "f2entry", r: Number(r), pos, pole: rc && playersIn(S.core).includes(rc.pole) ? rc.pole : "", fl: rc && playersIn(S.core).includes(rc.fl) ? rc.fl : "" }); },
+  "f2-save": () => f2Save(),
+  "f2-close": () => f2Close(),
+  "f2-n": (n) => { S.sheet.n = Number(n); renderSheet(); },
+  "f2-start": async () => {
+    const st = S.sheet;
+    closeSheet();
+    if (Number(st.n)) { await mutateCore((core) => { core.f2 = makeF2(core, Number(st.n), { [ME]: st.team || "campos" }); }).catch(() => null); S.ui.racesSeg = "f2"; switchTab("races"); toast("¡Bienvenido a la Fórmula 2!"); }
+    else toast("Directo a la Fórmula 1");
+  }
+});
+SHEETS.coop = coopSheet;
+SHEETS.invite = inviteSheet;
+SHEETS.f2entry = f2EntrySheet;
+SHEETS.f2setup = f2SetupSheet;
 let searchT = null;
 document.addEventListener("input", (e) => {
   const el = e.target;
@@ -8580,6 +9229,7 @@ function splash() {
 splash();
 render();
 Store.init();
+if (window.PADDOCK_STANDALONE && /coop=/.test(location.hash) && !(Mode.coop() && Mode.coop().gid)) setTimeout(() => { try { sessionStorage.removeItem("paddock.menu"); } catch (e) { /* sin almacenamiento */ } render(); ACTIONS["menu-coop"](); }, 400);
 setTimeout(() => loadCustomCrests(), 300);
 
 </script>
