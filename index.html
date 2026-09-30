@@ -966,6 +966,12 @@ body.in-menu #topbar, body.in-menu #tabbar, body.in-menu #fab { display: none !i
 .mcard.cur { box-shadow: var(--shadow), inset 0 0 0 2px var(--red); }
 .mcard em { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: .06em; }
 .menu .link { font-size: 13.5px; color: var(--muted); }
+.gdrv .gd-b { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.gdrv { gap: 8px; }
+.gbtn { width: 36px; height: 34px; border-radius: 10px; background: var(--card-2); font-size: 17px; font-weight: 700; display: inline-grid; place-items: center; }
+.gbtn.on { background: var(--red); color: #fff; }
+.gdrv > span:first-child { flex: 1; min-width: 0; }
+.gdrv .gd-b { flex: none; flex-wrap: nowrap; }
 
 </style>
 </head>
@@ -1016,8 +1022,8 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "14";
-const APP_DATE = "28 de septiembre de 2026";
+const APP_VERSION = "15";
+const APP_DATE = "29 de septiembre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
   /* Si llega una versión nueva, la app se recarga sola una vez para mostrarla. */
@@ -2303,7 +2309,7 @@ function bossQuote(g, ctx) {
   else if (m === "dnf" || m === "dsq") a = g.pick(["Hoy no ha salido. Lo analizaremos con calma y volveremos más fuertes.", "Es parte del deporte. Nuestro trabajo es que no se repita."]);
   else a = g.pick(["Sumamos y aprendemos. Todavía tenemos margen en el coche.", "No era nuestro mejor fin de semana, pero hemos minimizado daños."]);
   if (s !== "unknown") a += g.pick([" Tenemos a dos grandes pilotos y los dos tendrán las mismas oportunidades.", " Aquí no hay número uno ni número dos: hay un equipo.", " Lo que pasa dentro del garaje se queda dentro del garaje."]);
-  return { speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", q: g.pick(["¿Hay tensión entre sus dos pilotos?", "¿Cómo valora el fin de semana del equipo?"]), a };
+  return { speaker: AURELIA_BOSS + ", jefe de equipo", team: teamOf(S.core, ME), q: g.pick(["¿Hay tensión entre sus dos pilotos?", "¿Cómo valora el fin de semana del equipo?"]), a };
 }
 
 /* ---------- portadas ---------- */
@@ -2479,8 +2485,8 @@ function socialFor(g, core, ctx, kind) {
   if (ctx.mate) drvPost(ctx.mate);
   ctx.podium.filter((d) => d !== ME && d !== ctx.winner && d !== ctx.mate).slice(0, 1).forEach(drvPost);
   const tAur = ctx.me ? `${finished(ctx.me) ? `P${ctx.me.pos}` : String(ctx.me.st).toUpperCase()} para Andrés${ctx.mateRes ? ` y ${finished(ctx.mateRes) ? `P${ctx.mateRes.pos}` : String(ctx.mateRes.st).toUpperCase()} para Ayrton` : ""} en ${ctx.place}. 💙 #AureliaRacing` : "";
-  if (tAur) add({ who: "team", id: "aurelia", text: tAur, likes: big(60000, 200000), reposts: big(4000, 15000), replies: big(1000, 6000) });
-  if (ctx.winner && teamOf(core, ctx.winner) !== "aurelia") add({ who: "team", id: teamOf(core, ctx.winner), text: `🏆 ${UP(fullName(ctx.winner))} WINS THE ${UP(ctx.tag.replace("GP", " GP"))}!`, likes: big(150000, 500000), reposts: big(10000, 40000), replies: big(3000, 12000) });
+  if (tAur) add({ who: "team", id: teamOf(core, ME), text: tAur, likes: big(60000, 200000), reposts: big(4000, 15000), replies: big(1000, 6000) });
+  if (ctx.winner && teamOf(core, ctx.winner) !== teamOf(core, ME)) add({ who: "team", id: teamOf(core, ctx.winner), text: `🏆 ${UP(fullName(ctx.winner))} WINS THE ${UP(ctx.tag.replace("GP", " GP"))}!`, likes: big(150000, 500000), reposts: big(10000, 40000), replies: big(3000, 12000) });
   const facts = [];
   if (ctx.myRow) facts.push(ctx.myRow.pos === 1 ? `Arévalo lidera el Mundial con ${fmt(ctx.myRow.pts)} puntos, ${fmt(ctx.myRow.pts - ctx.second.pts)} más que ${LN(ctx.second.id)}.` : `Arévalo es ${ctx.myRow.pos}.º del Mundial, a ${fmt(ctx.leader.pts - ctx.myRow.pts)} puntos de ${LN(ctx.leader.id)}.`);
   const cs = careerStats(core, S.seasons, ME);
@@ -2603,7 +2609,7 @@ function extraPieces(core, round, t0) {
         { heading: "📊 Los números", body: `En carrera, Arévalo ha terminado por delante en ${h.r.a} ocasiones y Senna en ${h.r.b}. Los sábados, ${h.q.a} a ${h.q.b}. En el Mundial, ${fmt(core.standings[ME])} puntos contra ${fmt(core.standings[ctx.mate])}.` },
         { heading: "🔥 El ambiente", body: vr.pick("xk3", ["Nadie en Aurelia lo admite en público, pero los dos lados del garaje ya no comparten tanta información como al principio del año.", "Las ruedas de prensa son correctas y frías. Los dos pilotos se saludan, pero apenas se miran.", "En el equipo insisten en que hay igualdad de trato. En el paddock, pocos se lo creen."]) + (heat > 60 ? " La tensión está en su punto más alto de la temporada." : "") }
       ],
-      interviews: [{ speaker: AURELIA_BOSS + ", jefe de equipo", team: "aurelia", by: "cronometro", q: "¿Tiene un problema entre sus pilotos?", a: vr.pick("xk4", ["Tengo un problema bonito: dos pilotos que quieren ganar. Mientras respeten al equipo, que peleen.", "No hay órdenes de equipo. Hay reglas, y las conocen los dos."]) }],
+      interviews: [{ speaker: AURELIA_BOSS + ", jefe de equipo", team: teamOf(core, ME), by: "cronometro", q: "¿Tiene un problema entre sus pilotos?", a: vr.pick("xk4", ["Tengo un problema bonito: dos pilotos que quieren ganar. Mientras respeten al equipo, que peleen.", "No hay órdenes de equipo. Hay reglas, y las conocen los dos."]) }],
       social: [tiny({ who: "journalist", id: "confidencial", text: vr.pick("xs-aur1", ["Nuevo capítulo de la guerra fría de Aurelia. Palomitas preparadas. 🍿", "En Aurelia ya no se comparten ni los cafés. ☕👀", "Hoy en el garaje azul: silencio incómodo. 🤐", "Me llegan rumores de una reunión tensa en Aurelia. 👀"]) }), tiny({ who: "fan", name: "Fã do Ayrton", handle: "fa_do_ayrton", text: vr.pick("xs-aur2", ["Ayrton não é segundo piloto de ninguém. 🇧🇷", "Respeito ao tricampeão! 🇧🇷", "O Ayrton vai dar a volta por cima. 🇧🇷", "Paciência. O Ayrton sabe o que faz. 🇧🇷"]) })]
     } });
   }
@@ -2647,7 +2653,7 @@ function extraPieces(core, round, t0) {
   /* mercado */
   if (round.r >= 3) {
     const table = ctx.table;
-    const risers = table.filter((r) => r.pos <= 12 && !BIG_TEAMS.includes(teamOf(core, r.id)) && teamOf(core, r.id) !== "aurelia" && r.id !== ME);
+    const risers = table.filter((r) => r.pos <= 12 && !BIG_TEAMS.includes(teamOf(core, r.id)) && teamOf(core, r.id) !== teamOf(core, ME) && r.id !== ME);
     const riser = risers.length ? g.pick(risers.slice(0, 4)) : null;
     const target = g.pick(BIG_TEAMS.filter((t) => riser && teamOf(core, riser.id) !== t));
     if (riser && target) {
@@ -2733,7 +2739,7 @@ function extraPieces(core, round, t0) {
       `En Aurelia se ha reforzado la seguridad en el garaje. Oficialmente, por los aficionados.`,
       `${fullName(g.pick(DRIVER_IDS.filter((d) => d !== ME && d !== "senna")))} habría pedido cambios en su equipo de ingenieros.`,
       `Arévalo firmó autógrafos durante más de una hora. Su compañero salió por la puerta de atrás.`,
-      `Un patrocinador millonario estaría estudiando entrar en la F1 de la mano de ${team(g.pick(TEAM_IDS.filter((t) => t !== "aurelia"))).name}.`
+      `Un patrocinador millonario estaría estudiando entrar en la F1 de la mano de ${team(g.pick(TEAM_IDS.filter((t) => t !== teamOf(core, ME)))).name}.`
     ]).slice(0, 3).map((x) => "• " + x).join("\n") }],
     social: [tiny({ who: "journalist", id: "confidencial", text: vr.pick("xs-gos", ["Nueva entrega de secretos del paddock. Leed antes de que la borren. 🤫", "Hoy vengo cargado. 👀", "El Topo nunca duerme. 🕵️", "Esto no lo vais a leer en ningún otro sitio. 🤫"]) })]
   } });
@@ -2787,9 +2793,9 @@ function autoPrevia(core, round, t) {
   if (riv.length) sections.push({ heading: "🔥 Rivalidades", body: riv.map((x) => { const sto = rivalryStory(vr, core, x); return `${shortName(x.a)} contra ${shortName(x.b)}: ${sto.slice(1, 3).join(" ") || x.note}`; }).join("\n\n") });
   const mate = teammatesOf(core, ME)[0];
   const interviews = [
-    { speaker: fullName(ME), team: "aurelia", by: "cronometro", q: vr.pick("pvq1", [`¿Cómo afrontas ${c.gp}?`, `¿Qué esperas de ${c.place}?`, "¿Cómo llegas a esta carrera?", "¿Qué objetivo te marcas este fin de semana?"]), a: vr.pick("pv1", ["Con muchas ganas. Es un circuito que exige mucho y quiero sacar lo mejor del coche.", "Carrera a carrera. Hay que estar fino desde los libres.", "Lo importante es el sábado. Si clasificamos bien, tendremos opciones.", "Me gusta este trazado. Creo que podemos hacer algo bonito.", "Llego con confianza, pero sin relajarme lo más mínimo.", "Aquí cualquier detalle cuenta. Vamos a trabajar muy bien con los ingenieros.", "Quiero seguir sumando. El Mundial se gana con regularidad."]) }
+    { speaker: fullName(ME), team: teamOf(core, ME), by: "cronometro", q: vr.pick("pvq1", [`¿Cómo afrontas ${c.gp}?`, `¿Qué esperas de ${c.place}?`, "¿Cómo llegas a esta carrera?", "¿Qué objetivo te marcas este fin de semana?"]), a: vr.pick("pv1", ["Con muchas ganas. Es un circuito que exige mucho y quiero sacar lo mejor del coche.", "Carrera a carrera. Hay que estar fino desde los libres.", "Lo importante es el sábado. Si clasificamos bien, tendremos opciones.", "Me gusta este trazado. Creo que podemos hacer algo bonito.", "Llego con confianza, pero sin relajarme lo más mínimo.", "Aquí cualquier detalle cuenta. Vamos a trabajar muy bien con los ingenieros.", "Quiero seguir sumando. El Mundial se gana con regularidad."]) }
   ];
-  if (mate) interviews.push({ speaker: fullName(mate), team: "aurelia", by: "folha", q: vr.pick("pvq2", ["¿Qué esperas de este fin de semana?", "¿Cómo está la relación con Arévalo?", "¿Es este el fin de semana de tu reacción?"]), a: vr.pick("pv2", ["Espero lo de siempre: ganar.", "Estoy preparado. El resto lo dirá la pista.", "No me preocupan los demás. Me preocupa mi vuelta.", "Este circuito me trae buenos recuerdos.", "Hay que dar un paso adelante, y lo vamos a dar.", "Tengo cuentas pendientes. Ya está."]) });
+  if (mate) interviews.push({ speaker: fullName(mate), team: teamOf(core, ME), by: mate === "senna" ? "folha" : outletFor(mate), q: vr.pick("pvq2", ["¿Qué esperas de este fin de semana?", "¿Cómo está la relación con Arévalo?", "¿Es este el fin de semana de tu reacción?"]), a: vr.pick("pv2", ["Espero lo de siempre: ganar.", "Estoy preparado. El resto lo dirá la pista.", "No me preocupan los demás. Me preocupa mi vuelta.", "Este circuito me trae buenos recuerdos.", "Hay que dar un paso adelante, y lo vamos a dar.", "Tengo cuentas pendientes. Ya está."]) });
   if (homes[0] && homes[0] !== ME) interviews.push({ speaker: fullName(homes[0]), team: teamOf(core, homes[0]), by: NAT_OUTLET[DRIVERS[homes[0]].nat] || "pitwall", q: "¿Qué significa correr en casa?", a: vr.pick("pv3", ["Es especial. Ver a tanta gente animando te da una energía extra.", "Aquí quiero dar lo mejor de mí. Es la carrera que todos queremos ganar."]) });
   else if (leader.id !== ME) interviews.push({ speaker: fullName(leader.id), team: teamOf(core, leader.id), by: "pitwall", q: "¿Cómo se lleva ser el líder?", a: vr.pick("pv4", ["Bien. Pero sé que detrás vienen apretando.", "No miro atrás. Miro hacia delante."]) });
   const tag = GP_TAG[round.gp] || "F1";
@@ -2800,7 +2806,7 @@ function autoPrevia(core, round, t) {
     fps.push({ outlet: ol, focus: homes[0], headline: home.replace("{L}", UP(LN(homes[0]))), es: MEDIA[ol].lang === "es" ? "" : `${UP(LN(homes[0]))} CORRE EN CASA`, deck: c.gp, body: `${fullName(homes[0])} corre ante su público en ${c.place}. ${info.history || ""}` });
   }
   const social = [
-    { who: "team", id: "aurelia", text: `Rumbo a ${c.place}. 💙 #${tag} #AureliaRacing`, likes: g.int(40000, 120000), reposts: g.int(2000, 8000), replies: g.int(500, 3000) },
+    { who: "team", id: teamOf(core, ME), text: `Rumbo a ${c.place}. 💙 #${tag} #AureliaRacing`, likes: g.int(40000, 120000), reposts: g.int(2000, 8000), replies: g.int(500, 3000) },
     { who: "driver", id: ME, text: vr.pick("pv6", [`${c.place}, allá vamos 🏁💙`, `Semana de carrera. ${c.flag} ¡Vamos!`]), likes: g.int(80000, 250000), reposts: g.int(4000, 15000), replies: g.int(1000, 6000) },
     { who: "fan", name: "Lucía 🏁", handle: "lucia_boxbox", text: `Semana de ${c.name} 😍 ¿Pole de Arévalo? Yo digo que sí 💙`, likes: g.int(100, 4000), reposts: g.int(5, 300), replies: g.int(5, 200) }
   ];
@@ -3775,7 +3781,7 @@ function extraCandidates2(core, round, g, ctx) {
     const mate = ctx.mate;
     const qa = [
       { q: "¿Cómo resumirías tu temporada hasta ahora?", a: vr.f("ef1", ["{w} victorias, {p} podios… Si me lo dicen al empezar, no me lo creo.", "Estoy aprendiendo muchísimo. Los números acompañan, pero sé que puedo mejorar.", "Intensa. Ha habido de todo, y eso me hace crecer."], { w: cs.wins, p: cs.podiums }) },
-      mate ? { q: "¿Cómo es compartir garaje con Ayrton Senna?", a: toneWith(core, mate) === "hostil" ? vr.pick("ef2h", ["Es un tricampeón y le respeto. Pero no estoy aquí para ser su segundo.", "Hablamos lo justo. Cada uno tiene su camino."]) : vr.pick("ef2r", ["Aprendo cada día de él.", "Es exigente, y eso me hace mejor."]) } : null,
+      mate ? { q: `¿Cómo es compartir garaje con ${fullName(mate)}?`, a: toneWith(core, mate) === "hostil" ? vr.pick("ef2h", [`${((DRIVERS[mate].real || {}).titles || 0) >= 2 ? `Es un ${["", "", "bi", "tri", "tetra", "penta", "hexa", "hepta"][Math.min(7, DRIVERS[mate].real.titles)]}campeón` : "Es un gran piloto"} y le respeto. Pero no estoy aquí para ser su segundo.`, "Hablamos lo justo. Cada uno tiene su camino."]) : vr.pick("ef2r", ["Aprendo cada día de él.", "Es exigente, y eso me hace mejor."]) } : null,
       riv ? { q: `Háblanos de ${LN(riv)}.`, a: toneLine(vr, core, "meAbout", riv, ctx) } : null,
       lux.length ? { q: `Se habla mucho de tu ${lux[lux.length - 1].name.toLowerCase()}…`, a: vr.pick("ef3", ["Trabajo mucho y me doy algún capricho. Nada más.", "Es un sueño de niño. Pero lo importante es la pista.", "Mi familia está orgullosa, y eso es lo que cuenta."]) } : { q: "¿Te ha cambiado la fama?", a: vr.pick("ef4", ["Sigo siendo el mismo. Mis amigos no me dejarían cambiar.", "Hay más focos, pero intento que no me afecte."]) },
       { q: "¿Qué sueño te queda por cumplir?", a: vr.pick("ef5", ["Ganar el Mundial. Es para lo que me levanto cada día.", "Ser campeón con Aurelia sería lo más bonito.", "Que dentro de muchos años se hable de mí como de los grandes."]) }
@@ -4989,6 +4995,7 @@ function careerSeasonClose(core, next, entry) {
    ============================================================ */
 const $ = (sel, el) => (el || document).querySelector(sel);
 var IDENT = null;
+const escRaw = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const esc = (s) => (IDENT ? identSub(String(s == null ? "" : s)) : String(s == null ? "" : s)).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const NF = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1 });
 const fmt = (n) => NF.format(Number(n || 0));
@@ -5488,7 +5495,7 @@ function homeScreen() {
   if (riv) out.push(sec("Rivalidades", riv));
   const feuds = rivalryList(core, null, true);
   if (feuds) out.push(sec("Otras guerras en el paddock", feuds));
-  out.push(`<div class="sec"><button class="storycard" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>Tu carrera contada capítulo a capítulo</small></span>${ICON.chev}</button></div>`);
+  out.push(`<div class="sec"><button class="storycard" data-act="push" data-arg="story:">${crest(teamOf(S.core, ME), 54)}<span><b>Mi historia</b><small>Tu carrera contada capítulo a capítulo</small></span>${ICON.chev}</button></div>`);
   const sz = S.news.find((a) => (a.social || []).length);
   if (sz) {
     const top = sz.social.map((p, i) => [p.likes, i]).sort((x, y) => y[0] - x[0]).slice(0, 3).map(([, i]) => socialPost(sz, i));
@@ -5599,7 +5606,7 @@ function statBox(st, kind) {
   const mrow = (x, name, color) => `<div class="mrow"><span class="p">${x.pos}</span><i style="background:${color}"></i><span class="n">${esc(name)}</span><span class="v">${fmt(x.pts)}</span></div>`;
   const drivers = (st.drivers || []).filter((x) => DRIVERS[x.id]);
   const teams = (st.teams || []).filter((x) => TEAMS[x.id]);
-  return `<div class="statbox"><h3>${kind === "previa" ? "📊 Así llega Arévalo" : "📊 Actualización estadística"}</h3>${tiles(tl)}
+  return `<div class="statbox"><h3>${kind === "previa" ? `📊 Así llega ${esc(LN(ME))}` : "📊 Actualización estadística"}</h3>${tiles(tl)}
 ${chips.length ? `<div class="chips" style="margin-top:12px">${chips.join("")}</div>` : ""}
 ${drivers.length ? `<div class="mini"><h4>Mundial de pilotos</h4>${drivers.map((x) => mrow(x, fullName(x.id), tcolor(DRIVERS[x.id].team))).join("")}</div>` : ""}
 ${teams.length ? `<div class="mini"><h4>Constructores</h4>${teams.map((x) => mrow(x, team(x.id).name, team(x.id).color)).join("")}</div>` : ""}
@@ -6138,7 +6145,7 @@ ${mate ? `<div class="field"><label for="m-mate">Posición de ${esc(fullName(mat
     : `<select class="sel" data-bind="manual.p${p}" aria-label="P${p}"><option value="">P${p}: sin dato</option>${driverOptions(m["p" + p], [ME, mate])}</select>`;
   const others = DRIVER_IDS.filter((d) => d !== ME && d !== mate);
   return `<div class="field"><label for="m-are">Resultado de Arévalo</label><select id="m-are" class="sel" data-bind="manual.are" data-rerender><option value="">Elige</option>${posOptions(m.are, max)}<option value="dnf" ${m.are === "dnf" ? "selected" : ""}>Abandono (DNF)</option></select></div>
-<label class="toggle"><span><b>Vuelta rápida de Arévalo</b></span><input type="checkbox" data-bind="manual.fl" ${m.fl ? "checked" : ""}></label>
+<label class="toggle"><span><b>Vuelta rápida de ${esc(LN(ME))}</b></span><input type="checkbox" data-bind="manual.fl" ${m.fl ? "checked" : ""}></label>
 ${mate ? `<div class="field"><label for="m-mate">Resultado de ${esc(fullName(mate))}</label><select id="m-mate" class="sel" data-bind="manual.mate" data-rerender><option value="">Sin dato</option>${posOptions(m.mate, max)}<option value="dnf" ${m.mate === "dnf" ? "selected" : ""}>Abandono (DNF)</option></select></div>` : ""}
 <div class="field"><span class="lbl">Podio</span>${slot(1)}${slot(2)}${slot(3)}</div>
 <div class="field"><span class="lbl">Otros abandonos</span><div class="multi">${others.map((d) => `<button data-act="m-dnf" data-arg="${d}" aria-pressed="${m.dnfs.includes(d)}">${esc(DRIVERS[d].last)}</button>`).join("")}</div></div>
@@ -6458,7 +6465,7 @@ ${S.canWrite ? `<button class="list-btn" data-act="close-season">${ICON.trophy}<
 <div class="group" style="margin-top:14px">
 ${S.downloads && core ? `<button class="list-btn" data-act="export">${ICON.download}<span class="t">Descargar copia de seguridad<small>Un archivo con todo tu universo</small></span></button>` : ""}
 ${S.canWrite ? `<button class="list-btn" data-act="open-restore">${ICON.upload}<span class="t">Restaurar una copia<small>Sustituye el universo actual</small></span></button>` : ""}
-${S.canWrite && core ? `<button class="list-btn danger" data-act="reset-all">${ICON.reset}<span class="t">Empezar de cero<small>Borra temporadas, resultados y noticias</small></span></button>` : ""}</div>
+${S.canWrite && core && !isCoop() ? `<button class="list-btn danger" data-act="reset-all">${ICON.reset}<span class="t">Nueva partida<small>Borra la partida actual y configura otra desde cero</small></span></button>` : ""}</div>
 <div class="tip" style="margin-top:14px"><b>Guardado:</b> ${S.mode === "db" ? "en tu cuenta de Claude, disponible en todos tus dispositivos." : S.mode === "local" ? (window.PADDOCK_STANDALONE ? "en este iPhone. Descarga una copia de seguridad de vez en cuando." : "solo en este dispositivo.") : "conectando…"}<br>
 ${window.PADDOCK_STANDALONE ? "" : `<b>IA:</b> ${aiReady() ? (S.aiImages ? "activa, con lectura de fotos." : "activa, sin lectura de fotos en esta vista.") : "no disponible en esta vista."}<br>`}
 <b>Datos reales:</b> ${esc(REAL_STATS_SOURCE)}, según Wikipedia.</div>
@@ -6684,15 +6691,16 @@ async function doRestore() {
 }
 function confirmReset() {
   openSheet({
-    type: "confirm", title: "Empezar de cero", danger: true, typed: "BORRAR", typedValue: "",
-    text: "Se borrarán todas las temporadas, resultados, noticias y el palmarés. Si quieres conservarlo, descarga antes una copia de seguridad.",
-    confirm: "Borrar todo", onConfirm: async () => {
+    type: "confirm", title: "Nueva partida", danger: true, typed: "BORRAR", typedValue: "",
+    text: "Se borrarán todas las temporadas, resultados, noticias y el palmarés de esta partida, y empezarás una nueva desde cero: tu piloto, tu equipo, la parrilla y la F2. Si quieres conservar la actual, descarga antes una copia de seguridad.",
+    confirm: "Borrar y empezar", onConfirm: async () => {
       await wipeRemote();
-      S.core = blankCore(1);
-      await Store.saveCore().catch(() => null);
+      S.core = null; S.news = []; S.seasons = [];
+      try { Local.write(); } catch (e) { /* sin almacenamiento */ }
       S.nav.stacks = { home: [], news: [], races: [], standings: [], me: [], paddock: [] };
+      S.nav.tab = "home";
       render();
-      toast("Universo reiniciado: temporada 1");
+      ACTIONS["start-blank"]();
     }
   });
 }
@@ -6993,7 +7001,7 @@ SHEETS.distance = distanceSheet;
 /* ---------- historia ---------- */
 function historyBody(core) {
   const out = [];
-  out.push(`<button class="storycard" data-act="push" data-arg="story:">${crest("aurelia", 54)}<span><b>Mi historia</b><small>De tu debut a hoy: capítulos, hitos y rivalidades</small></span>${ICON.chev}</button>`);
+  out.push(`<button class="storycard" data-act="push" data-arg="story:">${crest(teamOf(S.core, ME), 54)}<span><b>Mi historia</b><small>De tu debut a hoy: capítulos, hitos y rivalidades</small></span>${ICON.chev}</button>`);
   out.push(sec("Las leyendas de la F1", legendsBody(core)));
   const sort = S.ui.allTimeSort || "pts";
   const rows = allTimeTable(core).sort((a, b) => (b[sort] - a[sort]) || (b.pts - a.pts));
@@ -7015,7 +7023,7 @@ function storyScreen() {
   const out = [];
   out.push(`<header class="story-hero"><span class="flag-bg">${DRIVERS[ME].flag}</span><div class="kick">La historia de</div><h1>Andrés<br>Arévalo</h1>
 <p>Piloto de Aurelia Racing. ${cs.titles} ${cs.titles === 1 ? "Mundial" : "Mundiales"}, ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.</p></header>`);
-  out.push(`<div class="prologue"><p>Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.</p>${core.f2 && core.f2.done ? `<p>Antes, en la Fórmula 2, ${core.f2.champion === ME ? "se proclamó campeón en su primer y único intento" : `terminó ${((core.f2.final || []).find((x) => x.id === ME) || {}).pos || "?"}.º en un breve pero intenso prólogo`}.</p>` : ""}</div>`);
+  out.push(`<div class="prologue"><p>${(() => { const tm = team(teamOf(core, ME)); const mate = teammatesOf(core, ME)[0]; const nat = (NATIONS.find((n) => n[0] === DRIVERS[ME].nat) || NATIONS[0])[1]; if (teamOf(core, ME) === "aurelia" && mate === "senna") return `Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.`; return `Nadie en el paddock sabía su nombre cuando ${esc(tm.name)} anunció su fichaje. Un ${nat} desconocido${mate ? `, en el mismo garaje que ${esc(fullName(mate))}` : ""}. Lo que vino después es esta historia.`; })()}</p>${core.f2 && core.f2.done ? `<p>Antes, en la Fórmula 2, ${core.f2.champion === ME ? "se proclamó campeón en su primer y único intento" : `terminó ${((core.f2.final || []).find((x) => x.id === ME) || {}).pos || "?"}.º en un breve pero intenso prólogo`}.</p>` : ""}</div>`);
   if (st.miles.length) out.push(sec("Hitos", `<ol class="miles">${st.miles.map((m) => `<li><span class="mi">${m.icon}</span><div><b>${esc(m.title)}</b><small>${esc(m.text)}</small></div></li>`).join("")}</ol>`));
   out.push(sec("Capítulos", st.chapters.map((c) => `<article class="chapter${c.current ? " now" : ""}"><span class="cn num">${c.season}</span><div><span class="ck">Temporada ${c.season}${c.current ? ", en curso" : ""}</span><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p></div></article>`).join("")));
   const riv = rivalryList(core, ME);
@@ -7752,19 +7760,38 @@ function syncGrid(core) {
   if (keepT.join() !== TEAM_IDS.join()) { TEAM_IDS.length = 0; keepT.forEach((t) => TEAM_IDS.push(t)); }
   if (keepD.join() !== DRIVER_IDS.join()) { DRIVER_IDS.length = 0; keepD.forEach((d) => DRIVER_IDS.push(d)); }
 }
-function gridSheet() {
+function gridSheet(st) {
   const core = S.core;
   const g = core.grid || {};
   const rt = new Set(g.removedTeams || []), rd = new Set(g.removedDrivers || []);
   const myTeam = teamOf(core, ME);
+  const players = typeof playersIn === "function" ? playersIn(core) : [ME];
   const rows = ALL_TEAM_IDS.map((t) => {
     const off = rt.has(t);
     const ds = ALL_DRIVER_IDS.filter((d) => teamOf(core, d) === t);
-    return `<div class="gteam${off ? " off" : ""}"><div class="gt-h">${crest(t, 30)}<b>${esc(team(t).name)}</b>${t === myTeam ? `<small>Tu equipo</small>` : `<button class="btn btn-sm ${off ? "btn-red" : "btn-ghost"}" data-act="grid-team" data-arg="${t}">${off ? "Recuperar" : "Quitar equipo"}</button>`}</div>
-${ds.map((d) => { const doff = rd.has(d) || off; return `<div class="gdrv${doff ? " off" : ""}"><span>${esc(fullName(d))}</span>${d === ME ? `<small>Tú</small>` : off ? "" : `<button class="btn btn-sm btn-ghost" data-act="grid-drv" data-arg="${d}">${rd.has(d) ? "Recuperar" : "Quitar"}</button>`}</div>`; }).join("")}</div>`;
+    if (off && !ds.some((d) => !rd.has(d))) { /* equipo quitado */ }
+    return `<div class="gteam${off ? " off" : ""}"><div class="gt-h">${crest(t, 30)}<b>${escRaw(team(t).name)}</b>${t === myTeam ? `<small>Tu equipo</small>` : `<button class="btn btn-sm ${off ? "btn-red" : "btn-ghost"}" data-act="grid-team" data-arg="${t}">${off ? "Recuperar" : "Quitar equipo"}</button>`}</div>
+${ds.length ? ds.map((d) => { const doff = rd.has(d) || off; const renamed = core.names && core.names[d]; return `<div class="gdrv${doff ? " off" : ""}"><span>${escRaw(fullName(d))}${players.includes(d) ? ` <small>${d === ME ? "(tú)" : "(jugador)"}</small>` : ""}${renamed ? ` <small>(renombrado)</small>` : ""}</span><span class="gd-b">${off ? "" : `${!doff ? `<button class="gbtn" data-act="grid-swap" data-arg="${d}" aria-label="Mover de equipo" title="Mover de equipo">⇄</button>` : ""}${!players.includes(d) ? `<button class="gbtn" data-act="grid-rename" data-arg="${d}" aria-label="Cambiar nombre" title="Cambiar nombre">✎</button><button class="gbtn${rd.has(d) ? " on" : ""}" data-act="grid-drv" data-arg="${d}" aria-label="${rd.has(d) ? "Recuperar" : "Quitar"}" title="${rd.has(d) ? "Recuperar" : "Quitar"}">${rd.has(d) ? "↺" : "✕"}</button>` : ""}`}</span></div>`; }).join("") : `<div class="gdrv"><span class="muted">Sin pilotos</span></div>`}</div>`;
   }).join("");
-  return { title: "Parrilla", body: `<p class="lede" style="margin:0 0 12px">Quita los pilotos o escuderías que no estén en tu partida. Desaparecen del Mundial, de la pantalla de anotar y de las noticias nuevas. Sus resultados pasados se conservan y puedes recuperarlos cuando quieras.</p>${rows}` };
+  return { title: st && st.wizard ? "3. La parrilla" : "Parrilla", body: `<p class="note" style="margin:0 0 10px">⇄ mover de equipo, ✎ cambiar nombre, ✕ quitar, ↺ recuperar.</p><p class="lede" style="margin:0 0 12px">${st && st.wizard ? "Déjala igual que en tu partida de F1 25: mueve pilotos de equipo, cambia nombres o quita a quien no esté. Puedes volver aquí cuando quieras desde Ajustes." : "Mueve pilotos de equipo, cambia nombres o quita a quien no esté en tu partida. Sus resultados pasados se conservan."}</p>${rows}`,
+    foot: `<button class="btn btn-red btn-block" data-act="grid-done">${st && st.wizard ? "Listo, ¡a correr!" : "Hecho"}</button>` };
 }
+function gridMoveSheet(st) {
+  const core = S.core;
+  const a = st.d;
+  const ta = teamOf(core, a);
+  const others = DRIVER_IDS.filter((d) => d !== a && teamOf(core, d) !== ta);
+  return { title: `Mover a ${fullName(a)}`, body: `<p class="lede" style="margin:0 0 10px">Ahora en ${escRaw(team(ta).name)}.</p>
+<h4 class="eh">Intercambiar el asiento con…</h4><div class="group">${others.map((d) => `<button class="list-btn" data-act="grid-do-swap" data-arg="${d}">${crest(teamOf(core, d), 24)}<span class="t">${escRaw(fullName(d))}<small>${escRaw(team(teamOf(core, d)).name)}</small></span></button>`).join("")}</div>
+<h4 class="eh">O pasar a un equipo sin cambiar a nadie</h4><div class="group">${ALL_TEAM_IDS.filter((t) => t !== ta).map((t) => `<button class="list-btn" data-act="grid-do-move" data-arg="${t}">${crest(t, 24)}<span class="t">${escRaw(team(t).name)}<small>${teamDrivers(core, t).map((d) => LN(d)).join(", ") || "Sin pilotos"}</small></span></button>`).join("")}</div>`,
+    foot: `<button class="btn btn-ghost btn-block" data-act="grid-back">Volver</button>` };
+}
+function gridNameSheet(st) {
+  return { title: "Nombre del piloto", short: true, body: `<div class="field"><label>Nombre</label><input class="inp" data-bind="f.first" value="${esc(st.f.first)}"></div><div class="field"><label>Apellido</label><input class="inp" data-bind="f.last" value="${esc(st.f.last)}"></div>`,
+    foot: `<button class="btn btn-red btn-block" data-act="grid-do-name">Guardar</button>${S.core.names && S.core.names[st.d] ? `<button class="btn btn-ghost btn-block" data-act="grid-name-reset">Volver al nombre real</button>` : ""}` };
+}
+SHEETS.gridmove = gridMoveSheet;
+SHEETS.gridname = gridNameSheet;
 SHEETS.grid = gridSheet;
 
 /* ---------- emblemas personalizados (imágenes del usuario, guardadas en el dispositivo) ---------- */
@@ -7843,9 +7870,10 @@ Object.assign(CAREER_ACTIONS, {
     render();
   },
   "grid-open": () => openSheet({ type: "grid" }),
+  "grid-back": () => openSheet({ type: "grid", wizard: S.sheet && S.sheet.back }),
   "grid-team": async (t) => {
     await mutateCore((core) => { const g = core.grid = core.grid || { removedTeams: [], removedDrivers: [] }; g.removedTeams = g.removedTeams || []; const i = g.removedTeams.indexOf(t); if (i >= 0) g.removedTeams.splice(i, 1); else g.removedTeams.push(t); }).catch(() => null);
-    syncGrid(S.core); renderSheet(); render();
+    syncGrid(S.core); render(); openSheet({ type: "grid", wizard: S.sheet && S.sheet.wizard });
   },
   "grid-drv": async (d) => {
     await mutateCore((core) => { const g = core.grid = core.grid || { removedTeams: [], removedDrivers: [] }; g.removedDrivers = g.removedDrivers || []; const i = g.removedDrivers.indexOf(d); if (i >= 0) g.removedDrivers.splice(i, 1); else g.removedDrivers.push(d); }).catch(() => null);
@@ -8201,11 +8229,23 @@ const NATIONS = [
   ["Brasil", "brasileño", "🇧🇷"], ["Estados Unidos", "estadounidense", "🇺🇸"], ["Canadá", "canadiense", "🇨🇦"], ["Australia", "australiano", "🇦🇺"], ["Japón", "japonés", "🇯🇵"], ["Finlandia", "finlandés", "🇫🇮"], ["Dinamarca", "danés", "🇩🇰"], ["Polonia", "polaco", "🇵🇱"]
 ];
 const ORIG = { first: DRIVERS.arevalo.first, last: DRIVERS.arevalo.last, code: DRIVERS.arevalo.code, flag: DRIVERS.arevalo.flag, nat: DRIVERS.arevalo.nat, team: Object.assign({}, TEAMS.aurelia) };
+const ORIG_NAMES = {};
+function applyNames(core) {
+  const names = (core && core.names) || {};
+  Object.keys(DRIVERS).forEach((d) => {
+    if (d === "arevalo" || d === "jugador2") return;
+    if (!ORIG_NAMES[d]) ORIG_NAMES[d] = { first: DRIVERS[d].first, last: DRIVERS[d].last, code: DRIVERS[d].code };
+    const n = names[d];
+    Object.assign(DRIVERS[d], n ? { first: n.first, last: n.last, code: (n.last || "").slice(0, 3).toUpperCase() } : ORIG_NAMES[d]);
+  });
+}
 function applyIdentity(core) {
   const id = core && core.identity;
-  const sig = JSON.stringify(id || null);
+  const mate = core ? teammatesOf(core, "arevalo")[0] : null;
+  const sig = JSON.stringify([id || null, mate || null, (core && core.names) || null, core ? DRIVER_IDS.includes("senna") : true]);
   if (applyIdentity.sig === sig) return;
   applyIdentity.sig = sig;
+  applyNames(core);
   const d = DRIVERS.arevalo;
   if (!id) {
     Object.assign(d, { first: ORIG.first, last: ORIG.last, code: ORIG.code, flag: ORIG.flag, nat: ORIG.nat });
@@ -8215,17 +8255,32 @@ function applyIdentity(core) {
   }
   Object.assign(d, { first: id.first, last: id.last, code: (id.code || id.last.slice(0, 3)).toUpperCase(), flag: id.flag, nat: id.nat });
   if (id.num != null && core.roster) core.roster.arevalo = Object.assign({}, core.roster.arevalo || {}, { num: id.num });
-  TEAMS.aurelia.name = id.teamName || ORIG.team.name;
-  TEAMS.aurelia.short = id.teamShort || (id.teamName ? id.teamName.split(" ")[0] : ORIG.team.short);
-  if (id.color) TEAMS.aurelia.color = id.color;
+  const realTeam = id.team && id.team !== "aurelia" ? id.team : null;
+  if (realTeam) Object.assign(TEAMS.aurelia, ORIG.team);
+  else {
+    TEAMS.aurelia.name = id.teamName || ORIG.team.name;
+    TEAMS.aurelia.short = id.teamShort || (id.teamName ? id.teamName.split(" ")[0] : ORIG.team.short);
+    if (id.color) TEAMS.aurelia.color = id.color;
+  }
+  const tmName = realTeam ? team(realTeam).name : TEAMS.aurelia.name;
+  const tmShort = realTeam ? team(realTeam).short : TEAMS.aurelia.short;
+  const boss = id.boss || (realTeam ? `Dirección de ${tmShort}` : "Marco Valenti");
   const nat = NATIONS.find((n) => n[0] === id.nat) || NATIONS[0];
   const full = `${id.first} ${id.last}`;
   const pairs = [
     ["Andrés Arévalo", full], ["ANDRÉS ARÉVALO", UP(full)], ["Arévalo", id.last], ["ARÉVALO", UP(id.last)], ["Andrés", id.first], ["ANDRÉS", UP(id.first)],
-    ["#AureliaRacing", "#" + TEAMS.aurelia.name.replace(/\s+/g, "")], ["AURELIA RACING", UP(TEAMS.aurelia.name)], ["Aurelia Racing", TEAMS.aurelia.name], ["AURELIA", UP(TEAMS.aurelia.short)], ["Aurelia", TEAMS.aurelia.short],
-    ["Marco Valenti", id.boss || "Marco Valenti"], ["Un español desconocido", `Un ${nat[1]} desconocido`], ["España vuelve a tener", `${nat[0]} vuelve a tener`], ["himno español", `himno ${nat[1] === "español" ? "español" : "nacional"}`], ["piloto español", `piloto ${nat[1]}`]
-  ].filter(([a, b]) => a !== b);
-  IDENT = pairs.length ? { re: new RegExp(pairs.map(([a]) => a.replace(/[.*+?^${}()|[\]\\#]/g, "\\$&")).join("|"), "g"), map: Object.fromEntries(pairs) } : null;
+    ["#AureliaRacing", "#" + tmName.replace(/\s+/g, "")], ["AURELIA RACING", UP(tmName)], ["Aurelia Racing", tmName], ["AURELIA", UP(tmShort)], ["Aurelia", tmShort],
+    ["Marco Valenti, jefe de equipo", realTeam && !id.boss ? boss : `${boss}, jefe de equipo`], [`Marco Valenti (${ORIG.team.name})`, realTeam && !id.boss ? boss : `${boss} (${tmName})`], ["Marco Valenti", boss],
+    ["Un español desconocido", `Un ${nat[1]} desconocido`], ["España vuelve a tener", `${nat[0]} vuelve a tener`], ["himno español", `himno ${nat[1] === "español" ? "español" : "nacional"}`], ["piloto español", `piloto ${nat[1]}`]
+  ];
+  /* Si Senna ya no corre, los textos que hablaban de él como compañero pasan al compañero real. */
+  if (mate && mate !== "senna" && !DRIVER_IDS.includes("senna")) {
+    const m = DRIVERS[mate];
+    pairs.push(["Ayrton Senna", `${m.first} ${m.last}`], ["AYRTON SENNA", UP(`${m.first} ${m.last}`)], ["Ayrton", m.first], ["Senna", m.last], ["SENNA", UP(m.last)], ["el tricampeón", "su compañero"], ["tricampeón", "compañero"]);
+  }
+  const used = pairs.filter(([a, b]) => a !== b);
+  used.sort((a, b) => b[0].length - a[0].length);
+  IDENT = used.length ? { re: new RegExp(used.map(([a]) => a.replace(/[.*+?^${}()|[\]\\#]/g, "\\$&")).join("|"), "g"), map: Object.fromEntries(used) } : null;
 }
 function identSub(s) { return IDENT ? s.replace(IDENT.re, (m) => IDENT.map[m] || m) : s; }
 function isHomeGP(gp) { return (HOME_GP[gp] || []).includes(DRIVERS[ME].nat); }
@@ -8237,14 +8292,22 @@ function identitySheet(st) {
 <div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
 <div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}"></div>
 <div class="field"><label>Jefe de tu equipo (opcional)</label><input class="inp" data-bind="f.boss" value="${esc(f.boss || "")}" placeholder="Nombre para los correos del equipo"></div>`, foot: `<button class="btn btn-red btn-block" data-act="id-save">Guardar</button>` };
-  return { title: st.fresh ? "Crea tu piloto" : "Tu piloto",
-    body: `<p class="lede" style="margin:0 0 12px">${st.fresh ? "Empieza tu propia carrera en la F1. Podrás cambiarlo después en Ajustes." : "Cambia tus datos. Las noticias ya publicadas se adaptarán solas."}</p>
+  const real = st.fresh && f.teamMode === "real";
+  const rt = f.team || ALL_TEAM_IDS.filter((t) => t !== "aurelia")[0];
+  const seats = ALL_DRIVER_IDS.filter((d) => d !== "arevalo" && d !== "jugador2" && DRIVERS[d].team === rt);
+  return { title: st.fresh ? "Nueva partida" : "Tu piloto",
+    body: `<p class="lede" style="margin:0 0 12px">${st.fresh ? "Configura tu carrera desde cero. Después podrás elegir si empiezas en la F2 y ajustar la parrilla." : "Cambia tus datos. Las noticias ya publicadas se adaptarán solas."}</p>
+${st.fresh ? `<h4 class="eh">1. Tu piloto</h4>` : ""}
 ${inp("first", "Nombre", "Andrés")}${inp("last", "Apellido", "Arévalo")}
 <div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
 <div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}" placeholder="7"></div>
-${inp("teamName", "Nombre de tu escudería", "Aurelia Racing")}${inp("boss", "Jefe de equipo", "Marco Valenti")}
-<div class="field"><label>Color de la escudería</label><div class="swatches">${TEAM_COLORS.map((c) => `<button class="sw-c${f.color === c ? " on" : ""}" style="background:${c}" data-act="id-color" data-arg="${c}" aria-label="Color ${c}"></button>`).join("")}</div></div>`,
-    foot: `<button class="btn btn-red btn-block" data-act="id-save">${st.fresh ? "Empezar mi carrera" : "Guardar"}</button>${!st.fresh && S.core && S.core.identity ? `<button class="btn btn-ghost btn-block" data-act="id-reset">Volver a Andrés Arévalo</button>` : ""}` };
+${st.fresh ? `<h4 class="eh">2. Tu equipo</h4><div class="chips" style="margin-bottom:10px"><button class="chip${!real ? " on" : ""}" data-act="id-teammode" data-arg="aurelia">Escudería nueva (Aurelia)</button><button class="chip${real ? " on" : ""}" data-act="id-teammode" data-arg="real">Un equipo de la parrilla</button></div>` : ""}
+${real ? `<div class="field"><label>Equipo</label><select class="sel" data-bind="f.team" data-rerender="1">${ALL_TEAM_IDS.filter((t) => t !== "aurelia").map((t) => `<option value="${t}" ${rt === t ? "selected" : ""}>${esc(team(t).name)}</option>`).join("")}</select></div>
+<div class="field"><label>Piloto al que sustituyes</label><select class="sel" data-bind="f.replace">${seats.map((d) => `<option value="${d}" ${f.replace === d ? "selected" : ""}>${esc(fullName(d))}</option>`).join("")}</select><small>Tu compañero será el otro piloto del equipo. Aurelia Racing y Ayrton Senna no estarán en la parrilla.</small></div>
+${inp("boss", "Jefe de equipo (opcional)", "Para los correos y declaraciones")}`
+    : `${inp("teamName", "Nombre de tu escudería", "Aurelia Racing")}${inp("boss", "Jefe de equipo", "Marco Valenti")}
+<div class="field"><label>Color de la escudería</label><div class="swatches">${TEAM_COLORS.map((c) => `<button class="sw-c${f.color === c ? " on" : ""}" style="background:${c}" data-act="id-color" data-arg="${c}" aria-label="Color ${c}"></button>`).join("")}</div></div>${st.fresh ? `<p class="note">Tu compañero será Ayrton Senna. Podrás cambiarlo en el paso de la parrilla.</p>` : ""}`}`,
+    foot: `<button class="btn btn-red btn-block" data-act="id-save">${st.fresh ? "Siguiente" : "Guardar"}</button>${!st.fresh && S.core && S.core.identity ? `<button class="btn btn-ghost btn-block" data-act="id-reset">Volver a Andrés Arévalo</button>` : ""}` };
 }
 SHEETS.identity = identitySheet;
 
@@ -9010,7 +9073,7 @@ const ACTIONS = {
   "open-restore": () => openSheet({ type: "restore", text: "", error: "" }),
   "restore-go": () => doRestore(),
   "reset-all": () => confirmReset(),
-  "start-blank": () => openSheet({ type: "identity", fresh: true, f: { first: "", last: "", nat: "España", num: "", teamName: "", boss: "", color: "#7DD3FC" } }),
+  "start-blank": () => openSheet({ type: "identity", fresh: true, f: { first: "", last: "", nat: "España", num: "", teamName: "", boss: "", color: "#7DD3FC", teamMode: "aurelia", team: "ferrari", replace: "" } }),
   "id-open": () => {
     if (isCoop() && ME === P2) { const p = S.core.coop.players.p2; openSheet({ type: "identity", p2: true, f: { first: p.first, last: p.last, nat: p.nat, num: p.num || "", boss: p.boss || "" } }); return; }
     const id = (S.core && S.core.identity) || {}; openSheet({ type: "identity", fresh: false, f: Object.assign({ first: DRIVERS[ME].first, last: DRIVERS[ME].last, nat: DRIVERS[ME].nat, num: drv(S.core, ME).num || "", teamName: TEAMS.aurelia.name, boss: "Marco Valenti", color: TEAMS.aurelia.color }, id) }); },
@@ -9030,10 +9093,24 @@ const ACTIONS = {
     f.first = String(f.first || "").trim(); f.last = String(f.last || "").trim();
     if (!f.first || !f.last) { toast("Escribe nombre y apellido"); return; }
     const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
-    const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || "Marco Valenti", color: f.color || "#7DD3FC" };
-    const isDefault = idn.first === ORIG.first && idn.last === ORIG.last && idn.nat === ORIG.nat && idn.teamName === ORIG.team.name && idn.boss === "Marco Valenti" && idn.color === ORIG.team.color;
+    const real = st.fresh && f.teamMode === "real";
+    const rt = real ? (f.team || ALL_TEAM_IDS.filter((t) => t !== "aurelia")[0]) : "aurelia";
+    const rep = real ? (f.replace || ALL_DRIVER_IDS.find((d) => d !== "arevalo" && d !== "jugador2" && DRIVERS[d].team === rt)) : null;
+    const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: real ? null : String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || (real ? null : "Marco Valenti"), color: real ? null : f.color || "#7DD3FC", team: rt };
+    const isDefault = !real && idn.first === ORIG.first && idn.last === ORIG.last && idn.nat === ORIG.nat && idn.teamName === ORIG.team.name && idn.boss === "Marco Valenti" && idn.color === ORIG.team.color;
     closeSheet();
-    if (st.fresh) { const core = blankCore(1); if (!isDefault) core.identity = idn; S.core = core; applyIdentity(core); await Store.saveCore().catch(() => null); render(); openSheet({ type: "f2setup", n: 0, team: "campos" }); return; }
+    if (st.fresh) {
+      const core = blankCore(1);
+      if (!isDefault) core.identity = idn;
+      if (real) { core.roster = { arevalo: { team: rt } }; core.grid = { removedTeams: ["aurelia"], removedDrivers: [rep] }; }
+      S.core = normalizeCore(core); S.news = []; S.seasons = [];
+      applyIdentity.sig = null; applyIdentity(S.core);
+      await Store.saveCore().catch(() => null);
+      render();
+      openSheet({ type: "f2setup", n: 0, team: "campos", wizard: true });
+      return;
+    }
+    if (S.core && S.core.identity && S.core.identity.team) idn.team = S.core.identity.team;
     await mutateCore((core) => { if (isDefault) delete core.identity; else core.identity = idn; if (idn.num != null) core.roster = Object.assign({}, core.roster, { [ME]: Object.assign({}, (core.roster || {})[ME], { num: idn.num }) }); }).catch(() => null);
     applyIdentity(S.core); render(); toast("Piloto actualizado");
   },
@@ -9150,8 +9227,51 @@ Object.assign(ACTIONS, {
   "f2-start": async () => {
     const st = S.sheet;
     closeSheet();
-    if (Number(st.n)) { await mutateCore((core) => { core.f2 = makeF2(core, Number(st.n), { [ME]: st.team || "campos" }); }).catch(() => null); S.ui.racesSeg = "f2"; switchTab("races"); toast("¡Bienvenido a la Fórmula 2!"); }
-    else toast("Directo a la Fórmula 1");
+    if (Number(st.n)) { await mutateCore((core) => { core.f2 = makeF2(core, Number(st.n), { [ME]: st.team || "campos" }); }).catch(() => null); S.ui.racesSeg = "f2"; switchTab("races"); }
+    if (st.wizard) openSheet({ type: "grid", wizard: true });
+    else toast(Number(st.n) ? "¡Bienvenido a la Fórmula 2!" : "Directo a la Fórmula 1");
+  },
+  "id-teammode": (m) => { S.sheet.f.teamMode = m; renderSheet(); },
+  "grid-done": () => { const w = S.sheet && S.sheet.wizard; closeSheet(); if (w) { toast(S.core.f2 ? "¡Todo listo! Empieza por la F2" : "¡Todo listo! A por la temporada 1"); render(); } },
+  "grid-swap": (d) => openSheet({ type: "gridmove", d, back: S.sheet && S.sheet.wizard }),
+  "grid-rename": (d) => { const n = (S.core.names || {})[d] || {}; openSheet({ type: "gridname", d, back: S.sheet && S.sheet.wizard, f: { first: n.first || DRIVERS[d].first, last: n.last || DRIVERS[d].last } }); },
+  "grid-do-swap": async (b) => {
+    const a = S.sheet.d, back = S.sheet.back;
+    await mutateCore((core) => {
+      core.roster = Object.assign({}, core.roster);
+      const ta = teamOf(core, a), tb = teamOf(core, b);
+      core.roster[a] = Object.assign({}, core.roster[a] || {}, { team: tb });
+      core.roster[b] = Object.assign({}, core.roster[b] || {}, { team: ta });
+      [a, b].forEach((x) => { if (x === "arevalo" && core.identity) core.identity.team = teamOf(core, x); });
+    }).catch(() => null);
+    toast(`${LN(a)} y ${LN(b)} intercambian asiento`);
+    openSheet({ type: "grid", wizard: back });
+  },
+  "grid-do-move": async (t) => {
+    const a = S.sheet.d, back = S.sheet.back;
+    await mutateCore((core) => {
+      core.roster = Object.assign({}, core.roster);
+      core.roster[a] = Object.assign({}, core.roster[a] || {}, { team: t });
+      if (a === "arevalo" && core.identity) core.identity.team = t;
+      core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
+      core.grid.removedTeams = (core.grid.removedTeams || []).filter((x) => x !== t);
+    }).catch(() => null);
+    toast(`${LN(a)} pasa a ${team(t).name}`);
+    openSheet({ type: "grid", wizard: back });
+  },
+  "grid-do-name": async () => {
+    const st = S.sheet;
+    const first = String(st.f.first || "").trim(), last = String(st.f.last || "").trim();
+    if (!first || !last) { toast("Escribe nombre y apellido"); return; }
+    await mutateCore((core) => { core.names = Object.assign({}, core.names); const o = ORIG_NAMES[st.d] || DRIVERS[st.d]; if (first === o.first && last === o.last) delete core.names[st.d]; else core.names[st.d] = { first, last }; }).catch(() => null);
+    applyIdentity.sig = null;
+    openSheet({ type: "grid", wizard: st.back });
+  },
+  "grid-name-reset": async () => {
+    const st = S.sheet;
+    await mutateCore((core) => { core.names = Object.assign({}, core.names); delete core.names[st.d]; }).catch(() => null);
+    applyIdentity.sig = null;
+    openSheet({ type: "grid", wizard: st.back });
   }
 });
 SHEETS.coop = coopSheet;
