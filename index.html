@@ -973,6 +973,26 @@ body.in-menu #topbar, body.in-menu #tabbar, body.in-menu #fab { display: none !i
 .gdrv > span:first-child { flex: 1; min-width: 0; }
 .gdrv .gd-b { flex: none; flex-wrap: nowrap; }
 
+/* ---------- ajustes y parrilla ---------- */
+.set-hero { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--tc) 30%, #111118), #111118); color: #fff; margin-bottom: 6px; }
+.set-hero b { display: block; font-family: var(--font-d); font-size: 22px; line-height: 1.05; }
+.set-hero small { opacity: .8; }
+.set-chip { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.14); font-size: 12px; }
+.set-h { margin-top: 18px; }
+.gsum { display: flex; gap: 8px; margin: 0 0 8px; }
+.gsum span { flex: 1; text-align: center; padding: 8px 4px; border-radius: 14px; background: var(--card); box-shadow: var(--shadow); font-size: 12.5px; color: var(--muted); }
+.gsum b { display: block; font-family: var(--font-d); font-size: 22px; color: var(--text); line-height: 1; }
+.gcard { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; border-left: 5px solid var(--tc); }
+.gc-h { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.gc-n { flex: 1; min-width: 0; }
+.gc-n b { display: block; font-family: var(--font-d); font-size: 19px; line-height: 1.05; }
+.gc-n small, .gd-n small { color: var(--muted); font-size: 12px; }
+.gwarn { font-size: 11.5px; font-weight: 700; color: #B45309; background: rgba(245,158,11,.15); padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.gd { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--line); }
+.gd-n { flex: 1; min-width: 0; }
+.gd-n b { display: block; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.group > .gd:first-child { border-top: 0; }
+
 </style>
 </head>
 <body>
@@ -1022,7 +1042,7 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "15";
+const APP_VERSION = "16";
 const APP_DATE = "29 de septiembre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
@@ -6448,28 +6468,38 @@ function rewriteArticle(id) {
 /* ---------- AJUSTES ---------- */
 function settingsSheet() {
   const core = S.core;
-  const me = core ? drv(core, ME) : null;
+  const W = S.canWrite;
+  const row = (act, ic, t, sub, cls) => `<button class="list-btn${cls ? " " + cls : ""}" data-act="${act}"><span class="li-ic">${ic}</span><span class="t">${t}<small>${sub}</small></span>${ICON.chev}</button>`;
+  const grp = (title, rows) => rows.filter(Boolean).length ? `<h4 class="eh set-h">${title}</h4><div class="group">${rows.filter(Boolean).join("")}</div>` : "";
+  const g = core && core.grid || {};
+  const gridSub = core ? `${TEAM_IDS.length} equipos y ${DRIVER_IDS.length} pilotos${(g.removedDrivers || []).length || Object.keys(core.names || {}).length || Object.keys(core.teamNames || {}).length ? ", con cambios" : ""}` : "";
+  const head = core ? `<div class="set-hero" style="--tc:${tcolor(teamOf(core, ME))}">${drvHelmet(ME, 54)}<div><b>${esc(fullName(ME))}</b><small>${esc(team(teamOf(core, ME)).name)}, temporada ${core.season}</small><span class="set-chip">${isCoop() ? `👥 Cooperativo${otherPlayer() ? " con " + esc(LN(otherPlayer())) : ""}` : "👤 Un jugador"}${core.f2 && !core.f2.done ? ", prólogo de F2" : ""}</span></div></div>` : "";
   return {
     title: "Ajustes",
-    body: `${core ? `<div class="group">
-<button class="list-btn" data-act="driver-edit" data-arg="${ME}">${ICON.edit}<span class="t">Tu dorsal y escudería<small>${me.num != null ? "#" + me.num : "Sin dorsal"} en ${esc(team(me.team).name)}</small></span>${ICON.chev}</button>
-${S.canWrite ? `<button class="list-btn" data-act="cal-open">${ICON.flag}<span class="t">Calendario de la temporada<small>${core.totalRounds} carreras. Cambia circuitos o su número</small></span>${ICON.chev}</button>
-${window.PADDOCK_STANDALONE ? `<button class="list-btn" data-act="mode-switch"><span class="li-ic">${isCoop() ? "👥" : "👤"}</span><span class="t">Modo de juego: ${isCoop() ? "cooperativo" : "un jugador"}<small>Volver al menú para cambiar de modo. Tus datos se conservan.</small></span>${ICON.chev}</button>` : ""}
-${isCoop() ? `<button class="list-btn" data-act="coop-invite"><span class="li-ic">🔗</span><span class="t">Invitar a tu amigo<small>${S.core.coop.players.p2 ? `Juegas con ${esc(fullName(otherPlayer()))}` : "Todavía no se ha unido nadie"}</small></span>${ICON.chev}</button>` : ""}
-<button class="list-btn" data-act="id-open"><span class="li-ic">🪪</span><span class="t">Tu piloto<small>Nombre, nacionalidad, dorsal y escudería</small></span>${ICON.chev}</button>
-<button class="list-btn" data-act="diff-open"><span class="li-ic">🎚️</span><span class="t">Dificultad<small>Exigencia del equipo y crecimiento de la fama</small></span>${ICON.chev}</button>
-<button class="list-btn" data-act="bk-open"><span class="li-ic">💾</span><span class="t">Copias automáticas<small>Se guardan solas después de cada carrera</small></span>${ICON.chev}</button>
-<button class="list-btn" data-act="grid-open">${ICON.paddock}<span class="t">Parrilla<small>Quitar o recuperar pilotos y escuderías</small></span>${ICON.chev}</button>
-<button class="list-btn" data-act="dist-open">${ICON.timer}<span class="t">Distancia de carrera<small>${core.distance || 50}% de la distancia real</small></span>${ICON.chev}</button>` : ""}
-${S.canWrite ? `<button class="list-btn" data-act="close-season">${ICON.trophy}<span class="t">Cerrar la temporada ${core.season}<small>Guarda la ficha histórica y empieza la siguiente</small></span>${ICON.chev}</button>` : ""}</div>` : ""}
-<div class="group" style="margin-top:14px">
-${S.downloads && core ? `<button class="list-btn" data-act="export">${ICON.download}<span class="t">Descargar copia de seguridad<small>Un archivo con todo tu universo</small></span></button>` : ""}
-${S.canWrite ? `<button class="list-btn" data-act="open-restore">${ICON.upload}<span class="t">Restaurar una copia<small>Sustituye el universo actual</small></span></button>` : ""}
-${S.canWrite && core && !isCoop() ? `<button class="list-btn danger" data-act="reset-all">${ICON.reset}<span class="t">Nueva partida<small>Borra la partida actual y configura otra desde cero</small></span></button>` : ""}</div>
-<div class="tip" style="margin-top:14px"><b>Guardado:</b> ${S.mode === "db" ? "en tu cuenta de Claude, disponible en todos tus dispositivos." : S.mode === "local" ? (window.PADDOCK_STANDALONE ? "en este iPhone. Descarga una copia de seguridad de vez en cuando." : "solo en este dispositivo.") : "conectando…"}<br>
+    body: `${head}
+${core && W ? grp("Tu partida", [
+      row("id-open", "🪪", "Tu piloto", "Nombre, nacionalidad y dorsal"),
+      row("grid-open", "🏁", "Parrilla y equipos", gridSub),
+      row("cal-open", "🗓️", "Calendario", `${core.totalRounds} carreras. Cambia circuitos o su número`),
+      row("dist-open", "⏱️", "Distancia de carrera", `${core.distance || 50}% de la distancia real`),
+      row("diff-open", "🎚️", "Dificultad", `Equipo ${({ facil: "comprensivo", normal: "normal", dificil: "implacable" })[diffOf(core).team]}, fama ${({ lenta: "lenta", normal: "normal", rapida: "rápida" })[diffOf(core).fame]}`)
+    ]) : ""}
+${core && W ? grp("Temporada", [row("close-season", "🏆", `Cerrar la temporada ${core.season}`, "Guarda la ficha histórica y empieza la siguiente")]) : ""}
+${window.PADDOCK_STANDALONE ? grp("Modo de juego", [
+      row("mode-switch", isCoop() ? "👥" : "👤", `Modo: ${isCoop() ? "cooperativo" : "un jugador"}`, "Volver al menú para cambiar de modo. Tus datos se conservan"),
+      isCoop() ? row("coop-invite", "🔗", "Invitar a tu amigo", S.core && S.core.coop.players.p2 ? `Juegas con ${esc(fullName(otherPlayer()))}` : "Todavía no se ha unido nadie") : ""
+    ]) : ""}
+${grp("Tus datos", [
+      core && W ? row("bk-open", "💾", "Copias automáticas", "Se guardan solas después de cada carrera") : "",
+      S.downloads && core ? row("export", "⬇️", "Descargar copia de seguridad", "Un archivo con toda tu partida") : "",
+      W ? row("open-restore", "⬆️", "Restaurar una copia", "Sustituye la partida actual") : ""
+    ])}
+${W && core && !isCoop() ? grp("Empezar otra vez", [row("reset-all", "♻️", "Nueva partida", "Borra la partida actual y configura otra desde cero", "danger")]) : ""}
+<h4 class="eh set-h">Acerca de</h4>
+<div class="tip"><b>Guardado:</b> ${S.mode === "db" ? (isCoop() ? "en vuestra partida compartida, en tiempo real." : "en tu cuenta de Claude, disponible en todos tus dispositivos.") : S.mode === "local" ? (window.PADDOCK_STANDALONE ? "en este dispositivo. Descarga una copia de seguridad de vez en cuando." : "solo en este dispositivo.") : "sin conexión: estás viendo los últimos datos guardados."}<br>
 ${window.PADDOCK_STANDALONE ? "" : `<b>IA:</b> ${aiReady() ? (S.aiImages ? "activa, con lectura de fotos." : "activa, sin lectura de fotos en esta vista.") : "no disponible en esta vista."}<br>`}
 <b>Datos reales:</b> ${esc(REAL_STATS_SOURCE)}, según Wikipedia.</div>
-${window.PADDOCK_STANDALONE ? `<div class="group" style="margin-top:14px"><button class="list-btn" data-act="check-update">${ICON.reset}<span class="t">Buscar actualización<small>Versión ${APP_VERSION}, del ${APP_DATE}</small></span>${ICON.chev}</button></div>` : ""}`
+${window.PADDOCK_STANDALONE ? `<div class="group" style="margin-top:10px">${row("check-update", "🔄", "Buscar actualización", `Versión ${APP_VERSION}, del ${APP_DATE}`)}</div>` : ""}`
   };
 }
 
@@ -7766,16 +7796,35 @@ function gridSheet(st) {
   const rt = new Set(g.removedTeams || []), rd = new Set(g.removedDrivers || []);
   const myTeam = teamOf(core, ME);
   const players = typeof playersIn === "function" ? playersIn(core) : [ME];
-  const rows = ALL_TEAM_IDS.map((t) => {
-    const off = rt.has(t);
-    const ds = ALL_DRIVER_IDS.filter((d) => teamOf(core, d) === t);
-    if (off && !ds.some((d) => !rd.has(d))) { /* equipo quitado */ }
-    return `<div class="gteam${off ? " off" : ""}"><div class="gt-h">${crest(t, 30)}<b>${escRaw(team(t).name)}</b>${t === myTeam ? `<small>Tu equipo</small>` : `<button class="btn btn-sm ${off ? "btn-red" : "btn-ghost"}" data-act="grid-team" data-arg="${t}">${off ? "Recuperar" : "Quitar equipo"}</button>`}</div>
-${ds.length ? ds.map((d) => { const doff = rd.has(d) || off; const renamed = core.names && core.names[d]; return `<div class="gdrv${doff ? " off" : ""}"><span>${escRaw(fullName(d))}${players.includes(d) ? ` <small>${d === ME ? "(tú)" : "(jugador)"}</small>` : ""}${renamed ? ` <small>(renombrado)</small>` : ""}</span><span class="gd-b">${off ? "" : `${!doff ? `<button class="gbtn" data-act="grid-swap" data-arg="${d}" aria-label="Mover de equipo" title="Mover de equipo">⇄</button>` : ""}${!players.includes(d) ? `<button class="gbtn" data-act="grid-rename" data-arg="${d}" aria-label="Cambiar nombre" title="Cambiar nombre">✎</button><button class="gbtn${rd.has(d) ? " on" : ""}" data-act="grid-drv" data-arg="${d}" aria-label="${rd.has(d) ? "Recuperar" : "Quitar"}" title="${rd.has(d) ? "Recuperar" : "Quitar"}">${rd.has(d) ? "↺" : "✕"}</button>` : ""}`}</span></div>`; }).join("") : `<div class="gdrv"><span class="muted">Sin pilotos</span></div>`}</div>`;
-  }).join("");
-  return { title: st && st.wizard ? "3. La parrilla" : "Parrilla", body: `<p class="note" style="margin:0 0 10px">⇄ mover de equipo, ✎ cambiar nombre, ✕ quitar, ↺ recuperar.</p><p class="lede" style="margin:0 0 12px">${st && st.wizard ? "Déjala igual que en tu partida de F1 25: mueve pilotos de equipo, cambia nombres o quita a quien no esté. Puedes volver aquí cuando quieras desde Ajustes." : "Mueve pilotos de equipo, cambia nombres o quita a quien no esté en tu partida. Sus resultados pasados se conservan."}</p>${rows}`,
-    foot: `<button class="btn btn-red btn-block" data-act="grid-done">${st && st.wizard ? "Listo, ¡a correr!" : "Hecho"}</button>` };
+  const wiz = st && st.wizard;
+  const activeTeams = ALL_TEAM_IDS.filter((t) => !rt.has(t) || t === myTeam);
+  const nDrivers = DRIVER_IDS.length;
+  const changes = Object.keys(core.names || {}).length + Object.keys(core.teamNames || {}).length + (g.removedDrivers || []).length + (g.removedTeams || []).length + Object.keys(core.roster || {}).filter((d) => DRIVERS[d] && core.roster[d].team && core.roster[d].team !== DRIVERS[d].team).length;
+  const card = (t) => {
+    const ds = ALL_DRIVER_IDS.filter((d) => teamOf(core, d) === t && !rd.has(d));
+    const tm = team(t);
+    const warn = ds.length !== 2 ? `<span class="gwarn">${ds.length === 1 ? "Solo 1 piloto" : ds.length === 0 ? "Sin pilotos" : ds.length + " pilotos"}</span>` : "";
+    return `<div class="gcard" style="--tc:${tm.color}"><div class="gc-h">${crest(t, 34)}<span class="gc-n"><b>${escRaw(tm.name)}</b><small>${t === myTeam ? "Tu equipo" : core.teamNames && core.teamNames[t] ? "Nombre cambiado" : "&nbsp;"}</small></span>${warn}
+${t !== "aurelia" ? `<button class="gbtn" data-act="team-edit" data-arg="${t}" aria-label="Editar equipo" title="Editar equipo">✎</button>` : ""}${t !== myTeam && !players.some((p) => teamOf(core, p) === t) ? `<button class="gbtn" data-act="grid-team" data-arg="${t}" aria-label="Quitar equipo" title="Quitar equipo">✕</button>` : ""}</div>
+${ds.map((d) => `<div class="gd">${drvHelmet(d, 28)}<span class="gd-n"><b>${escRaw(fullName(d))}</b><small>${players.includes(d) ? (d === ME ? "Tú" : "Jugador") : core.names && core.names[d] ? "Nombre cambiado" : (DRIVERS[d].num != null ? "#" + DRIVERS[d].num : "")}</small></span>
+<button class="gbtn" data-act="grid-swap" data-arg="${d}" aria-label="Mover" title="Mover">⇄</button>${!players.includes(d) ? `<button class="gbtn" data-act="grid-rename" data-arg="${d}" aria-label="Cambiar nombre" title="Cambiar nombre">✎</button><button class="gbtn" data-act="grid-drv" data-arg="${d}" aria-label="Quitar" title="Quitar">✕</button>` : ""}</div>`).join("") || `<div class="gd"><span class="gd-n"><small>Sin pilotos. Usa ⇄ en un piloto para traerlo aquí.</small></span></div>`}</div>`;
+  };
+  const outDrivers = ALL_DRIVER_IDS.filter((d) => rd.has(d) || (rt.has(teamOf(core, d)) && teamOf(core, d) !== myTeam));
+  const outTeams = ALL_TEAM_IDS.filter((t) => rt.has(t) && t !== myTeam);
+  return { title: wiz ? "3. Parrilla y equipos" : "Parrilla y equipos", body: `<p class="lede" style="margin:0 0 10px">${wiz ? "Déjala igual que en tu partida de F1 25. Puedes volver aquí cuando quieras desde Ajustes." : "Déjala igual que en tu partida de F1 25. Los resultados pasados se conservan."}</p>
+<div class="gsum"><span><b>${activeTeams.length}</b> equipos</span><span><b>${nDrivers}</b> pilotos</span><span><b>${changes}</b> ${changes === 1 ? "cambio" : "cambios"}</span></div>
+<p class="note" style="margin:0 0 10px">⇄ mover de equipo, ✎ cambiar nombre, ✕ quitar.</p>
+${activeTeams.map(card).join("")}
+${outDrivers.length || outTeams.length ? `<h4 class="eh">Fuera de la parrilla</h4><div class="group">${outTeams.map((t) => `<div class="gd">${crest(t, 26)}<span class="gd-n"><b>${escRaw(team(t).name)}</b><small>Equipo completo</small></span><button class="btn btn-sm btn-ghost" data-act="grid-team" data-arg="${t}">Recuperar</button></div>`).join("")}${outDrivers.filter((d) => !outTeams.includes(teamOf(core, d)) || rd.has(d)).map((d) => `<div class="gd">${drvHelmet(d, 26)}<span class="gd-n"><b>${escRaw(fullName(d))}</b><small>${escRaw(team(teamOf(core, d)).name)}</small></span>${rd.has(d) ? `<button class="btn btn-sm btn-ghost" data-act="grid-drv" data-arg="${d}">Recuperar</button>` : ""}</div>`).join("")}</div>` : ""}
+${changes ? `<button class="btn btn-ghost btn-block" style="margin-top:14px" data-act="grid-reset">Restablecer la parrilla original</button>` : ""}`,
+    foot: `<button class="btn btn-red btn-block" data-act="grid-done">${wiz ? "Listo, ¡a correr!" : "Hecho"}</button>` };
 }
+function teamEditSheet(st) {
+  return { title: "Editar equipo", short: true, body: `<div class="field"><label>Nombre del equipo</label><input class="inp" data-bind="f.name" value="${escRaw(st.f.name)}"></div>
+<div class="field"><label>Color</label><div class="swatches">${TEAM_COLORS.concat([ORIG_TEAMS[st.t] ? ORIG_TEAMS[st.t].color : "#999"]).filter((c, i, a) => a.indexOf(c) === i).map((c) => `<button class="sw-c${st.f.color === c ? " on" : ""}" style="background:${c}" data-act="team-color" data-arg="${c}" aria-label="Color ${c}"></button>`).join("")}</div></div>`,
+    foot: `<button class="btn btn-red btn-block" data-act="team-save">Guardar</button>${S.core.teamNames && S.core.teamNames[st.t] ? `<button class="btn btn-ghost btn-block" data-act="team-reset">Volver al nombre real</button>` : ""}<button class="btn btn-ghost btn-block" data-act="grid-back">Volver</button>` };
+}
+SHEETS.teamedit = teamEditSheet;
 function gridMoveSheet(st) {
   const core = S.core;
   const a = st.d;
@@ -7871,6 +7920,21 @@ Object.assign(CAREER_ACTIONS, {
   },
   "grid-open": () => openSheet({ type: "grid" }),
   "grid-back": () => openSheet({ type: "grid", wizard: S.sheet && S.sheet.back }),
+  "team-edit": (t) => { const o = ORIG_TEAMS[t] || TEAMS[t]; const n = (S.core.teamNames || {})[t] || {}; openSheet({ type: "teamedit", t, back: S.sheet && S.sheet.wizard, f: { name: n.name || o.name, color: n.color || o.color } }); },
+  "team-color": (c) => { S.sheet.f.color = c; renderSheet(); },
+  "team-save": async () => { const st = S.sheet; const name = String(st.f.name || "").trim(); if (!name) { toast("Escribe un nombre"); return; } await mutateCore((core) => { core.teamNames = Object.assign({}, core.teamNames); const o = ORIG_TEAMS[st.t]; if (o && name === o.name && st.f.color === o.color) delete core.teamNames[st.t]; else core.teamNames[st.t] = { name, color: st.f.color }; }).catch(() => null); applyIdentity.sig = null; openSheet({ type: "grid", wizard: st.back }); },
+  "team-reset": async () => { const st = S.sheet; await mutateCore((core) => { core.teamNames = Object.assign({}, core.teamNames); delete core.teamNames[st.t]; }).catch(() => null); applyIdentity.sig = null; openSheet({ type: "grid", wizard: st.back }); },
+  "grid-reset": () => openSheet({ type: "confirm", title: "Restablecer la parrilla", text: "Vuelven los equipos, pilotos y nombres reales. Tu piloto se queda donde está.", confirm: "Restablecer", onConfirm: async () => {
+    await mutateCore((core) => {
+      const keep = {};
+      ["arevalo", "jugador2"].forEach((p) => { if (core.roster && core.roster[p]) keep[p] = core.roster[p]; });
+      core.roster = keep;
+      const rep = [core.identity && core.identity.replaced, core.coop && core.coop.players && core.coop.players.p2 && core.coop.players.p2.replaced].filter(Boolean);
+      core.grid = { removedTeams: core.identity && core.identity.team && core.identity.team !== "aurelia" ? ["aurelia"] : [], removedDrivers: rep };
+      core.names = {}; core.teamNames = {};
+    }).catch(() => null);
+    applyIdentity.sig = null; syncGrid(S.core); render(); openSheet({ type: "grid" }); toast("Parrilla restablecida");
+  } }),
   "grid-team": async (t) => {
     await mutateCore((core) => { const g = core.grid = core.grid || { removedTeams: [], removedDrivers: [] }; g.removedTeams = g.removedTeams || []; const i = g.removedTeams.indexOf(t); if (i >= 0) g.removedTeams.splice(i, 1); else g.removedTeams.push(t); }).catch(() => null);
     syncGrid(S.core); render(); openSheet({ type: "grid", wizard: S.sheet && S.sheet.wizard });
@@ -8230,7 +8294,15 @@ const NATIONS = [
 ];
 const ORIG = { first: DRIVERS.arevalo.first, last: DRIVERS.arevalo.last, code: DRIVERS.arevalo.code, flag: DRIVERS.arevalo.flag, nat: DRIVERS.arevalo.nat, team: Object.assign({}, TEAMS.aurelia) };
 const ORIG_NAMES = {};
+const ORIG_TEAMS = {};
 function applyNames(core) {
+  const tn = (core && core.teamNames) || {};
+  Object.keys(TEAMS).forEach((t) => {
+    if (t === "aurelia") return;
+    if (!ORIG_TEAMS[t]) ORIG_TEAMS[t] = { name: TEAMS[t].name, short: TEAMS[t].short, color: TEAMS[t].color };
+    const n = tn[t];
+    Object.assign(TEAMS[t], n ? { name: n.name || ORIG_TEAMS[t].name, short: n.short || (n.name ? n.name.split(" ")[0] : ORIG_TEAMS[t].short), color: n.color || ORIG_TEAMS[t].color } : ORIG_TEAMS[t]);
+  });
   const names = (core && core.names) || {};
   Object.keys(DRIVERS).forEach((d) => {
     if (d === "arevalo" || d === "jugador2") return;
@@ -8242,7 +8314,7 @@ function applyNames(core) {
 function applyIdentity(core) {
   const id = core && core.identity;
   const mate = core ? teammatesOf(core, "arevalo")[0] : null;
-  const sig = JSON.stringify([id || null, mate || null, (core && core.names) || null, core ? DRIVER_IDS.includes("senna") : true]);
+  const sig = JSON.stringify([id || null, mate || null, (core && core.names) || null, (core && core.teamNames) || null, core ? DRIVER_IDS.includes("senna") : true]);
   if (applyIdentity.sig === sig) return;
   applyIdentity.sig = sig;
   applyNames(core);
@@ -9096,7 +9168,7 @@ const ACTIONS = {
     const real = st.fresh && f.teamMode === "real";
     const rt = real ? (f.team || ALL_TEAM_IDS.filter((t) => t !== "aurelia")[0]) : "aurelia";
     const rep = real ? (f.replace || ALL_DRIVER_IDS.find((d) => d !== "arevalo" && d !== "jugador2" && DRIVERS[d].team === rt)) : null;
-    const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: real ? null : String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || (real ? null : "Marco Valenti"), color: real ? null : f.color || "#7DD3FC", team: rt };
+    const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: real ? null : String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || (real ? null : "Marco Valenti"), color: real ? null : f.color || "#7DD3FC", team: rt, replaced: rep };
     const isDefault = !real && idn.first === ORIG.first && idn.last === ORIG.last && idn.nat === ORIG.nat && idn.teamName === ORIG.team.name && idn.boss === "Marco Valenti" && idn.color === ORIG.team.color;
     closeSheet();
     if (st.fresh) {
