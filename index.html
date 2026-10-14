@@ -541,6 +541,28 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .m-fr .fp-name, .mmast.m-fr { font-family: var(--font-serif); font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
 .m-nl .fp-name, .mmast.m-nl { font-family: var(--font-black); font-weight: 400; }
 .m-gossip .fp-name, .mmast.m-gossip { font-family: var(--font-serif); font-weight: 900; font-style: italic; }
+.m-ref .fp-name, .mmast.m-ref { font-family: var(--font-serif); font-weight: 900; letter-spacing: -0.01em; }
+.m-radio .fp-name, .mmast.m-radio { font-family: var(--font-d); font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--pc); }
+.m-times .fp-name, .mmast.m-times { font-family: var(--font-serif); font-weight: 700; font-style: italic; letter-spacing: 0.01em; }
+.m-ref .fp-mast, .m-times .fp-mast { text-align: center; border-bottom: 3px double var(--pi); }
+.m-radio .fp-mast { border-bottom: 3px solid var(--pc); }
+.m-ref .fp-head, .m-times .fp-head { font-family: var(--font-serif); font-weight: 800; font-size: 16px; line-height: 1.08; }
+.m-ref.fp.big .fp-head, .m-times.fp.big .fp-head { font-size: 30px; }
+.m-radio .fp-head { color: var(--pi); }
+.lean { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--lc, #888) 16%, transparent); color: var(--lc, #888); margin-left: 6px; vertical-align: 1px; }
+.thread { margin: 8px 0 2px; padding: 6px 0 0 10px; border-left: 2px solid var(--line, rgba(127,127,127,.25)); display: grid; gap: 7px; }
+.thread .tr { font-size: 13.5px; line-height: 1.35; }
+.thread .tr b { font-weight: 700; }
+.thread .tr small { color: var(--muted); margin-left: 4px; }
+.thread .tr .tl { color: var(--muted); font-size: 12px; margin-left: 6px; white-space: nowrap; }
+.duelbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 14px 16px; }
+.duelbar .side { display: flex; flex-direction: column; gap: 2px; }
+.duelbar .side.r { text-align: right; align-items: flex-end; }
+.duelbar .side b { font-size: 17px; }
+.duelbar .side small { color: var(--muted); font-size: 12.5px; }
+.duelbar .vs { font-family: var(--font-d); font-weight: 900; font-style: italic; font-size: 26px; }
+.duelmeter { height: 8px; border-radius: 99px; background: var(--line, rgba(127,127,127,.2)); overflow: hidden; display: flex; margin: 0 16px 14px; }
+.duelmeter i { display: block; height: 100%; }
 
 .kiosk { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -14px; padding: 4px 14px 12px; scrollbar-width: none; }
 .kiosk::-webkit-scrollbar { display: none; }
@@ -1047,8 +1069,8 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "17";
-const APP_DATE = "29 de septiembre de 2026";
+const APP_VERSION = "18";
+const APP_DATE = "14 de octubre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
   /* Si llega una versión nueva, la app se recarga sola una vez para mostrarla. */
@@ -1165,12 +1187,18 @@ const CIRCUIT_IDS = Object.keys(CIRCUITS);
 /* ---------- Medios ficticios del universo ----------
    Todos inventados: cabeceras, periodistas y cuentas. */
 const MEDIA = {
-  cronometro:   { name: "El Cronómetro",        country: "🇪🇸", lang: "es", kind: "Diario deportivo",       mast: "es",     paper: "#FFFFFF", ink: "#111114", accent: "#E10600", journalist: "Marta Villalba",    handle: "martavillalba_f1",   angle: "diario deportivo español, entusiasta de Arévalo y de Alonso, titulares grandes y patrióticos" },
+  cronometro:   { name: "El Cronómetro",        country: "🇪🇸", lang: "es", kind: "Diario deportivo",       mast: "es",     paper: "#FFFFFF", ink: "#111114", accent: "#E10600", journalist: "Marta Villalba",    handle: "martavillalba_f1",   lean: "p1", angle: "diario deportivo español, entusiasta de Arévalo y de Alonso, titulares grandes y patrióticos" },
   rettilineo:   { name: "Il Rettilineo",        country: "🇮🇹", lang: "it", kind: "Quotidiano sportivo",    mast: "it",     paper: "#FBF6EA", ink: "#1A1712", accent: "#0B7A3E", journalist: "Lorenzo Bianchetti", handle: "bianchetti_paddock", angle: "diario italiano, vive pendiente de Ferrari (Leclerc y Hamilton) y de Antonelli, dramático y pasional" },
   pitwall:      { name: "The Pit Wall Post",    country: "🇬🇧", lang: "en", kind: "Tabloid",                mast: "uk",     paper: "#FFFFFF", ink: "#0E0E10", accent: "#D4001A", journalist: "Oliver Hartley",    handle: "hartley_pitwall",    angle: "tabloide británico sensacionalista, obsesionado con Norris, Hamilton y Russell, juegos de palabras" },
   folha:        { name: "Folha do Grid",        country: "🇧🇷", lang: "pt", kind: "Jornal esportivo",       mast: "br",     paper: "#FFFFFF", ink: "#0E2A18", accent: "#009C3B", journalist: "Beatriz Moura",     handle: "biamoura_grid",      angle: "diario brasileño, devoto de Senna y de Bortoleto, emocional" },
   chicane:      { name: "Chicane",              country: "🇫🇷", lang: "fr", kind: "Magazine",               mast: "fr",     paper: "#F3F5FA", ink: "#0B1B3F", accent: "#1D3F8F", journalist: "Julien Maréchal",   handle: "jmarechal_chicane",  angle: "revista francesa analítica y elegante, atenta a Gasly, Ocon y Hadjar" },
   circuit:      { name: "Het Circuit",          country: "🇳🇱", lang: "nl", kind: "Dagblad",                mast: "nl",     paper: "#FFFDF7", ink: "#141414", accent: "#FF6A00", journalist: "Sander de Wit",     handle: "sanderdewit_f1",     angle: "diario neerlandés, siempre del lado de Verstappen, directo y seco" },
+  parrilla:     { name: "La Parrilla",          country: "🇪🇸", lang: "es", kind: "Diario de referencia",   mast: "ref",    paper: "#FFFFFF", ink: "#111114", accent: "#1F3A5F", journalist: "Elena Ríos",        handle: "elenarios_parrilla", lean: "mod", angle: "el diario de referencia del motor en España: riguroso, moderado y sin colores; cuenta lo que pasa y analiza con calma" },
+  rebufo:       { name: "Rebufo",               country: "🇪🇸", lang: "es", kind: "Diario deportivo",       mast: "es",     paper: "#FFFFFF", ink: "#111114", accent: "#0E9F6E", journalist: "Quique Soler",      handle: "quiquesoler_rebufo", lean: "p2", angle: "diario deportivo español, pasional y de trinchera; defiende a su piloto contra viento y marea" },
+  semaforo:     { name: "El Semáforo",          country: "🇪🇸", lang: "es", kind: "Revista de análisis",    mast: "fr",     paper: "#F6F4EF", ink: "#14213D", accent: "#C1121F", journalist: "Nuria Campos",      handle: "nuriacampos_f1",     lean: "mod", angle: "revista española de análisis técnico y datos; fría, precisa y equidistante" },
+  onda:         { name: "Onda Paddock",         country: "🇪🇸", lang: "es", kind: "Radio y pódcast",        mast: "radio",  paper: "#14141A", ink: "#FFFFFF", accent: "#F2C14E", journalist: "Rafa Mena",         handle: "rafamena_onda",      lean: "mod", angle: "la tertulia de radio del motor: cada contertulio tiene su bando y el moderador intenta poner orden" },
+  gridtimes:    { name: "The Grid Times",       country: "🇬🇧", lang: "en", kind: "Broadsheet",             mast: "times",  paper: "#FBFAF6", ink: "#111111", accent: "#7A1F2B", journalist: "Harriet Cole",      handle: "harrietcole_gt",     lean: "mod", angle: "periódico británico de calidad: sobrio, internacional y muy respetado en el paddock" },
+  apex:         { name: "Apex Weekly",          country: "🇺🇸", lang: "en", kind: "Magazine",               mast: "uk",     paper: "#FFFFFF", ink: "#0E0E10", accent: "#2563EB", journalist: "Ryan Brooks",       handle: "ryanbrooks_apex",    lean: "mod", angle: "revista estadounidense de reportajes largos; le encantan las historias humanas detrás del casco" },
   confidencial: { name: "Paddock Confidencial", country: "🌍", lang: "es", kind: "Prensa rosa del motor",  mast: "gossip", paper: "#1B0B24", ink: "#FFFFFF", accent: "#FF3EA5", journalist: "El Topo",           handle: "el_topo_paddock",    angle: "cotilleos y rumores del paddock; nunca hechos de pista, solo ambiente, fichajes y tensiones" }
 };
 const MEDIA_IDS = Object.keys(MEDIA);
@@ -2288,7 +2316,7 @@ function bestOf(ctx, ids) {
   return ids.map((id) => [id, ctx.res[id]]).filter(([, x]) => x).sort((a, b) => (finished(b[1]) ? 1 : 0) - (finished(a[1]) ? 1 : 0) || ((a[1].pos || 99) - (b[1].pos || 99)))[0] || null;
 }
 function rivalryHeat(core, a, b) {
-  const r = (core.narrative.rivalries || []).find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
+  const r = (core.narrative.rivalries || []).concat(core.narrative.rivalries2 || []).find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
   return r ? r.heat : 0;
 }
 
@@ -2555,12 +2583,13 @@ function updateRivalries(core, round) {
     /* Corrección de una carrera ya procesada: se vuelve al estado anterior antes de recalcular. */
     const sn = nar.heatSnap[snapKey];
     nar.rivalries = (nar.rivalries || []).filter((r) => !(r.born && r.born.s === core.season && r.born.r === round.r));
+    nar.rivalries2 = (nar.rivalries2 || []).filter((r) => !(r.born && r.born.s === core.season && r.born.r === round.r));
     nar.feuds = (nar.feuds || []).filter((f) => !(f.born && f.born.s === core.season && f.born.r === round.r));
-    nar.rivalries.forEach((r) => { const k = rvKey(r.a, r.b); if (sn[k] != null) { r.heat = sn[k].heat; if (sn[k].note != null) r.note = sn[k].note; } });
+    nar.rivalries.concat(nar.rivalries2).forEach((r) => { const k = rvKey(r.a, r.b); if (sn[k] != null) { r.heat = sn[k].heat; if (sn[k].note != null) r.note = sn[k].note; if (sn[k].phase != null) r.phase = sn[k].phase; } });
     nar.feuds.forEach((f) => { const k = "f:" + rvKey(f.a, f.b); if (sn[k] != null) { f.heat = sn[k].heat; if (sn[k].note != null) f.note = sn[k].note; } });
   } else {
     const sn = {};
-    (nar.rivalries || []).forEach((r) => { sn[rvKey(r.a, r.b)] = { heat: r.heat, note: r.note }; });
+    (nar.rivalries || []).concat(nar.rivalries2 || []).forEach((r) => { sn[rvKey(r.a, r.b)] = { heat: r.heat, note: r.note, phase: r.phase }; });
     (nar.feuds || []).forEach((f) => { sn["f:" + rvKey(f.a, f.b)] = { heat: f.heat, note: f.note }; });
     nar.heatSnap[snapKey] = sn;
     const keys = Object.keys(nar.heatSnap);
@@ -2568,15 +2597,16 @@ function updateRivalries(core, round) {
   }
   const ctx = raceCtx(core, round, "race");
   const list = core.narrative.rivalries = (core.narrative.rivalries || []).slice();
+  const pls = typeof playersIn === "function" ? playersIn(core) : [ME];
   const bump = (other, delta, note) => {
-    if (!DRIVERS[other] || other === ME) return;
+    if (!DRIVERS[other] || other === ME || pls.includes(other)) return;
     let r = list.find((x) => (x.a === ME && x.b === other) || (x.b === ME && x.a === other));
     if (!r) { if (delta < 4) return; r = { a: ME, b: other, heat: 20, note: note || "" }; list.push(r); }
     r.heat = Math.max(5, Math.min(100, Math.round(r.heat + delta)));
     if (note) r.note = note;
   };
   const me = ctx.me;
-  list.forEach((r) => { r.heat = Math.max(5, r.heat - 2); });
+  list.forEach((r) => { if (!isDuel(r)) r.heat = Math.max(5, r.heat - 2); });
   if (ctx.mate && ctx.mateRes && me) {
     const mateAhead = finished(ctx.mateRes) && (!finished(me) || ctx.mateRes.pos < me.pos);
     bump(ctx.mate, mateAhead ? 5 : 1, mateAhead ? `Senna se impuso en ${ctx.place} y el garaje de Aurelia está más dividido que nunca.` : null);
@@ -2589,9 +2619,12 @@ function updateRivalries(core, round) {
     bump(m.who, { toque: 12, duelo: 6, ultimavuelta: 8, defensa: 5 }[m.id], notes[m.id]);
   });
   if (ctx.second && ctx.myRow && ctx.myRow.pos === 1) bump(ctx.second.id, 2, ctx.second.id === ctx.mate ? null : `${fullName(ctx.second.id)} es su perseguidor más directo en el Mundial.`);
-  list.forEach((r) => { if (r.b !== ctx.mate && r.a !== ctx.mate && !ctx.res[r.a === ME ? r.b : r.a]) r.heat = Math.max(5, r.heat - 1); });
+  list.forEach((r) => { if (!isDuel(r) && r.b !== ctx.mate && r.a !== ctx.mate && !ctx.res[r.a === ME ? r.b : r.a]) r.heat = Math.max(5, r.heat - 1); });
   core.narrative.rivalries = keepTop(list, 6);
   analyzeRivalries(core, round);
+  /* El jugador 2 también tiene sus rivales con la parrilla, y el duelo entre los dos se cuenta aparte. */
+  if (typeof updateRivalsP2 === "function") updateRivalsP2(core, round);
+  if (typeof updateDuel === "function") updateDuel(core, round);
 }
 
 /* ---------- piezas entre carreras ---------- */
@@ -2914,6 +2947,7 @@ async function publishAutoNews(session, r, edit) {
   const writes = [];
   if (session === "race") hostDo(() => updateRivalries(core, round));
   const main = hostDo(() => autoChronicle(core, round, session));
+  try { hostDo(() => pressEnrich(main, core, round, session)); } catch (e) { console.warn("prensa", e); }
   const legacy = findArticle(core.season, r, session);
   if (legacy && legacy.auto && legacy.id !== main.id) await Store.deleteArticle(legacy.id).catch(() => null);
   if (legacy && !legacy.auto) {
@@ -2927,13 +2961,15 @@ async function publishAutoNews(session, r, edit) {
     core.narrative.storyline = hostDo(() => storyline(core));
     S.core = core;
     await Store.saveCore().catch(() => null);
-    const old = S.news.filter((a) => a.auto && a.season === core.season && a.r === r && a.kind === "flash");
+    const old = S.news.filter((a) => a.auto && a.season === core.season && a.r === r && a.kind === "flash" && !/-press-duelq-auto$/.test(a.id));
     for (const a of old) await Store.deleteArticle(a.id).catch(() => null);
     const base = edit && S.news.find((x) => x.id === main.id) ? S.news.find((x) => x.id === main.id).t : now;
     hostDo(() => extraPieces(core, round, base)).forEach((a) => writes.push(a));
+    try { hostDo(() => duelPieces(core, round, "race", base).concat(soloTrenches(core, round, base))).forEach((a) => writes.push(a)); } catch (e) { console.warn("prensa", e); }
     const nx = core.rounds.find((x) => x.r > r && !x.race);
     if (nx && nx.gp) {
       const pv = hostDo(() => autoPrevia(core, nx, base - 10));
+      try { if (pv) hostDo(() => pressEnrich(pv, core, nx, "previa")); } catch (e) { console.warn("prensa", e); }
       const existing = findArticle(core.season, nx.r, "previa");
       if (pv && (!existing || existing.auto)) {
         if (existing && existing.id !== pv.id) await Store.deleteArticle(existing.id).catch(() => null);
@@ -2941,6 +2977,7 @@ async function publishAutoNews(session, r, edit) {
       }
     }
   }
+  if (session === "quali") { try { hostDo(() => duelPieces(core, round, "quali", now)).forEach((a) => writes.push(a)); } catch (e) { console.warn("prensa", e); } }
   S.core = core;
   await Store.saveCore().catch(() => null);
   for (const a of writes) if (keep(a.id)) await Store.saveArticle(a).catch(() => null);
@@ -2998,7 +3035,7 @@ function storyChapters(core) {
     const title = !done.length ? "Todo por escribir" : s.entry && s.entry.champion === ME ? "La temporada del título" : w.length >= done.length / 2 ? "La temporada del dominio" : w.length ? "La temporada de las victorias" : p.length ? "La temporada del aprendizaje" : "La temporada más dura";
     return { season: s.season, title, text, current: !!s.current };
   });
-  return { miles, chapters, rivalries: (core.narrative.rivalries || []).slice(0, 4) };
+  return { miles, chapters, rivalries: myRivals(core).slice(0, 4) };
 }
 
 /* ---------- clasificación histórica ---------- */
@@ -3294,7 +3331,7 @@ function buildInterviews(vr, core, round, ctx, kind, moms, cc) {
       q = vr.f("mq-" + top.id, MQ[top.id].q, vars);
       a = vr.f("ma-" + top.id, MQ[top.id].a, vars) + " " + a;
     }
-    const hotRival = (core.narrative.rivalries || []).filter((r) => r.heat >= 50).map((r) => (r.a === ME ? r.b : r.a)).find((d) => d !== ctx.mate && ctx.res[d]);
+    const hotRival = myRivals(core).filter((r) => r.heat >= 50).map((r) => (r.a === ME ? r.b : r.a)).find((d) => d !== ctx.mate && ctx.res[d]);
     if (hotRival && ctx.g2 && ctx.g2.R() < 0.6) a += " " + toneLine(vr, core, "meAbout", hotRival, ctx);
     const st = champStatus(core);
     if (st.decided) a += " " + (st.champion === ME ? vr.pick("a-champ", ["¡Somos campeones! Todavía no me lo creo.", "Campeón del mundo. Esto es para toda la gente de Aurelia.", "Ahora sí puedo decirlo: somos campeones."]) : vr.f("a-lost", ["El título ya tiene dueño. Enhorabuena a {C}; nosotros volveremos más fuertes.", "{C} se lo ha ganado. Toca pensar en el año que viene."], { C: LN(st.champion) }));
@@ -3460,7 +3497,7 @@ function buildSocial(vr, core, round, ctx, kind, moms, cc) {
   const max = ctx.res.verstappen;
   if (max && ctx.g2.R() < 0.55) add({ who: "journalist", id: "circuit", text: finished(max) ? vr.f("jn", ["Max P{N}. {C}", "Verstappen eindigt als {N}e. {C}"], { N: max.pos, C: max.pos === 1 ? "Zo ken ik hem weer." : max.pos <= 3 ? "Hij blijft erbij." : "Dit is niet genoeg." }) : vr.pick("jn-dnf", ["Uitvalbeurt voor Max. Pijnlijk.", "Max valt uit. Slechte dag."]), likes: R(2000, 12000), reposts: R(300, 2000), replies: R(100, 800) });
   if (ctx.mateRes && ctx.me) add({ who: "journalist", id: "confidencial", text: vr.pick("jconf", ["Me cuentan que en el motorhome de Aurelia no ha habido abrazos esta noche. 🤫", "Dos pilotos, dos caminos distintos para salir del circuito. Casualidad, seguro. 👀", "¿Cena de equipo en Aurelia? Dicen que faltaba alguien en la mesa. 🍽️👀", "Portazo en el garaje azul. No digo más. 🚪👀", "El ingeniero de Senna y el de Arévalo ya no se sientan juntos. 👀", "Aurelia prepara una reunión de urgencia. Oficialmente, rutina. 🤫"]), likes: R(10000, 40000), reposts: R(2000, 9000), replies: R(1000, 5000) });
-  (core.narrative.rivalries || []).filter((r) => r.heat >= 40).map((r) => (r.a === ME ? r.b : r.a)).filter((d) => d !== ctx.mate && ctx.res[d]).slice(0, 1).forEach((d) => {
+  myRivals(core).filter((r) => r.heat >= 40).map((r) => (r.a === ME ? r.b : r.a)).filter((d) => d !== ctx.mate && ctx.res[d]).slice(0, 1).forEach((d) => {
     const t = toneWith(core, d);
     const x = ctx.res[d];
     if (!authors.has(d) && ctx.g2.R() < 0.7) { authors.add(d); add({ who: "driver", id: d, text: toneLine(vr, core, "post", d, ctx), likes: Math.round(R(80000, 350000) * scale(d)), reposts: R(5000, 30000), replies: R(3000, 20000) }); }
@@ -3629,7 +3666,7 @@ function enrichChronicle(base, core, round, kind, g) {
     if (cx.length) base.sections.splice(1, 0, { heading: "🧠 El contexto", body: cx.join(" ") });
   }
   if (kind === "race") {
-    const ch = (core.narrative.rivalries || []).filter((rv) => (rv.log || []).some((e) => e.s === core.season && e.r === round.r)).slice(0, 2).map((rv) => chapterLine(vr, core, rv, round));
+    const ch = myRivals(core).filter((rv) => (rv.log || []).some((e) => e.s === core.season && e.r === round.r)).slice(0, 2).map((rv) => chapterLine(vr, core, rv, round));
     const fd = (core.narrative.feuds || []).filter((f) => f.heat >= 20 && (f.log || []).some((e) => e.s === core.season && e.r === round.r)).slice(0, 1).map((f) => chapterLine(vr, core, f, round));
     const born = (core.narrative.born || []).filter((b) => b.s === core.season && b.r === round.r).map((b) => `Nace una rivalidad: ${b.why}`);
     const all = born.concat(ch, fd).filter(Boolean);
@@ -3662,7 +3699,7 @@ function enrichChronicle(base, core, round, kind, g) {
    RIVALIDADES CON COHERENCIA Y PIEZAS NUEVAS
    ============================================================ */
 function heatWith(core, d) {
-  const r = (core.narrative.rivalries || []).find((x) => (x.a === ME && x.b === d) || (x.b === ME && x.a === d));
+  const r = myRivals(core).find((x) => (x.a === ME && x.b === d) || (x.b === ME && x.a === d));
   return r ? r.heat : 0;
 }
 function toneWith(core, d) { const h = heatWith(core, d); return h >= 65 ? "hostil" : h >= 40 ? "tenso" : "respeto"; }
@@ -3785,7 +3822,7 @@ function extraCandidates2(core, round, g, ctx) {
     sections: [{ heading: "📻 Los mensajes", body: radio.join("\n") }]
   } });
   /* la rivalidad a fondo */
-  const riv = (core.narrative.rivalries || []).filter((r) => r.heat >= 55).map((r) => (r.a === ME ? r.b : r.a)).find((d) => DRIVER_IDS.includes(d) && res[d] && d !== ctx.mate);
+  const riv = myRivals(core).filter((r) => r.heat >= 55).map((r) => (r.a === ME ? r.b : r.a)).find((d) => DRIVER_IDS.includes(d) && res[d] && d !== ctx.mate);
   if (riv) {
     const h = h2hWith(core, riv);
     const t = toneWith(core, riv);
@@ -3793,7 +3830,7 @@ function extraCandidates2(core, round, g, ctx) {
       kicker: "Rivalidad", color: "#E10600",
       title: vr.f("xrv-t", ["ARÉVALO CONTRA {X}: LA GUERRA CONTINÚA", "{X} Y ARÉVALO, CADA VEZ MÁS LEJOS", "LA RIVALIDAD DEL AÑO", "ARÉVALO Y {X} NO SE SOPORTAN"], { X: UP(LN(riv)) }),
       subtitle: `Cara a cara esta temporada: Arévalo ${h.a}, ${LN(riv)} ${h.b}.`,
-      sections: [{ heading: "📖 La saga", body: rivalryStory(vr, core, core.narrative.rivalries.find((r) => r.a === riv || r.b === riv)).join("\n\n") }, { heading: "🔥 La tensión", body: `${heatWith(core, riv)} sobre 100.` }],
+      sections: [{ heading: "📖 La saga", body: rivalryStory(vr, core, myRivals(core).find((r) => r.a === riv || r.b === riv)).join("\n\n") }, { heading: "🔥 La tensión", body: `${heatWith(core, riv)} sobre 100.` }],
       interviews: [{ speaker: fullName(riv), team: teamOf(core, riv), by: outletFor(riv), q: "¿Cómo es tu relación con Arévalo?", a: toneLine(vr, core, "aboutMe", riv, ctx) + " " + tail(vr, riv) }, { speaker: fullName(ME), team: teamOf(core, ME), by: "cronometro", q: `¿Y la tuya con ${LN(riv)}?`, a: toneLine(vr, core, "meAbout", riv, ctx) }],
       social: [tiny({ who: "driver", id: riv, text: toneLine(vr, core, "post", riv, ctx), likes: g.int(80000, 300000) })]
     } });
@@ -3898,13 +3935,28 @@ function moreSocial(vr, core, round, ctx, moms, add, drvPost, R) {
    ============================================================ */
 
 function rvKey(a, b) { return [a, b].sort().join("~"); }
+/* El duelo entre los dos jugadores del cooperativo. */
+function isDuel(r) { return !!r && ((r.a === "arevalo" && r.b === "jugador2") || (r.a === "jugador2" && r.b === "arevalo")); }
+/* Cada jugador tiene sus propias rivalidades: las del jugador 1 en "rivalries" (incluido el duelo)
+   y las del jugador 2 en "rivalries2". */
+function RK(pid) { return (pid || ME) === "jugador2" ? "rivalries2" : "rivalries"; }
+function rivalsOf(core, pid) {
+  const nar = (core && core.narrative) || {};
+  if ((pid || ME) === "jugador2") {
+    const duel = (nar.rivalries || []).find(isDuel);
+    return (duel ? [duel] : []).concat(nar.rivalries2 || []).sort((a, b) => b.heat - a.heat);
+  }
+  return nar.rivalries || [];
+}
+function myRivals(core) { return rivalsOf(core, ME); }
+function duelOf(core) { return ((core && core.narrative && core.narrative.rivalries) || []).find(isDuel) || null; }
 /* La rivalidad entre los dos jugadores del cooperativo nunca sale de la lista. */
 function keepTop(list, n) {
-  const pinned = list.filter((r) => r.a === "jugador2" || r.b === "jugador2");
+  const pinned = list.filter(isDuel);
   const rest = list.filter((r) => !pinned.includes(r)).sort((a, b) => b.heat - a.heat);
   return pinned.concat(rest).slice(0, Math.max(n, pinned.length)).sort((a, b) => b.heat - a.heat);
 }
-function rvOther(rv) { return rv.a === ME ? rv.b : rv.a; }
+function rvOther(rv, pid) { const me = pid || ME; return rv.a === me ? rv.b : rv.a; }
 function lastRaces(core, n, uptoR) { return core.rounds.filter((x) => x.race && (!uptoR || x.r <= uptoR)).slice(-n); }
 
 /* Registro carrera a carrera para una pareja. */
@@ -3949,26 +4001,34 @@ function bornWhy(sc, a, b) {
 
 /* Se llama después de cada carrera: registra, descubre, calienta o enfría. */
 function analyzeRivalries(core, round) {
+  analyzeRivalsFor(core, round, ME);
+  analyzeFeuds(core, round);
+}
+function analyzeRivalsFor(core, round, pid) {
   const nar = core.narrative;
-  const list = nar.rivalries = nar.rivalries || [];
-  const mate = teammatesOf(core, ME)[0];
-  nar.born = (nar.born || []).filter((x) => !(x.s === core.season && x.r === round.r));
-  /* descubrir rivalidades con Arévalo a partir de los datos */
-  DRIVER_IDS.filter((d) => d !== ME && d !== mate && resOf(round, d)).forEach((d) => {
-    if (list.some((r) => rvOther(r) === d)) return;
-    const sc = pairScore(core, ME, d, round.r);
+  const key = RK(pid);
+  const list = nar[key] = nar[key] || [];
+  const players = typeof playersIn === "function" ? playersIn(core) : [pid];
+  const mate = teammatesOf(core, pid)[0];
+  nar.born = (nar.born || []).filter((x) => !(x.s === core.season && x.r === round.r && x.a === pid));
+  /* descubrir rivalidades a partir de los datos (el duelo entre jugadores ya existe) */
+  DRIVER_IDS.filter((d) => d !== pid && d !== mate && !players.includes(d) && resOf(round, d)).forEach((d) => {
+    if (list.some((r) => rvOther(r, pid) === d)) return;
+    const sc = pairScore(core, pid, d, round.r);
     if (sc.score >= 30 && sc.both >= 3) {
-      const why = bornWhy(sc, ME, d);
-      list.push({ a: ME, b: d, heat: 28 + Math.min(20, sc.score / 3), note: why, born: { s: core.season, r: round.r, gp: round.gp, why }, log: [] });
-      nar.born.push({ s: core.season, r: round.r, a: ME, b: d, why });
+      const why = bornWhy(sc, pid, d);
+      list.push({ a: pid, b: d, heat: 28 + Math.min(20, sc.score / 3), note: why, born: { s: core.season, r: round.r, gp: round.gp, why }, log: [] });
+      nar.born.push({ s: core.season, r: round.r, a: pid, b: d, why });
     }
   });
   /* registrar y ajustar la tensión según la tendencia */
   list.forEach((rv) => {
-    const x = rvOther(rv);
-    if (!rv.log) { rv.log = []; core.rounds.filter((rd) => rd.race && rd.r < round.r).forEach((rd) => logPair(core, rd, rv, ME, x)); }
+    const a = isDuel(rv) ? rv.a : pid;
+    const x = isDuel(rv) ? rv.b : rvOther(rv, pid);
+    if (!rv.log) { rv.log = []; core.rounds.filter((rd) => rd.race && rd.r < round.r).forEach((rd) => logPair(core, rd, rv, a, x)); }
     if (!rv.born) { const f = rv.log[0]; rv.born = { s: core.season, r: f ? f.r : round.r, gp: f ? f.gp : round.gp, why: rv.note || "" }; }
-    logPair(core, round, rv, ME, x);
+    logPair(core, round, rv, a, x);
+    if (isDuel(rv)) return;
     const lg = (rv.log || []).filter((e) => e.s === core.season).slice(-4);
     if (lg.length >= 3) {
       const last3 = lg.slice(-3);
@@ -3984,8 +4044,7 @@ function analyzeRivalries(core, round) {
     }
     rv.heat = Math.round(rv.heat);
   });
-  nar.rivalries = keepTop(list, 8);
-  analyzeFeuds(core, round);
+  nar[key] = keepTop(list, 8);
 }
 
 /* Guerras entre otros pilotos: pelea por el título, compañeros y duelos repetidos. */
@@ -3999,15 +4058,16 @@ function analyzeFeuds(core, round) {
     else { f.heat = Math.min(100, f.heat + 3); f.note = note; }
     return f;
   };
-  const t = driverTable(core).filter((x) => x.id !== ME);
+  const pls = typeof playersIn === "function" ? playersIn(core) : [ME];
+  const t = driverTable(core).filter((x) => x.id !== ME && !pls.includes(x.id));
   if (!core.stale && t.length > 1 && t[0].pts >= 20 && t[0].pts - t[1].pts <= 25) add(t[0].id, t[1].id, "title", 35, `${LN(t[0].id)} y ${LN(t[1].id)} están a ${fmt(t[0].pts - t[1].pts)} puntos en la general.`);
-  TEAM_IDS.filter((tm) => tm !== teamOf(core, ME)).forEach((tm) => {
+  TEAM_IDS.filter((tm) => !pls.some((p) => teamOf(core, p) === tm)).forEach((tm) => {
     const ds = teamDrivers(core, tm);
     if (ds.length !== 2 || core.stale) return;
     const d = Math.abs((core.standings[ds[0]] || 0) - (core.standings[ds[1]] || 0));
     if (d <= 8 && (core.standings[ds[0]] || 0) + (core.standings[ds[1]] || 0) >= 20) add(ds[0], ds[1], "team", 28, `Guerra interna en ${team(tm).name}: solo ${fmt(d)} puntos entre ${LN(ds[0])} y ${LN(ds[1])}.`);
   });
-  const others = DRIVER_IDS.filter((d) => d !== ME && resOf(round, d));
+  const others = DRIVER_IDS.filter((d) => d !== ME && !pls.includes(d) && resOf(round, d));
   for (let i = 0; i < others.length; i++) for (let j = i + 1; j < others.length; j++) {
     const a = others[i], b = others[j];
     if (find(a, b) || teamOf(core, a) === teamOf(core, b)) continue;
@@ -4020,7 +4080,7 @@ function analyzeFeuds(core, round) {
     const l5 = (f.log || []).slice(-5);
     if (l5.length >= 5 && l5.every((e) => e.ahead === l5[0].ahead)) f.heat = Math.max(5, f.heat - 4);
   });
-  nar.feuds = fs.filter((f) => f.heat > 8).sort((a, b) => b.heat - a.heat).slice(0, 5);
+  nar.feuds = fs.filter((f) => f.heat > 8 && !pls.includes(f.a) && !pls.includes(f.b)).sort((a, b) => b.heat - a.heat).slice(0, 5);
 }
 
 /* ---------- lectura de una rivalidad ---------- */
@@ -4168,7 +4228,7 @@ function rivalPieces(core, round, g, ctx) {
 /* ---------- pantalla de una rivalidad ---------- */
 function rivalryScreen(key) {
   const core = S.core;
-  const all = (core.narrative.rivalries || []).concat(core.narrative.feuds || []);
+  const all = (core.narrative.rivalries || []).concat(core.narrative.rivalries2 || [], core.narrative.feuds || []);
   const rv = all.find((r) => rvKey(r.a, r.b) === key);
   if (!rv || !DRIVERS[rv.a] || !DRIVERS[rv.b]) return notFound("Rivalidad");
   const st = rivalryState(core, rv);
@@ -4199,7 +4259,8 @@ function rivalryScreen(key) {
 ${tiles([{ k: "cara a cara en carrera", v: `${st.a}-${st.b}`, cls: "hl" }, { k: "en clasificación", v: `${qa}-${qb}` }, { k: st.streak >= 2 ? `racha de ${st.who === "a" ? LN(rv.a) : LN(rv.b)}` : "capítulos", v: st.streak >= 2 ? st.streak : st.n }])}
 ${sec("📖 La historia", `<div class="group" style="padding:12px 14px">${story.map((p) => `<p style="margin:6px 0">${esc(p)}</p>`).join("")}</div>`)}
 ${chart ? sec("📈 La diferencia en el Mundial", chart) : ""}
-${timeline ? sec("🗓️ Capítulo a capítulo", `<div class="group">${timeline}</div>`) : ""}` };
+${timeline ? sec("🗓️ Capítulo a capítulo", `<div class="group">${timeline}</div>`) : ""}
+${typeof duelExtras === "function" ? duelExtras(core, rv) : ""}` };
 }
 
 
@@ -4434,7 +4495,9 @@ function addMail(c, m) {
   if (c.inbox.length > 60) c.inbox = c.inbox.filter((x, i) => i < 45 || x.status === "new").slice(0, 60);
 }
 function heatBump(core, other, delta, note) {
-  const list = core.narrative.rivalries = core.narrative.rivalries || [];
+  /* El duelo entre los dos jugadores vive en la lista del jugador 1. */
+  const key = typeof playersIn === "function" && playersIn(core).includes(other) ? "rivalries" : RK();
+  const list = core.narrative[key] = core.narrative[key] || [];
   let r = list.find((x) => (x.a === ME && x.b === other) || (x.b === ME && x.a === other));
   if (!r) { if (delta <= 0) return; r = { a: ME, b: other, heat: 20, note: note || "Una rivalidad nueva en el paddock." }; list.push(r); }
   r.heat = Math.max(5, Math.min(100, r.heat + delta));
@@ -4587,7 +4650,7 @@ const DILEMMAS = [
       { label: "Aceptar el rodaje", fx: { money: 400000, fame: 1.5, trust: -1 }, res: "El anuncio ya se emite en media Europa." },
       { label: "Rechazarlo y centrarte", fx: { trust: 2 }, res: "Prefieres centrarte en correr. El equipo lo agradece." }
     ] },
-  { id: "rivalpost", need: (core) => (core.narrative.rivalries || []).some((r) => r.b !== teammatesOf(core, ME)[0] && r.a !== teammatesOf(core, ME)[0]), from: "Tu community manager", subject: "Te están criticando en redes", body: "Un rival ha publicado un mensaje dando a entender que ganas gracias al coche. Las redes arden. ¿Cómo respondemos?",
+  { id: "rivalpost", need: (core) => myRivals(core).some((r) => r.b !== teammatesOf(core, ME)[0] && r.a !== teammatesOf(core, ME)[0]), from: "Tu community manager", subject: "Te están criticando en redes", body: "Un rival ha publicado un mensaje dando a entender que ganas gracias al coche. Las redes arden. ¿Cómo respondemos?",
     rival: true,
     choices: [
       { label: "Con humor", fx: { fame: 2, heatRival: 5 }, res: "Tu respuesta con humor es lo más compartido del día." },
@@ -4818,7 +4881,7 @@ function careerAfterSession(core, session, r) {
   if (pool.length && !c.inbox.some((m) => m.type === "dilemma" && m.status === "new") && g.R() < 0.55) {
     const d = g.pick(pool);
     let rival = null;
-    if (d.rival) { const list = (core.narrative.rivalries || []).filter((x2) => x2.a !== mate && x2.b !== mate); const rv = list[0]; rival = rv ? (rv.a === ME ? rv.b : rv.a) : null; }
+    if (d.rival) { const list = myRivals(core).filter((x2) => x2.a !== mate && x2.b !== mate); const rv = list[0]; rival = rv ? (rv.a === ME ? rv.b : rv.a) : null; }
     mk({ type: "dilemma", from: d.from, subject: d.subject, body: rival ? d.body.replace("Un rival", fullName(rival)) : d.body, data: { id: d.id, rival } });
   }
   /* objetivos al empezar */
@@ -4991,7 +5054,7 @@ function careerSeasonClose(core, next, entry) {
   /* gala */
   const table = driverTable(core);
   const rookies = table.filter((r) => ROOKIES.includes(r.id));
-  const heat = (core.narrative.rivalries || [])[0];
+  const heat = myRivals(core)[0];
   const awards = [
     { id: "driver", name: "Piloto del año", who: entry.champion },
     { id: "rookie", name: "Novato del año", who: rookies[0] ? rookies[0].id : null },
@@ -5369,6 +5432,7 @@ function socialPost(a, i, ctx) {
 ${au.link ? `<button class="av-btn" data-act="push" data-arg="${esc(au.link)}" aria-label="${esc(au.name)}">${au.av}</button>` : `<span class="av-btn">${au.av}</span>`}
 <div class="pb"><div class="ph"><b>${esc(au.name)}</b>${au.vf ? VERIFIED : ""}</div><div class="hd">${esc(au.sub)}</div>
 <p>${hashtags(p.text)}</p>
+${(p.thread || []).length ? `<div class="thread">${p.thread.slice(0, 5).map((r) => `<div class="tr"><b>${esc(r.name)}</b><small>@${esc(r.handle)}</small> ${hashtags(r.text)}<span class="tl">♥ ${cfmt(r.likes || 0)}</span></div>`).join("")}</div>` : ""}
 ${ctx ? `<button class="pctx" data-act="push" data-arg="article:${esc(a.id)}">${esc(ctx)}</button>` : ""}
 <div class="pf"><span>${ICON.reply}${cfmt(p.replies)}</span><span>${ICON.repost}${cfmt(p.reposts)}</span>
 <button class="like${liked ? " on" : ""}" data-act="like" data-arg="${esc(key)}" data-n="${p.likes}" aria-pressed="${liked}" aria-label="Me gusta">${ICON.heart}<span>${cfmt(p.likes + (liked ? 1 : 0))}</span></button></div></div></article>`;
@@ -5486,7 +5550,7 @@ function streakChips(core) {
 }
 
 function rivalryList(core, onlyWith, feuds) {
-  const src = feuds ? ((core.narrative && core.narrative.feuds) || []) : ((core.narrative && core.narrative.rivalries) || []).concat(onlyWith && onlyWith !== ME ? ((core.narrative && core.narrative.feuds) || []) : []);
+  const src = feuds ? ((core.narrative && core.narrative.feuds) || []) : myRivals(core).concat(onlyWith && onlyWith !== ME ? ((core.narrative && core.narrative.feuds) || []) : []);
   const list = src.filter((x) => DRIVERS[x.a] && DRIVERS[x.b] && (!onlyWith || x.a === onlyWith || x.b === onlyWith));
   if (!list.length) return "";
   return `<div class="group">${list.map((x) => {
@@ -5564,11 +5628,11 @@ function kioskBody() {
 }
 function socialBody() {
   const f = S.ui.socialFilter || "all";
-  const who = { all: null, driver: ["driver"], team: ["team"], journalist: ["journalist"], fan: ["fan"] }[f];
+  const who = { all: null, duel: null, driver: ["driver"], team: ["team"], journalist: ["journalist"], fan: ["fan"] }[f];
   const trendSrc = S.news.find((a) => (a.trending || []).length);
   const items = [];
-  S.news.forEach((a) => (a.social || []).forEach((p, i) => { if (!who || who.includes(p.who)) items.push([a, i]); }));
-  const filters = [["all", "Todo"], ["driver", "Pilotos"], ["team", "Escuderías"], ["journalist", "Prensa"], ["fan", "Afición"]];
+  S.news.forEach((a) => (a.social || []).forEach((p, i) => { if (f === "duel" ? p.duel || a.duel : !who || who.includes(p.who)) items.push([a, i]); }));
+  const filters = [["all", "Todo"]].concat(typeof duelPair === "function" && duelPair(S.core) ? [["duel", "El duelo"]] : [], [["driver", "Pilotos"], ["team", "Escuderías"], ["journalist", "Prensa"], ["fan", "Afición"]]);
   return `<div class="filters" role="toolbar" aria-label="Filtrar redes">${filters.map(([k, l]) => `<button data-act="seg" data-arg="socialFilter:${k}" aria-pressed="${f === k}">${l}</button>`).join("")}</div>
 ${trendSrc && f === "all" ? sec("Tendencias", trendsBlock(trendSrc.trending.slice(0, 5))) : ""}
 ${items.length ? sec("Lo último", `<div class="group feed">${items.slice(0, 80).map(([a, i]) => socialPost(a, i, articleLabel(a))).join("")}</div>`) : `<div class="empty"><b>Sin publicaciones</b>Las redes se llenarán con la próxima crónica.</div>`}`;
@@ -5584,11 +5648,11 @@ function mediaStats(id) {
 }
 function mediaBody() {
   return `<p class="lede" style="margin:0 0 12px">La prensa de tu universo. Cada medio tiene su país, su línea editorial y su periodista estrella.</p>
-<div class="group">${MEDIA_IDS.map((id) => {
+<div class="group">${["parrilla", "cronometro", "rebufo", "semaforo", "onda", "gridtimes", "apex"].concat(MEDIA_IDS).filter((x, i, arr) => MEDIA[x] && arr.indexOf(x) === i).map((id) => {
     const m = MEDIA[id];
     const st = mediaStats(id);
     return `<button class="mrow" data-act="push" data-arg="media:${id}"><span class="mmast m-${m.mast}" style="--pa:${m.paper};--pi:${m.ink};--pc:${m.accent}">${esc(m.name)}</span>
-<span class="txt"><b>${m.country} ${esc(m.kind)}</b><small>${esc(m.journalist)}, ${plural(st.fps, "portada", "portadas")}</small></span>${ICON.chev}</button>`;
+<span class="txt"><b>${m.country} ${esc(m.kind)}${typeof leanBadge === "function" ? leanBadge(S.core, id) : ""}</b><small>${esc(m.journalist)}, ${plural(st.fps, "portada", "portadas")}</small></span>${ICON.chev}</button>`;
   }).join("")}</div>`;
 }
 function mediaScreen(id) {
@@ -5597,13 +5661,16 @@ function mediaScreen(id) {
   const st = mediaStats(id);
   const out = [`<header class="mhero m-${m.mast}" style="--pa:${m.paper};--pi:${m.ink};--pc:${m.accent}"><span class="fp-ed">${m.country} ${esc(m.kind)}</span><h1 class="fp-name">${esc(m.name)}</h1>
 <div class="mh-by">${jAvatar(m, 40)}<span><b>${esc(m.journalist)}</b><small>@${esc(m.handle)}</small></span></div></header>`];
-  out.push(`<p class="lede" style="margin-top:12px"><b>Línea editorial:</b> ${esc(m.angle.charAt(0).toUpperCase() + m.angle.slice(1))}.</p>`);
+  const ln = typeof leanOf === "function" ? leanOf(S.core, id) : null;
+  out.push(`<p class="lede" style="margin-top:12px"><b>Línea editorial:</b> ${esc(m.angle.charAt(0).toUpperCase() + m.angle.slice(1))}.${ln ? ` ${leanBadge(S.core, id)}${ln.hero ? ` Su piloto: <b>${esc(fullName(ln.hero))}</b>.` : ""}` : ""}</p>`);
   out.push(tiles([{ k: "Portadas", v: st.fps }, { k: "Columnas", v: st.cols }, { k: "Posts", v: st.posts }]));
   const fps = [];
   S.news.forEach((a) => (a.frontPages || []).forEach((f, i) => { if (f.outlet === id) fps.push(frontPage(a, i)); }));
   if (fps.length) out.push(sec("Sus portadas", `<div class="fpgrid">${fps.slice(0, 24).join("")}</div>`));
   const cols = S.news.filter((a) => a.column && a.column.outlet === id);
   if (cols.length) out.push(sec("Columnas", `<div class="group">${cols.map((a) => `<button class="list-btn" data-act="push" data-arg="article:${esc(a.id)}">✍️<span class="t">${esc(a.column.title)}<small>${esc(articleLabel(a))}</small></span>${ICON.chev}</button>`).join("")}</div>`));
+  const arts = S.news.filter((a) => (a.outlets || []).includes(id)).slice(0, 12);
+  if (arts.length) out.push(sec("Sus artículos", `<div class="group">${arts.map((a) => `<button class="list-btn" data-act="push" data-arg="article:${esc(a.id)}">📰<span class="t">${esc(a.title)}<small>${esc(articleLabel(a))}</small></span>${ICON.chev}</button>`).join("")}</div>`));
   const posts = [];
   S.news.forEach((a) => (a.social || []).forEach((p, i) => { if (p.who === "journalist" && p.id === id) posts.push(socialPost(a, i, articleLabel(a))); }));
   if (posts.length) out.push(sec("En redes", `<div class="group feed">${posts.join("")}</div>`));
@@ -5688,6 +5755,7 @@ function articleScreen(id) {
   }
   if ((a.radio || []).length) body.push(`<h2>📻 Radio paddock</h2><ul class="radio">${a.radio.map((h) => `<li>${inlineMd(h)}</li>`).join("")}</ul>`);
   body.push(dotdBlock(a));
+  if (a.link && /^rivalry:/.test(a.link)) body.push(`<div class="row-btns sec"><button class="btn btn-ghost" data-act="push" data-arg="${esc(a.link)}">⚔️ Ver la rivalidad completa</button></div>`);
   if (a.kind === "race" && S.core && a.season === S.core.season && roundOf(S.core, a.r) && roundOf(S.core, a.r).race) body.push(`<div class="row-btns sec"><button class="btn btn-ghost" data-act="share-card" data-arg="${a.r}">📤 Tarjeta para compartir</button></div>`);
   body.push(statBox(a.stats, a.kind));
   const canRewrite = S.canWrite && aiReady() && a.r && S.core && a.season === S.core.season && ["previa", "quali", "race", "sprint"].includes(a.kind);
@@ -8125,7 +8193,7 @@ function snapshotFor(core) {
   const t = driverTable(core);
   const row = t.find((x) => x.id === ME) || { pos: null, pts: 0 };
   const riv = {};
-  (core.narrative.rivalries || []).forEach((r) => { riv[r.a === ME ? r.b : r.a] = r.heat; });
+  myRivals(core).forEach((r) => { riv[r.a === ME ? r.b : r.a] = r.heat; });
   return { pos: row.pos, pts: row.pts, leader: t[0] && t[0].id, fame: c.fame, money: c.money, followers: c.followers, trust: c.trust, ach: Object.keys(c.achievements || {}), mails: c.inbox.filter((m) => m.status === "new").length, riv };
 }
 function summarySheet(st) {
@@ -8262,7 +8330,7 @@ function weekScreen() {
   out.push(sec("Pendiente antes de la carrera", todo.length ? `<div class="group">${todo.join("")}</div>` : `<div class="group" style="padding:14px 16px">Todo al día. Solo queda correr.</div>`));
   const rec = recordsAtStake(core);
   if (rec.length) out.push(sec("📈 En juego", `<div class="group" style="padding:10px 14px">${rec.map((t) => `<p style="margin:6px 0">${esc(t)}</p>`).join("")}</div>`));
-  const riv = (core.narrative.rivalries || []).slice().sort((a, b) => b.heat - a.heat).slice(0, 3);
+  const riv = myRivals(core).slice().sort((a, b) => b.heat - a.heat).slice(0, 3);
   if (riv.length) out.push(sec("👀 Rivales a vigilar", `<div class="group">${riv.map((r) => { const d = r.a === ME ? r.b : r.a; const h = h2hWith(core, d); return `<button class="list-btn" data-act="push" data-arg="rivalry:${rvKey(r.a, r.b)}">${drvHelmet(d, 30)}<span class="t">${esc(fullName(d))}<small>Tensión ${r.heat}/100. Cara a cara: tú ${h.a}, él ${h.b}. ${esc(r.note || "")}</small></span>${ICON.chev}</button>`; }).join("")}</div>`));
   const obj = cv.objectives && cv.objectives.season === core.season ? cv.objectives : makeObjectives(core, cv);
   out.push(sec("🎯 Tus objetivos", `<div class="group objs">${obj.list.map((o) => { const p = objectiveProgress(core, o); return `<div class="obj${p.ok ? " ok" : ""}"><div class="obj-t"><span>${p.ok ? "✅" : "🎯"} ${esc(o.text)}</span><b>${esc(p.value)}</b></div><div class="obj-bar"><i style="width:${p.pct}%"></i></div></div>`; }).join("")}</div>`));
@@ -8284,7 +8352,7 @@ function wrappedData(core, seasonDoc) {
   const best = my.map((z) => ({ z, g: z.rd.quali && z.rd.quali.res && z.rd.quali.res[ME] && finished(z.x) ? z.rd.quali.res[ME] - z.x.pos : -99 })).sort((a, b) => b.g - a.g)[0];
   const fav = my.filter((z) => finished(z.x) && z.x.pos === 1).map((z) => circuit(z.rd.gp)).filter(Boolean)[0];
   const c = careerView(core);
-  const riv = (core.narrative.rivalries || []).slice().sort((a, b) => b.heat - a.heat)[0];
+  const riv = myRivals(core).slice().sort((a, b) => b.heat - a.heat)[0];
   const earned = c.ledger.filter((l) => l.season === (src.season || core.season) && l.amount > 0).reduce((a, l) => a + l.amount, 0);
   const spent = -c.ledger.filter((l) => l.season === (src.season || core.season) && l.amount < 0).reduce((a, l) => a + l.amount, 0);
   const t = seasonDoc ? null : driverTable(core);
@@ -8583,9 +8651,10 @@ function asPlayer2(fn) {
   const d = DRIVERS.arevalo, sn = DRIVERS.senna, tm = TEAMS.aurelia;
   const saved = { me: ME, af: d.first, al: d.last, sf: sn && sn.first, sl: sn && sn.last, tn: tm.name, ts: tm.short };
   ME = P2;
-  d.first = "\u2460AF"; d.last = "\u2460AL";
-  if (sn) { sn.first = "\u2460SF"; sn.last = "\u2460SL"; }
-  tm.name = "\u2460TN"; tm.short = "\u2460TS";
+  /* Marcadores en minúscula: si un titular los pasa a mayúsculas, se sabe y se respeta. */
+  d.first = "\u2460af"; d.last = "\u2460al";
+  if (sn) { sn.first = "\u2460sf"; sn.last = "\u2460sl"; }
+  tm.name = "\u2460tn"; tm.short = "\u2460ts";
   let out;
   try { out = fn(); } finally {
     d.first = saved.af; d.last = saved.al;
@@ -8594,7 +8663,8 @@ function asPlayer2(fn) {
   }
   const fix = (s) => {
     let t = persp(s);
-    return t.replace(/\u2460AF/g, saved.af).replace(/\u2460AL/g, saved.al).replace(/\u2460SF/g, saved.sf || "").replace(/\u2460SL/g, saved.sl || "").replace(/\u2460TN/g, saved.tn).replace(/\u2460TS/g, saved.ts);
+    const map = { af: saved.af, al: saved.al, sf: saved.sf || "", sl: saved.sl || "", tn: saved.tn, ts: saved.ts };
+    return t.replace(/\u2460(af|al|sf|sl|tn|ts)/gi, (m, k) => (k === k.toUpperCase() ? UP(map[k.toLowerCase()]) : map[k.toLowerCase()]));
   };
   const walk = (o) => {
     if (typeof o === "string") return fix(o);
@@ -8616,6 +8686,11 @@ async function publishP2Chronicle(r, ses) {
   let art;
   try { art = asPlayer2(() => autoChronicle(core, round, ses)); } catch (e) { return null; }
   art.id = p2ChronicleId(core, r, ses);
+  /* En la crónica del jugador 2, su periódico es Rebufo. */
+  (art.interviews || []).forEach((q) => { if (q.by === "cronometro") q.by = "rebufo"; });
+  (art.frontPages || []).forEach((f) => { if (f.outlet === "cronometro" && !(art.frontPages || []).some((x) => x.outlet === "rebufo")) f.outlet = "rebufo"; });
+  (art.social || []).forEach((p) => { if (p.who === "journalist" && p.id === "cronometro") p.id = "rebufo"; });
+  if (art.column && art.column.outlet === "cronometro") art.column.outlet = "rebufo";
   art.kicker = ses === "quali" ? `Sábado de ${DRIVERS[P2].last}` : `Crónica de ${DRIVERS[P2].last}`;
   art.frontPages = [];
   art.t = (S.news.find((a) => a.id === `s${core.season}-r${r}-${ses}-auto`) || { t: Date.now() }).t + 2;
@@ -9128,7 +9203,7 @@ ${offers.map(card).join("")}
 }
 
 async function debutSign(i) {
-  const st = S.sheet;
+  const st = (S.sheet && S.sheet.type === "debut" && S.sheet) || {};
   const core0 = S.core;
   const d0 = debutOf(core0, ME);
   const o = d0 && d0.offers && d0.offers[Number(i)];
@@ -9226,6 +9301,566 @@ function debutGate() {
 }
 
 SHEETS.debut = debutSheet;
+/* ============================================================
+   PRENSA 2.0
+   Los medios toman partido: El Cronómetro defiende al jugador 1,
+   Rebufo al jugador 2 (en solitario, a su gran rival) y los
+   moderados (La Parrilla, El Semáforo, Onda Paddock, The Grid
+   Times, Apex Weekly) cuentan y analizan sin colores.
+   En el cooperativo los dos jugadores son protagonistas: el duelo
+   de amigos tiene fases, historia desde la F2, terceros en
+   discordia, tertulias, columnas de trinchera y guerras en redes.
+   Todo lo deportivo sale de los datos; solo se inventa lo narrativo.
+   ============================================================ */
+
+/* ---------- quién es quién ---------- */
+function duelPair(core) {
+  if (!core || !core.coop || !core.coop.players || !core.coop.players.p2 || !DRIVERS[P2]) return null;
+  if (typeof seatPending === "function" && seatPending(core)) return null;
+  return { a: "arevalo", b: P2, coop: true };
+}
+/* El piloto al que defiende Rebufo: en el cooperativo, el jugador 2; en solitario, el gran rival. */
+function rebufoHero(core) {
+  const d = duelPair(core);
+  if (d) return d.b;
+  const me = "arevalo";
+  const riv = rivalsOf(core, me).filter((r) => !isDuel(r)).map((r) => (r.a === me ? r.b : r.a)).find((x) => DRIVER_IDS.includes(x));
+  if (riv) return riv;
+  const mate = core ? teammatesOf(core, me)[0] : null;
+  if (mate) return mate;
+  const t = core ? driverTable(core).filter((x) => x.id !== me) : [];
+  return t[0] ? t[0].id : null;
+}
+function leanOf(core, outlet) {
+  const m = MEDIA[outlet];
+  if (!m) return null;
+  if (m.lean === "p1") return { kind: "p1", hero: "arevalo", label: `Pro ${LN("arevalo")}`, color: "#E10600" };
+  if (m.lean === "p2") { const h = rebufoHero(core); return { kind: "p2", hero: h, label: h ? `Pro ${LN(h)}` : "De trinchera", color: "#0E9F6E" }; }
+  if (m.lean === "mod") return { kind: "mod", hero: null, label: "Moderado", color: "#1F3A5F" };
+  return null;
+}
+function leanBadge(core, outlet) {
+  const l = leanOf(core, outlet);
+  return l ? `<span class="lean" style="--lc:${l.color}">${esc(l.label)}</span>` : "";
+}
+function slotOfPid(pid) { return pid === P2 ? "p2" : "p1"; }
+function careerOfPid(core, pid) { return (core && core[pid === P2 ? "career2" : "career"]) || null; }
+function fameOfPid(core, pid) { const c = careerOfPid(core, pid); return c ? c.fame : 15; }
+function likesFor(core, pid, a, b, g) { return Math.round(g.int(a, b) * (0.45 + fameOfPid(core, pid) / 50)); }
+function langFor(pid) { return DRIVERS[pid] && ["España", "México", "Argentina", "Colombia", "Chile", "Venezuela", "Uruguay", "Perú"].includes(DRIVERS[pid].nat) ? "es" : "en"; }
+function tagOf(pid) { return (DRIVERS[pid] ? DRIVERS[pid].last : String(pid)).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]/g, ""); }
+
+function listY(l) { return l.length <= 1 ? l.join("") : l.slice(0, -1).join(", ") + " y " + l[l.length - 1]; }
+
+/* ---------- fases del duelo ---------- */
+const DUEL_PHASES = [
+  { min: 0, id: "amigos", name: "Amigos", icon: "🤝", line: "Amigos fuera de la pista, rivales dentro." },
+  { min: 40, id: "pique", name: "Pique sano", icon: "😏", line: "El pique ya se nota: ninguno quiere quedar detrás del otro." },
+  { min: 60, id: "fria", name: "Guerra fría", icon: "🥶", line: "Ya no se esperan en el motorhome. La amistad, en pausa." },
+  { min: 80, id: "enemigos", name: "Enemigos íntimos", icon: "⚔️", line: "Enemigos íntimos: se conocen demasiado bien para perdonarse nada." }
+];
+function phaseOf(heat) { let p = DUEL_PHASES[0]; DUEL_PHASES.forEach((x) => { if (heat >= x.min) p = x; }); return p; }
+
+/* ---------- datos del duelo (todo sale de los resultados) ---------- */
+function f2Duel(core, a, b) {
+  const f2 = core && core.f2;
+  if (!f2 || !(f2.races || []).length) return null;
+  let wa = 0, wb = 0;
+  f2.races.forEach((rc) => {
+    const pa = rc.res[a], pb = rc.res[b];
+    if (pa === undefined || pb === undefined) return;
+    if (pa !== "out" && (pb === "out" || pa < pb)) wa++;
+    else if (pb !== "out" && (pa === "out" || pb < pa)) wb++;
+  });
+  const fa = (f2.final || []).find((x) => x.id === a), fb = (f2.final || []).find((x) => x.id === b);
+  return { wa, wb, n: f2.races.length, done: f2.done, champ: f2.champion, posA: fa ? fa.pos : null, posB: fb ? fb.pos : null };
+}
+function duelStats(core, a, b, uptoR) {
+  const rounds = core.rounds.filter((x) => !uptoR || x.r <= uptoR);
+  let ra = 0, rb = 0, qa = 0, qb = 0, n = 0;
+  rounds.forEach((rd) => {
+    const xa = resOf(rd, a), xb = resOf(rd, b);
+    if (xa && xb) { n++; const c = cmpRace(xa, xb); if (c === 1) ra++; else if (c === -1) rb++; }
+    const pa = qOf(rd, a), pb = qOf(rd, b);
+    if (pa && pb) { if (pa < pb) qa++; else if (pb < pa) qb++; }
+  });
+  let hra = 0, hrb = 0;
+  (S.seasons || []).forEach((sd) => (sd.rounds || []).forEach((rd) => {
+    const xa = resOf(rd, a), xb = resOf(rd, b);
+    if (xa && xb) { const c = cmpRace(xa, xb); if (c === 1) hra++; else if (c === -1) hrb++; }
+  }));
+  const t = driverTable(core);
+  const ta = t.find((x) => x.id === a), tb = t.find((x) => x.id === b);
+  const won = (id) => rounds.filter((rd) => { const x = resOf(rd, id); return finished(x) && x.pos === 1; }).length;
+  const pods = (id) => rounds.filter((rd) => { const x = resOf(rd, id); return finished(x) && x.pos <= 3; }).length;
+  return {
+    ra, rb, qa, qb, n, all: { a: ra + hra, b: rb + hrb },
+    ptsA: ta ? ta.pts : 0, ptsB: tb ? tb.pts : 0, posA: ta ? ta.pos : null, posB: tb ? tb.pos : null,
+    winsA: won(a), winsB: won(b), podsA: pods(a), podsB: pods(b), f2: f2Duel(core, a, b)
+  };
+}
+/* Lo que pasó entre los dos en una ronda. */
+function duelRound(core, round, a, b, kind) {
+  if (kind === "quali") {
+    const pa = qOf(round, a), pb = qOf(round, b);
+    if (!pa || !pb) return null;
+    const w = pa < pb ? a : b, l = w === a ? b : a;
+    const between = DRIVER_IDS.filter((d) => d !== a && d !== b && qOf(round, d) && qOf(round, d) > Math.min(pa, pb) && qOf(round, d) < Math.max(pa, pb));
+    return { kind, pa, pb, w, l, d: Math.abs(pa - pb), between, posW: Math.min(pa, pb), posL: Math.max(pa, pb) };
+  }
+  const xa = resOf(round, a), xb = resOf(round, b);
+  if (!xa || !xb) return null;
+  const c = cmpRace(xa, xb);
+  const w = c === 1 ? a : c === -1 ? b : null, l = w ? (w === a ? b : a) : null;
+  const fa = finished(xa), fb = finished(xb);
+  const between = fa && fb ? DRIVER_IDS.filter((d) => d !== a && d !== b && finished(resOf(round, d)) && resOf(round, d).pos > Math.min(xa.pos, xb.pos) && resOf(round, d).pos < Math.max(xa.pos, xb.pos)) : [];
+  const src = round.race || {};
+  const moms = (src.moments || []).filter((m) => m.who && (m.by === "p1" ? m.who === b : m.by === "p2" ? m.who === a : false));
+  const third = (src.moments || []).filter((m) => m.who && m.who !== a && m.who !== b && ["toque", "duelo", "ultimavuelta", "defensa"].includes(m.id)).map((m) => ({ id: m.id, who: m.who, by: m.by === "p2" ? b : a }));
+  return { kind, xa, xb, fa, fb, w, l, both: fa && fb, none: !fa && !fb, d: fa && fb ? Math.abs(xa.pos - xb.pos) : null, between, moms, third,
+    posW: w ? (w === a ? xa.pos : xb.pos) : null, posL: l ? (l === a ? xa.pos : xb.pos) : null };
+}
+
+/* ---------- rivalidades del jugador 2 y tensión del duelo ---------- */
+function updateRivalsP2(core, round) {
+  const dp = duelPair(core);
+  if (!dp || !resOf(round, P2)) return;
+  const prev = ME;
+  ME = P2;
+  try {
+    const nar = core.narrative;
+    const list = nar.rivalries2 = (nar.rivalries2 || []).slice();
+    const ctx = raceCtx(core, round, "race");
+    const bump = (other, delta, note) => {
+      if (!DRIVERS[other] || other === P2 || other === "arevalo") return;
+      let r = list.find((x) => (x.a === P2 && x.b === other) || (x.b === P2 && x.a === other));
+      if (!r) { if (delta < 4) return; r = { a: P2, b: other, heat: 20, note: note || "", born: { s: core.season, r: round.r, gp: round.gp, why: note || "" }, log: [] }; list.push(r); nar.born = (nar.born || []).concat([{ s: core.season, r: round.r, a: P2, b: other, why: note || "" }]); }
+      r.heat = Math.max(5, Math.min(100, Math.round(r.heat + delta)));
+      if (note) r.note = note;
+    };
+    list.forEach((r) => { r.heat = Math.max(5, r.heat - 2); });
+    const me = ctx.me;
+    if (ctx.mate && ctx.mateRes && me) {
+      const mateAhead = finished(ctx.mateRes) && (!finished(me) || ctx.mateRes.pos < me.pos);
+      bump(ctx.mate, mateAhead ? 5 : 1, mateAhead ? `${fullName(ctx.mate)} le ganó el duelo interno en ${ctx.place}.` : null);
+    }
+    if (ctx.winner && ctx.winner !== P2 && finished(me)) bump(ctx.winner, me.pos <= 3 ? 6 : 3, `${fullName(ctx.winner)} le ganó la partida en ${ctx.place}.`);
+    if (finished(me)) ctx.fin.filter((f) => f.id !== P2 && f.id !== "arevalo" && f.id !== ctx.mate && Math.abs(f.pos - me.pos) === 1).forEach((f) => bump(f.id, 2));
+    roundMoments(core, round, "race").forEach((m) => {
+      if (!m.who || m.who === P2 || m.who === "arevalo" || !["toque", "duelo", "ultimavuelta", "defensa"].includes(m.id)) return;
+      const notes = { toque: `El toque en ${ctx.place} ha dejado heridas abiertas.`, duelo: `Su duelo en ${ctx.place} fue de los que se recuerdan.`, ultimavuelta: `Lo de la última vuelta en ${ctx.place} no se olvida.`, defensa: `La defensa en ${ctx.place} les enfrentó rueda a rueda.` };
+      bump(m.who, { toque: 12, duelo: 6, ultimavuelta: 8, defensa: 5 }[m.id], notes[m.id]);
+    });
+    nar.rivalries2 = keepTop(list, 6);
+    analyzeRivalsFor(core, round, P2);
+  } finally { ME = prev; }
+}
+function updateDuel(core, round) {
+  const dp = duelPair(core);
+  if (!dp) return;
+  const nar = core.narrative;
+  const rv = (nar.rivalries || []).find(isDuel);
+  if (!rv) return;
+  const dr = duelRound(core, round, dp.a, dp.b, "race");
+  const before = phaseOf(rv.heat);
+  if (!rv.phase) rv.phase = before.id;
+  if (!dr) return;
+  let d = -2;
+  if (dr.both && dr.d <= 2) d += dr.d === 1 ? 4 : 3;
+  const lg = (rv.log || []).filter((e) => e.ahead !== "=");
+  if (lg.length >= 2 && lg[lg.length - 1].ahead !== lg[lg.length - 2].ahead) d += 3;
+  dr.moms.forEach((m) => { d += { toque: 12, duelo: 5, ultimavuelta: 7, defensa: 4 }[m.id] || 2; });
+  if (dr.both && dr.d >= 8 && !dr.moms.length) d -= 2;
+  const st = duelStats(core, dp.a, dp.b);
+  if (!core.stale && st.posA && st.posB && st.posA <= 3 && st.posB <= 3 && Math.abs(st.ptsA - st.ptsB) <= 15) d += 3;
+  if (dr.between.length === 1) d += 1;
+  /* La amistad no se rompe de golpe: sin toques, como mucho +6 por carrera. */
+  if (!dr.moms.some((m) => m.id === "toque")) d = Math.min(d, 6);
+  rv.heat = Math.max(20, Math.min(100, Math.round(rv.heat + d)));
+  const after = phaseOf(rv.heat);
+  const toque = dr.moms.find((m) => m.id === "toque");
+  rv.note = toque ? `El toque en ${circuit(round.gp) ? circuit(round.gp).name : "la última carrera"} ha cambiado la relación entre los dos.` : after.line;
+  if (after.id !== rv.phase) { rv.phaseChange = { s: core.season, r: round.r, from: rv.phase, to: after.id, up: after.min > before.min }; rv.phase = after.id; }
+}
+
+/* ---------- textos partidistas ---------- */
+function partisanHead(vr, side, dr, A, B, P) {
+  /* side: héroe del medio. dr: resultado del duelo. */
+  const hero = side, foe = side === A ? B : A;
+  const H = UP(LN(hero)), F = UP(LN(foe));
+  if (!dr || !dr.w) return vr.f("ph-none-" + (hero === A ? "a" : "b"), ["{H}, A POR LA SIGUIENTE", "{H} NO SE RINDE", "MALA SUERTE PARA {H} EN {P}"], { H, F, P });
+  if (dr.w === hero) return vr.f("ph-win-" + (hero === A ? "a" : "b"), ["¡{H} PONE ORDEN!", "¡{H} MANDA EN EL DUELO!", "{H} LE DA UNA LECCIÓN A {F}", "¡QUE APRENDA {F}! {H}, IMPERIAL", "{H} DEJA CLARO QUIÉN MANDA", "¡ASÍ SE HACE, {H}!"], { H, F, P });
+  return vr.f("ph-loss-" + (hero === A ? "a" : "b"), ["{H}, MÁS FUERTE QUE EL COCHE", "{F} TUVO SU DÍA; QUE NO SE ACOSTUMBRE", "{H} PIERDE LA BATALLA, NO LA GUERRA", "EL COCHE TRAICIONA A {H}", "{F} SE LLEVA UN DUELO QUE NO MERECÍA", "{H}, CON LA CABEZA ALTA"], { H, F, P });
+}
+function partisanColumn(vr, g, outlet, hero, foe, dr, st, P, ph) {
+  const H = LN(hero), F = LN(foe);
+  const win = dr && dr.w === hero, lose = dr && dr.w === foe;
+  const me = MEDIA[outlet];
+  const heroPts = hero === "arevalo" ? st.ptsA : st.ptsB, foePts = hero === "arevalo" ? st.ptsB : st.ptsA;
+  const h2hH = hero === "arevalo" ? st.ra : st.rb, h2hF = hero === "arevalo" ? st.rb : st.ra;
+  const open = win ? vr.f("pc-w", ["Lo de {P} no fue una victoria en un duelo: fue una declaración de intenciones. {H} terminó por delante de {F} y lo hizo con la autoridad de los elegidos.", "Que nadie se engañe: en {P} hubo un piloto y un acompañante. {H} fue el piloto.", "Hay domingos que ponen a cada uno en su sitio, y el de {P} fue uno de ellos. {H}, delante; {F}, mirando el alerón trasero de su amigo."], { H, F, P })
+    : lose ? vr.f("pc-l", ["Sí, {F} terminó delante en {P}. Y sí, lo celebrarán como si fuera un Mundial. Pero quien haya visto la carrera sabe que {H} tenía más ritmo y menos suerte.", "Un domingo torcido no cambia una realidad: {H} es mejor piloto que {F}. Hoy, simplemente, no se ha visto.", "Que disfruten en el otro bando. Lo de {P} fue un accidente estadístico, y {H} tiene memoria."], { H, F, P })
+    : vr.f("pc-n", ["En {P} el duelo quedó en tablas, pero las sensaciones fueron de {H}.", "Ninguno vio la bandera de cuadros como quería, pero solo uno nos dejó con ganas de más: {H}."], { H, F, P });
+  const nums = (h2hH >= h2hF ? vr.f("pc-num", ["Los números no mienten: {hh}-{ff} en el cara a cara de la temporada.", "Cara a cara de la temporada: {hh}-{ff}. Que cada uno saque sus conclusiones.", "Llevan {n} duelos este año y el marcador dice {hh}-{ff}."], { hh: h2hH, ff: h2hF, n: st.n })
+    : vr.f("pc-num2", ["El cara a cara dice {hh}-{ff}, sí. Pero las temporadas no se cuentan a mitad de año, sino al final.", "Van {hh}-{ff} en el cara a cara. Nada que no se arregle en dos domingos.", "{hh}-{ff}. Un marcador que solo es una foto, no la película."], { hh: h2hH, ff: h2hF }))
+    + (heroPts >= foePts ? ` Y en el Mundial, ${H} va por delante (${fmt(heroPts)} a ${fmt(foePts)}).` : ` En el Mundial, ${F} va delante por ${fmt(foePts - heroPts)} puntos, que en esta F1 no son nada.`);
+  const jab = vr.f("pc-jab-" + ph.id, ph.id === "amigos" ? ["Se llevan bien, dicen. Que les dure.", "Fuera de la pista se invitan a cenar. Dentro, que pague el que quede detrás.", "Son amigos desde la F2. A {H} no le tiembla el pulso por eso."] : ph.id === "pique" ? ["El pique ya se nota en las miradas.", "A {F} se le está atragantando su amigo, y se nota.", "En el paddock se habla del pique; aquí hablamos de quién lo está ganando: {H}."] : ph.id === "fria" ? ["Ya no comparten mesa, y no es casualidad.", "{F} ha elegido el silencio. Nosotros preferimos los hechos.", "La guerra fría tiene un ganador claro, y se llama {H}."] : ["Enemigos íntimos. {F} sabe que {H} no le va a regalar nada nunca más.", "Esto ya no es un pique: es una guerra, y {H} no va a ceder ni un metro.", "Los amigos de la F2 son hoy los peores enemigos del paddock. Y {H} está más cómodo que nunca."], { H, F });
+  const close = vr.f("pc-close", ["Nos vemos en la próxima. {H} tiene cuentas pendientes.", "La temporada es larga y {H} acaba de empezar.", "Que tomen nota en el otro bando.", "Seguiremos contándolo, con el corazón donde siempre: con {H}."], { H });
+  return `${open}\n\n${nums} ${jab}\n\n${close}${me && me.lang !== "es" ? "\n\n(Traducido del original.)" : ""}`;
+}
+
+/* ---------- redes: cuentas de aficionados de cada bando ---------- */
+function fanCamps(core, A, B) {
+  const a = DRIVERS[A], b = DRIVERS[B];
+  const slug = (s) => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return {
+    A: [{ name: `${a.last.replace(/[aeiouáéíóú]$/i, "")}istas 🔴`, handle: `${slug(a.last).replace(/[aeiou]$/, "")}istas` }, { name: "Lucía 🏁", handle: "lucia_boxbox" }, { name: `Team ${a.last}`, handle: `team_${slug(a.last)}` }, { name: "Marcos del Box", handle: "marcos_delbox" }],
+    B: [{ name: `${b.first} Army 💚`, handle: `${slug(b.first)}_army` }, { name: `${b.last}mania`, handle: `${slug(b.last)}mania` }, { name: "Irene GP", handle: "irene_gp" }, { name: `Team ${b.last}`, handle: `team_${slug(b.last)}` }],
+    N: [{ name: "Grid Nerd 📊", handle: "gridnerd_stats" }, { name: "Pepe Box Box", handle: "boxbox_pepe" }, { name: "F1 Memes ES", handle: "f1memes_es" }, { name: "Neutral pero no tanto", handle: "neutral_f1" }, { name: "Carla Slipstream", handle: "carla_slipstream" }]
+  };
+}
+function reply(g, who, text) { return { name: who.name, handle: who.handle, text, likes: g.int(5, 4000) }; }
+/* Hilo de comentarios bajo un post: los dos bandos y algún neutral. */
+function duelThread(vr, g, camps, A, B, dr, about) {
+  const a = LN(A), b = LN(B);
+  const wA = dr && dr.w === A, wB = dr && dr.w === B;
+  const f2 = about && about.f2;
+  const f2A = f2 && (f2.champ === A || (f2.posA && f2.posB && f2.posA < f2.posB));
+  const f2B = f2 && (f2.champ === B || (f2.posA && f2.posB && f2.posB < f2.posA));
+  const fromA = [wA ? `${a} es otra liga 🔥` : wB ? `Hoy no, pero ${a} le saca 50 puntos a final de año, apuntadlo` : `Tranquilos, ${a} vuelve`, f2A ? `Que no se os olvide quién ganó la F2 😏` : `${b} tuvo suerte en la F2 y ya está`, `Arriba ${a} siempre 🔴`, wA ? `¿Dónde están ahora los de ${b}? 🤫` : `Coche peor, piloto mejor. Fin.`];
+  const fromB = [wB ? `${b} lo ha vuelto a hacer 💚 que lloren` : wA ? `Suerte. Mucha suerte tiene ${a}` : `${b} merecía más hoy`, `${b} en el coche de ${a} y estaría peleando el Mundial`, f2B ? `Que no se os olvide quién ganó la F2 😏` : `La F2 fue el pasado. Ahora manda ${b}`, wB ? `Silencio en el bando de ${a} 🤐` : `La próxima es nuestra 💚`];
+  const neutral = [`Sois muy pesados los dos bandos 😂 disfrutad del duelo`, `Dato: llevan ${about.n} duelos este año y van ${about.ra}-${about.rb}`, `Cuando se den un toque de verdad esto explota 🍿`, `Lo mejor de la temporada es esta rivalidad, sin más`];
+  const out = [];
+  const pickA = g.shuffle(camps.A), pickB = g.shuffle(camps.B), pickN = g.shuffle(camps.N);
+  out.push(reply(g, pickA[0], g.pick(fromA)));
+  out.push(reply(g, pickB[0], g.pick(fromB)));
+  if (g.R() < 0.8) out.push(reply(g, pickN[0], g.pick(neutral)));
+  if (g.R() < 0.6) out.push(reply(g, pickB[1], g.pick(fromB.filter((x) => x !== out[1].text))));
+  if (g.R() < 0.5) out.push(reply(g, pickA[1], g.pick(fromA.filter((x) => x !== out[0].text))));
+  return out.slice(0, 5);
+}
+function genericThread(g, camps, subject) {
+  const pool = camps ? camps.N.concat(camps.A.slice(0, 1), camps.B.slice(0, 1)) : [{ name: "Grid Nerd 📊", handle: "gridnerd_stats" }, { name: "Pepe Box Box", handle: "boxbox_pepe" }, { name: "Lucía 🏁", handle: "lucia_boxbox" }, { name: "Dani Undercut", handle: "dani_undercut" }];
+  const lines = [`Qué pedazo de carrera 🔥`, `${subject} está en otro nivel`, `No me lo creo todavía 😂`, `La estrategia ha sido clave hoy`, `Quiero ya la siguiente carrera`, `Esto es la F1 que nos gusta`, `Alguien más ha gritado en la salida? 😅`];
+  return g.shuffle(pool).slice(0, g.int(2, 3)).map((w) => reply(g, w, g.pick(lines)));
+}
+
+/* ---------- piezas del cooperativo ---------- */
+function pressArticle(core, round, key, t, o) {
+  return makeArticle(core, round, "flash", null, Object.assign({ id: `s${core.season}-r${round.r}-press-${key}-auto`, t, auto: true, interviews: [], headlines: [], radio: [], stats: null, press: true }, o));
+}
+function duelPieces(core, round, kind, t0) {
+  const dp = duelPair(core);
+  if (!dp) return [];
+  const A = dp.a, B = dp.b;
+  const g = NG(core, round, "prensa-" + kind);
+  const vr = makeVary(core, g);
+  const c = circuit(round.gp);
+  const P = c ? c.name : `la ronda ${round.r}`;
+  const PU = UP(P);
+  const dr = duelRound(core, round, A, B, kind);
+  if (!dr) return [];
+  const st = duelStats(core, A, B, round.r);
+  const rv = duelOf(core) || { heat: 35 };
+  const ph = phaseOf(rv.heat);
+  const camps = fanCamps(core, A, B);
+  const a = LN(A), b = LN(B), fa = fullName(A), fb = fullName(B);
+  const tiny = (p) => Object.assign({ likes: g.int(800, 26000), reposts: g.int(80, 3500), replies: g.int(40, 1800) }, p);
+  const out = [];
+  let ti = 0;
+  const T = () => t0 - 1 - ti++;
+  const link = `rivalry:${rvKey(A, B)}`;
+
+  if (kind === "quali") {
+    const W = LN(dr.w), L = LN(dr.l);
+    out.push(pressArticle(core, round, "duelq", T(), {
+      kicker: "El duelo · La Parrilla", color: "#1F3A5F", duel: true, link, outlets: ["parrilla"],
+      title: vr.f("dq-t", ["{W} GANA EL SÁBADO DEL DUELO", "PRIMER ASALTO PARA {W} EN {P}", "{W} SE LLEVA LA CLASIFICACIÓN ENTRE AMIGOS", "{W} SALDRÁ POR DELANTE DE {L}"], { W: UP(W), L: UP(L), P: PU }),
+      subtitle: `${fullName(dr.w)} saldrá ${dr.posW}.º y ${fullName(dr.l)}, ${dr.posL}.º. ${dr.between.length ? `Entre ellos, ${dr.between.length === 1 ? fullName(dr.between[0]) : dr.between.length + " pilotos"}.` : "Saldrán uno detrás del otro."}`,
+      sections: [
+        { heading: "⏱️ El sábado", body: `${fullName(dr.w)} clasificó ${dr.posW}.º y ${fullName(dr.l)} ${dr.posL}.º en ${P}. ${dr.d === 1 ? "Saldrán pegados en la parrilla: la primera curva promete." : dr.d >= 8 ? "Mucha distancia entre los dos: mañana el duelo será a distancia." : `Les separan ${dr.d} posiciones en la parrilla.`}` },
+        { heading: "📊 El cara a cara del sábado", body: `Esta temporada, en clasificación: ${a} ${st.qa}, ${b} ${st.qb}.` }
+      ],
+      social: [
+        tiny({ who: "driver", id: dr.w, text: langFor(dr.w) === "es" ? vr.f("dq-s1", ["Delante de {L} mañana 😏 a ver si me alcanza", "Sábado bueno. Mañana, el de verdad. Saludos a {L} 👋", "P{N}. {L}, te veo por el retrovisor 😎"], { L, N: dr.posW }) : vr.f("dq-s1e", ["Ahead of {L} tomorrow 😏", "P{N}. See you in my mirrors, {L} 👋"], { L, N: dr.posW }), likes: likesFor(core, dr.w, 40000, 180000, g), duel: true }),
+        tiny({ who: "driver", id: dr.l, text: langFor(dr.l) === "es" ? vr.f("dq-s2", ["Los puntos se dan el domingo. Tranquilo, {W} 😉", "Mañana hablamos, {W}.", "Sábado mejorable. Domingo, a por él 🎯"], { W }) : vr.f("dq-s2e", ["Points are on Sunday, {W} 😉", "Tomorrow we talk, {W}."], { W }), likes: likesFor(core, dr.l, 30000, 150000, g), duel: true, thread: duelThread(vr, g, camps, A, B, { w: dr.w }, st) })
+      ]
+    }));
+    return out;
+  }
+
+  /* 1. El duelo, contado por La Parrilla (moderada, la de referencia) */
+  const W = dr.w ? LN(dr.w) : null, L = dr.l ? LN(dr.l) : null;
+  const title = !dr.w ? vr.f("dd-none", ["NI {A} NI {B}: DUELO EN BLANCO EN {P}", "{P}, UN DOMINGO PARA OLVIDAR EN LOS DOS BANDOS"], { A: UP(a), B: UP(b), P: PU })
+    : !dr.both ? vr.f("dd-dnf", ["{W} GANA EL DUELO POR ABANDONO DE {L}", "EL ABANDONO DE {L} DEJA EL DUELO EN BANDEJA A {W}", "{P}: {W} SUMA; {L}, A CERO"], { W: UP(W), L: UP(L), P: PU })
+    : dr.d === 1 ? vr.f("dd-near", ["{W} GANA A {L} POR UNA POSICIÓN", "RUEDA A RUEDA: {W} SE IMPONE A {L} EN {P}", "AL LÍMITE: {W} PUEDE CON {L}"], { W: UP(W), L: UP(L), P: PU })
+    : dr.posW === 1 ? vr.f("dd-win", ["{W} GANA EN {P} Y {L} LO VE DESDE LEJOS", "VICTORIA DE {W}; {L}, P{N}"], { W: UP(W), L: UP(L), P: PU, N: dr.posL })
+    : vr.f("dd-std", ["{W} SE LLEVA EL DUELO DE AMIGOS EN {P}", "CAPÍTULO PARA {W} EN {P}", "{W} VUELVE A MIRAR A {L} POR EL RETROVISOR", "{P}: {W} DELANTE, {L} DETRÁS"], { W: UP(W), L: UP(L), P: PU });
+  const raceLine = (id, x) => finished(x) ? `${fullName(id)} terminó ${x.pos}.º${x.pts ? ` (${fmt(x.pts)} puntos)` : ""}` : `${fullName(id)} no terminó`;
+  const history = [];
+  if (st.f2) history.push(`Todo empezó en la Fórmula 2: allí el cara a cara quedó ${a} ${st.f2.wa}, ${b} ${st.f2.wb}${st.f2.done && st.f2.posA && st.f2.posB ? `, y en la general ${st.f2.posA < st.f2.posB ? a : b} terminó por delante (${Math.min(st.f2.posA, st.f2.posB)}.º contra ${Math.max(st.f2.posA, st.f2.posB)}.º)` : ""}.`);
+  history.push(`En la F1 llevan ${st.all.a + st.all.b} duelos en carrera: ${a} ${st.all.a}, ${b} ${st.all.b}.`);
+  if ((S.seasons || []).length) history.push(`Esta temporada: ${a} ${st.ra}, ${b} ${st.rb}.`);
+  const chap = chapterLine(vr, core, duelOf(core) || { log: [], a: A, b: B }, round);
+  const analysis = vr.f("dd-an", [
+    "La clave del duelo no está en un domingo, sino en la regularidad. Quien sume más fines de semana limpios se quedará con el orgullo, y quizá con algo más.",
+    "Los dos han demostrado ya que pueden ganar al otro. Lo que está por ver es quién aguanta mejor la presión cuando lleguen las carreras decisivas.",
+    "Más allá de los colores, el duelo está sano: se respetan en la pista y eso se agradece. Pero cada vez se dejan menos espacio.",
+    "Si algo ha enseñado esta temporada es que entre ellos no hay favorito claro. El que se crea superior, perderá."
+  ]);
+  const qA = dr.w === A ? vr.pick("dd-qa-w-" + ph.id, ["Hoy he estado por delante, que es lo que cuenta. Le tengo mucho cariño, pero en la pista no hay amigos.", "Me gusta ganarle, no lo voy a negar. Él haría lo mismo.", "Ha sido un buen día. Que celebre su gente; la mía celebra más."]) : dr.w === B ? vr.pick("dd-qa-l-" + ph.id, ["Hoy ha sido mejor. Le felicito, aunque me cuesta.", "Ya me tocará. Esto es muy largo.", ph.id === "fria" || ph.id === "enemigos" ? "No tengo nada que decir sobre él." : "Que lo disfrute. Le queda poco."]) : "Día para olvidar. Pensamos ya en la siguiente.";
+  const qB = dr.w === B ? vr.pick("dd-qb-w-" + ph.id, ["Ganarle a mi amigo tiene un sabor especial. Se lo recordaré en la cena.", "Hoy he sido yo. Y no será la última.", "Que se acostumbre a verme delante."]) : dr.w === A ? vr.pick("dd-qb-l-" + ph.id, ["Hoy ha estado mejor, punto. La próxima es mía.", "Me fastidia perder con él más que con nadie.", ph.id === "fria" || ph.id === "enemigos" ? "Prefiero no hablar de él." : "Ya le tocará pagar la cena."]) : "Ni para él ni para mí. A seguir.";
+  out.push(pressArticle(core, round, "duel", T(), {
+    kicker: "El duelo · La Parrilla", color: "#1F3A5F", duel: true, link, outlets: ["parrilla"],
+    title, subtitle: `${raceLine(A, dr.xa)}; ${raceLine(B, dr.xb)}. Fase de la rivalidad: ${ph.name.toLowerCase()} ${ph.icon}.`,
+    sections: [
+      { heading: "🏁 Lo que pasó", body: `${raceLine(A, dr.xa)} y ${raceLine(B, dr.xb)} en ${P}.${dr.between.length ? ` Entre los dos se ${dr.between.length === 1 ? "metió" : "metieron"} ${listY(dr.between.map((x) => fullName(x)))}.` : dr.both ? " No hubo nadie entre ellos." : ""}${dr.moms.length ? ` ${dr.moms.map((m) => ({ toque: "Hubo contacto entre los dos.", duelo: "Pelearon rueda a rueda.", ultimavuelta: "Se decidió en la última vuelta.", defensa: "Hubo una defensa de las que se recuerdan." }[m.id] || "")).join(" ")}` : ""}${chap ? `\n\n${chap}` : ""}` },
+      { heading: "📊 Los números", body: `Mundial: ${a} ${st.posA ? st.posA + ".º" : ""} con ${fmt(st.ptsA)} puntos, ${b} ${st.posB ? st.posB + ".º" : ""} con ${fmt(st.ptsB)}.${st.ptsA !== st.ptsB ? ` Diferencia: ${fmt(Math.abs(st.ptsA - st.ptsB))} a favor de ${st.ptsA > st.ptsB ? a : b}.` : " Empatados."}\nCara a cara de la temporada: carrera ${st.ra}-${st.rb}, clasificación ${st.qa}-${st.qb}.\nVictorias: ${a} ${st.winsA}, ${b} ${st.winsB}. Podios: ${a} ${st.podsA}, ${b} ${st.podsB}.` },
+      { heading: "📖 Desde la F2", body: history.join(" ") },
+      { heading: `${ph.icon} Cómo está la relación`, body: `${ph.line} Tensión: ${rv.heat}/100.` },
+      { heading: "🧭 El análisis", body: analysis }
+    ],
+    interviews: [{ speaker: fa, team: teamOf(core, A), by: "parrilla", q: `¿Qué tal el duelo con ${b}?`, a: qA }, { speaker: fb, team: teamOf(core, B), by: "parrilla", q: `¿Qué tal el duelo con ${a}?`, a: qB }],
+    social: [tiny({ who: "journalist", id: "parrilla", text: vr.f("dd-tw", ["El duelo de {P}, contado sin colores. {A} {ra}-{rb} {B} en la temporada. 🧭", "Análisis del duelo {A}-{B} tras {P}. Spoiler: esto está más igualado de lo que dicen los dos bandos.", "Lo de {A} y {B} es la mejor historia de la temporada. Hoy, capítulo para {W}."], { P, A: a, B: b, ra: st.ra, rb: st.rb, W: W || "nadie" }), duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) })]
+  }));
+
+  /* 2. Las dos trincheras: El Cronómetro y Rebufo */
+  out.push(pressArticle(core, round, "trincheras", T(), {
+    kicker: "Opinión · Las dos trincheras", color: "#B91C1C", duel: true, link, outlets: ["cronometro", "rebufo"],
+    title: vr.f("tr-t", ["LAS DOS TRINCHERAS: ASÍ LO VEN LOS DE {A} Y LOS DE {B}", "¿QUIÉN GANÓ EN {P}? DEPENDE DE A QUIÉN LEAS", "DOS PERIÓDICOS, DOS VERDADES", "EL DUELO, VISTO DESDE CADA BANDO"], { A: UP(a), B: UP(b), P: PU }),
+    subtitle: `El Cronómetro defiende a ${a}; Rebufo, a ${b}. Esto es lo que han escrito tras ${P}.`,
+    sections: [
+      { heading: `🔴 El Cronómetro: «${partisanHead(vr, A, dr, A, B, PU)}»`, body: partisanColumn(vr, g, "cronometro", A, B, dr, st, P, ph) },
+      { heading: `💚 Rebufo: «${partisanHead(vr, B, dr, A, B, PU)}»`, body: partisanColumn(vr, g, "rebufo", B, A, dr, st, P, ph) }
+    ],
+    social: [
+      tiny({ who: "journalist", id: "cronometro", text: dr.w === A ? vr.f("tr-c1", ["{A} puso orden en {P}. Lo demás es ruido. 🔴", "Hoy en El Cronómetro: por qué {A} es mejor que {B}. No hace falta leerlo, era evidente. 😏"], { A: a, B: b, P }) : vr.f("tr-c2", ["{B} ganó el duelo en {P}. Lo contamos con dolor y sin excusas… bueno, con alguna. 🔴", "Un mal día lo tiene cualquiera. {A} volverá. 🔴"], { A: a, B: b, P }), duel: true }),
+      tiny({ who: "journalist", id: "rebufo", text: dr.w === B ? vr.f("tr-r1", ["¡{B}! ¡{B}! ¡{B}! Hoy en Rebufo no cabe tanta alegría 💚", "Que alguien avise al Cronómetro de cómo ha acabado el duelo en {P} 😏💚"], { A: a, B: b, P }) : vr.f("tr-r2", ["{B} merecía más en {P}. Lo de {A}, suerte de principiante en la F1. 💚", "Perder una batalla no es perder la guerra. Arriba {B} 💚"], { A: a, B: b, P }), duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) })
+    ]
+  }));
+
+  /* 3. Piezas según lo que haya pasado: tercero en discordia, tertulia, prensa internacional, redes */
+  const cand = [];
+  const thirdIds = [];
+  dr.between.forEach((x) => thirdIds.push({ id: x, why: "between" }));
+  dr.third.forEach((m) => thirdIds.push({ id: m.who, why: m.id, vs: m.by }));
+  [A, B].forEach((p) => rivalsOf(core, p).filter((r) => !isDuel(r) && r.heat >= 50).forEach((r) => { const x = r.a === p ? r.b : r.a; if (resOf(round, x)) thirdIds.push({ id: x, why: "rival", vs: p }); }));
+  const third = thirdIds.find((x) => x.why !== "between" && x.why !== "rival") || thirdIds.find((x) => x.why === "between" && dr.between.length === 1) || thirdIds.find((x) => x.why === "rival");
+  if (third && DRIVERS[third.id]) {
+    const X = third.id, x = LN(X);
+    const vs = third.vs ? LN(third.vs) : null;
+    const xr = resOf(round, X);
+    const why = third.why === "between" ? `${fullName(X)} terminó entre los dos amigos, ${finished(xr) ? `${xr.pos}.º` : ""}, y les estropeó el duelo.`
+      : third.why === "toque" ? `${fullName(X)} y ${vs} se tocaron en ${P}. No se han dirigido la palabra desde entonces.`
+      : third.why === "rival" ? `La rivalidad entre ${fullName(X)} y ${vs} sigue creciendo carrera a carrera.`
+      : `${fullName(X)} se cruzó en el camino de ${vs} en ${P}: ${({ duelo: "un duelo rueda a rueda", ultimavuelta: "un adelantamiento en la última vuelta", defensa: "una defensa al límite" })[third.why] || "una batalla"}.`;
+    cand.push({ w: third.why === "between" ? 30 : 45, key: "third", o: {
+      kicker: "El tercero en discordia · El Semáforo", color: "#C1121F", outlets: ["semaforo"],
+      title: vr.f("th-t", ["{X}, EL TERCERO EN DISCORDIA", "{X} SE METE EN LA GUERRA DE LOS AMIGOS", "{X} NO QUIERE SER UN ESPECTADOR", "AHORA TAMBIÉN {X}"], { X: UP(x) }),
+      subtitle: why,
+      sections: [
+        { heading: "🎯 Qué ha pasado", body: why + (third.why === "between" ? ` ${a} y ${b} no fueron los únicos protagonistas: ${x} también quiere su parte.` : "") },
+        { heading: "📊 Los datos", body: `${fullName(X)} es ${(driverTable(core).find((r) => r.id === X) || {}).pos || "?"}.º del Mundial con ${fmt(core.standings[X] || 0)} puntos. ${a}: ${fmt(st.ptsA)}. ${b}: ${fmt(st.ptsB)}.` },
+        { heading: "🧭 El análisis", body: vr.pick("th-an", ["Cuando dos pilotos se obsesionan el uno con el otro, siempre aparece un tercero que se aprovecha.", "El duelo entre los dos amigos acapara los focos, pero la parrilla no espera a nadie.", "Ojo con olvidarse del resto: en esta F1, un despiste se paga caro."]) }
+      ],
+      interviews: [{ speaker: fullName(X), team: teamOf(core, X), by: "semaforo", q: `¿Qué opinas del duelo entre ${a} y ${b}?`, a: vr.pick("th-q", [`Que se peleen entre ellos. Yo, a lo mío.`, `Son buenos, pero no son los únicos en la pista.`, `${vs || a} tendrá que acostumbrarse a verme cerca.`, `Me da igual quién gane su duelo. Quiero ganarles a los dos.`]) + " " + tail(vr, X) }],
+      social: [tiny({ who: "driver", id: X, text: langFor(X) === "es" ? vr.f("th-s", ["Algunos se creen que esto es cosa de dos 😏", "No soy un decorado. 🏁"], {}) : vr.f("th-se", ["Some people think this is a two-man show 😏", "Not here to watch. 🏁"], {}), likes: g.int(40000, 220000), thread: genericThread(g, camps, x) })]
+    } });
+  }
+  const phc = (duelOf(core) || {}).phaseChange;
+  if (phc && phc.s === core.season && phc.r === round.r) {
+    const to = DUEL_PHASES.find((p) => p.id === phc.to) || ph;
+    cand.push({ w: 80, key: "fase", o: {
+      kicker: "La rivalidad · Paddock Confidencial", color: "#FF3EA5", duel: true, link, outlets: ["confidencial"],
+      title: phc.up ? vr.f("ph-up-" + to.id, to.id === "pique" ? ["EMPIEZA EL PIQUE ENTRE {A} Y {B}", "SE ACABARON LAS SONRISAS"] : to.id === "fria" ? ["GUERRA FRÍA: {A} Y {B} YA NO SE HABLAN", "LA AMISTAD, EN PAUSA"] : ["{A} Y {B}, ENEMIGOS ÍNTIMOS", "SE ROMPE LA AMISTAD DE LA F2"], { A: UP(a), B: UP(b) }) : vr.f("ph-down", ["PAZ ENTRE {A} Y {B}… POR AHORA", "SE RELAJA LA TENSIÓN ENTRE LOS AMIGOS"], { A: UP(a), B: UP(b) }),
+      subtitle: to.line,
+      sections: [{ heading: `${to.icon} ${to.name}`, body: `${phc.up ? "La relación entre los dos amigos ha cambiado." : "Las aguas vuelven a su cauce."} ${to.line} Tensión: ${(duelOf(core) || {}).heat || 0}/100.` },
+        { heading: "🤫 Lo que nos cuentan", body: phc.up ? vr.pick("ph-gos", [`Nos cuentan que ${a} y ${b} ya no viajan juntos al circuito.`, `Dicen que la cena de los jueves entre ${a} y ${b} se ha cancelado. Sin explicaciones.`, `En el paddock aseguran que ${a} y ${b} no se han saludado esta semana.`]) : vr.pick("ph-gos2", [`Vistos ${a} y ${b} tomando algo juntos tras la carrera.`, `Abrazo entre ${a} y ${b} en el parque cerrado. Las cámaras lo han visto.`]) }],
+      social: [tiny({ who: "journalist", id: "confidencial", text: phc.up ? "Lo de los dos amigos de la F2 se está poniendo feo. 👀" : "Bandera blanca entre los dos amigos. ¿Cuánto durará? 👀", duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) })]
+    } });
+  }
+  const homeA = (HOME_GP[round.gp] || []).includes(DRIVERS[A].nat), homeB = (HOME_GP[round.gp] || []).includes(DRIVERS[B].nat);
+  cand.push({ w: 18 + (dr.moms.length ? 25 : 0) + (rv.heat >= 60 ? 10 : 0), key: "tertulia", o: {
+    kicker: "Onda Paddock · La tertulia", color: "#F2C14E", duel: true, link, outlets: ["onda"],
+    title: vr.f("te-t", ["LA TERTULIA ARDE CON {A} Y {B}", "«¿QUIÉN ES MEJOR?»: LA PREGUNTA QUE DIVIDE A ONDA PADDOCK", "BRONCA EN ONDA PADDOCK POR EL DUELO DE {P}", "TRES VOCES, TRES VERDADES SOBRE {A} Y {B}"], { A: UP(a), B: UP(b), P: PU }),
+    subtitle: "Rafa Mena modera; Paco Ledesma defiende a " + a + " y Marisa Font a " + b + ".",
+    sections: [{ heading: "🎙️ En antena", body: [
+      `RAFA MENA: Bueno, ${P}. ${dr.w ? `${fullName(dr.w)} delante de ${fullName(dr.l)}.` : "Duelo sin ganador."} ¿Qué os ha parecido?`,
+      `PACO LEDESMA: ${dr.w === A ? `Lo que llevo diciendo toda la temporada: ${a} es mejor. Punto.` : dr.w === B ? `Hoy ${b} ha estado bien, lo reconozco. Pero ${a} tenía más coche para perder que ${b} para ganar.` : `Mal día para los dos, pero ${a} volverá antes.`}`,
+      `MARISA FONT: ${dr.w === B ? `Paco, que te veo nervioso. ${b} le ha ganado y punto. Y ya van ${st.rb} este año.` : dr.w === A ? `Hoy toca aplaudir a ${a}, vale. Pero ${b} sigue ahí${st.f2 && st.f2.posB && st.f2.posA && st.f2.posB < st.f2.posA ? ", y en la F2 ya demostró quién era quién" : ""}.` : `Al menos ${b} lo intentó.`}`,
+      `RAFA MENA: Los datos: ${st.ra}-${st.rb} en carrera esta temporada y ${st.ptsA === st.ptsB ? "empate a puntos" : `${fmt(Math.abs(st.ptsA - st.ptsB))} ${Math.abs(st.ptsA - st.ptsB) === 1 ? "punto" : "puntos"} de diferencia`} en el Mundial.${homeA || homeB ? ` Y ojo, que corrían en casa${homeA && homeB ? " los dos" : homeA ? ` de ${a}` : ` de ${b}`}.` : ""}`,
+      `PACO LEDESMA: ${vr.pick("te-p", ["Los datos los carga el diablo.", "A final de año hablamos.", "Yo me quedo con el talento, no con las tablas."])}`,
+      `MARISA FONT: ${vr.pick("te-m", ["Pues yo me quedo con los datos, que no mienten.", "Lo que tú digas, Paco. Pásame la tabla.", "Paco, el año pasado decías lo mismo de otro."])}`,
+      `RAFA MENA: ${vr.pick("te-r", ["Lo dejamos aquí antes de que esto acabe mal. Nos oímos la semana que viene.", "Lo único seguro es que esto se ha convertido en la mejor rivalidad del paddock.", "Paz, por favor. Que son amigos… creo."])}`
+    ].join("\n\n") }],
+    social: [tiny({ who: "journalist", id: "onda", text: vr.pick("te-s", ["Hoy la tertulia ha sido de las buenas 🎙️🔥 Paco y Marisa, otra vez a la gresca.", "Si no habéis escuchado el programa de hoy, os habéis perdido la bronca del año 🎙️", "Encuesta: ¿quién tiene razón, Paco o Marisa? 🎙️"]), duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) })]
+  } });
+  const bigDay = (dr.posW && dr.posW <= 3) || (dr.w && dr.l && st.posA && st.posB && st.posA <= 3 && st.posB <= 3);
+  const intlO = g.R() < 0.5 ? "gridtimes" : "apex";
+  cand.push({ w: bigDay ? 40 : 14, key: "intl", o: {
+    kicker: intlO === "gridtimes" ? "The Grid Times 🇬🇧" : "Apex Weekly 🇺🇸", color: "#7A1F2B", duel: true, link, outlets: [intlO],
+    title: vr.f("in-t", ["LA PRENSA INGLESA SE RINDE AL DUELO DE {A} Y {B}", "DESDE LONDRES: «LA RIVALIDAD MÁS AUTÉNTICA DE LA PARRILLA»", "EL MUNDO MIRA A LOS DOS AMIGOS DE LA F2", "«DOS AMIGOS, UNA OBSESIÓN»: ASÍ LOS VEN FUERA"], { A: UP(a), B: UP(b) }),
+    subtitle: "Lo que se escribe del duelo fuera de España.",
+    sections: [
+      { heading: `📰 «${vr.pick("in-h", ["THE FRIENDS WHO BECAME RIVALS", "TWO MATES, ONE OBSESSION", "FROM F2 TEAMMATES IN SPIRIT TO SWORN ENEMIES", "THE RIVALRY EVERYONE IS TALKING ABOUT"])}»`, body: `${dr.w ? `${fullName(dr.w)} beat ${fullName(dr.l)} in ${P}.` : `Neither of them had a good day in ${P}.`} The head-to-head this season stands at ${st.ra}-${st.rb}. ${vr.pick("in-b", ["What started as a friendship in Formula 2 has become the most watched duel on the grid.", "They grew up racing each other. Now they are fighting for the same piece of tarmac every Sunday.", "Spain is divided, and the paddock is loving every minute of it."])}` },
+      { heading: "🇪🇸 Traducción", body: `${dr.w ? `${fullName(dr.w)} ganó a ${fullName(dr.l)} en ${P}.` : `Ninguno de los dos tuvo un buen día en ${P}.`} El cara a cara de la temporada va ${st.ra}-${st.rb}. ${vr.pick("in-bt", ["Lo que empezó como una amistad en la Fórmula 2 se ha convertido en el duelo más seguido de la parrilla.", "Crecieron corriendo el uno contra el otro. Ahora pelean por el mismo trozo de asfalto cada domingo.", "España está dividida, y el paddock lo disfruta."])}` }
+    ],
+    social: [tiny({ who: "journalist", id: intlO, text: vr.pick("in-s", [`The ${a} vs ${b} rivalry is the best thing about this season. 🇪🇸⚔️`, `Spain's two young guns at it again in ${P}. ${st.ra}-${st.rb} this year.`, `If you're not following ${a} vs ${b}, you're missing the story of the year.`]), duel: true })]
+  } });
+  if (dr.moms.some((m) => m.id === "toque") || rv.heat >= 70 || (dr.both && dr.d === 1)) cand.push({ w: dr.moms.some((m) => m.id === "toque") ? 70 : 28, key: "redes", o: {
+    kicker: "Redes", color: "#8B3DFF", duel: true, link,
+    title: vr.f("rd-t", ["LAS REDES ARDEN: {A} CONTRA {B}", "#Team{A} CONTRA #Team{B}: GUERRA EN REDES", "LOS FANS DE {A} Y {B}, A LA GRESCA"], { A: UP(a), B: UP(b), A2: tagOf(A), B2: tagOf(B) }),
+    subtitle: "Lo que se ha dicho en redes tras " + P + ".",
+    sections: [{ heading: "🔥 Lo más comentado", body: `${dr.moms.some((m) => m.id === "toque") ? `El toque entre ${a} y ${b} ha incendiado las redes.` : `El duelo entre ${a} y ${b} ha vuelto a dividir a los aficionados.`} #Team${tagOf(A)} y #Team${tagOf(B)} fueron tendencia durante horas.` }],
+    social: [
+      tiny({ who: "fan", name: camps.A[0].name, handle: camps.A[0].handle, text: `${a} > ${b}. No hay debate. #Team${tagOf(A)}`, duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) }),
+      tiny({ who: "fan", name: camps.B[0].name, handle: camps.B[0].handle, text: `Hoy ${dr.w === B ? "hemos ganado" : "nos han robado"}. #Team${tagOf(B)} 💚`, duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) }),
+      tiny({ who: "fan", name: "F1 Memes ES", handle: "f1memes_es", text: `Los dos amigos de la F2 en la cena de Navidad: 🍽️🔪`, duel: true })
+    ],
+    trending: [{ tag: "#Team" + tagOf(A), posts: g.int(20000, 90000) }, { tag: "#Team" + tagOf(B), posts: g.int(20000, 90000) }, { tag: "#DueloDeAmigos", posts: g.int(15000, 70000) }]
+  } });
+  cand.sort((x, y) => y.w - x.w).slice(0, 3).forEach((c2) => out.push(pressArticle(core, round, c2.key, T(), c2.o)));
+  return out;
+}
+
+/* ---------- enriquecer crónicas y previas ---------- */
+function pressEnrich(art, core, round, kind) {
+  if (!art || !round) return art;
+  const g = NG(core, round, "prensa-enrich-" + kind);
+  const vr = makeVary(core, g);
+  const dp = duelPair(core);
+  const c = circuit(round.gp);
+  const P = c ? c.name : `la ronda ${round.r}`;
+  const fps = (art.frontPages || []).slice();
+  const social = (art.social || []).slice();
+  const has = (o) => fps.some((f) => f.outlet === o);
+  const camps = dp ? fanCamps(core, dp.a, dp.b) : null;
+  const tagMe = GP_TAG[round.gp] || "F1";
+  /* hilos de comentarios en los posts más importantes */
+  social.forEach((p, i) => { if (!p.thread && (p.who === "driver" || (p.who === "team" && i < 3)) && g.R() < 0.75) p.thread = genericThread(g, camps, p.who === "driver" ? LN(p.id) : "El equipo"); });
+  if (kind === "previa") {
+    const res = driverTable(core);
+    if (dp) {
+      const A = dp.a, B = dp.b, a = LN(A), b = LN(B);
+      const st = duelStats(core, A, B);
+      const rv = duelOf(core) || { heat: 35 };
+      const ph = phaseOf(rv.heat);
+      const dsec = { heading: "👥 El duelo de amigos", body: `${fullName(A)} llega ${st.posA ? st.posA + ".º" : ""} con ${fmt(st.ptsA)} puntos y ${fullName(B)} ${st.posB ? st.posB + ".º" : ""} con ${fmt(st.ptsB)}. Cara a cara de la temporada: ${st.ra}-${st.rb} en carrera y ${st.qa}-${st.qb} en clasificación.${st.f2 ? ` En la F2 quedó ${st.f2.wa}-${st.f2.wb}.` : ""} ${ph.icon} ${ph.line}` };
+      art.sections = (art.sections || []).slice(0, 2).concat([dsec], (art.sections || []).slice(2));
+      art.interviews = (art.interviews || []).concat([{ speaker: fullName(B), team: teamOf(core, B), by: "rebufo", q: vr.pick("pvb-q", [`¿Cómo llegas a ${P}?`, `¿Y ${a}? ¿Le ganarás este fin de semana?`, "¿Qué esperas de este fin de semana?"]), a: vr.pick("pvb-a-" + ph.id, ph.id === "amigos" ? [`Con muchas ganas. Y con ganas de ganarle a ${a}, claro, que luego me lo recuerda toda la semana.`, `Bien. ${a} es mi amigo, pero aquí vengo a ganarle.`] : ph.id === "pique" ? [`Con hambre. ${a} sabe que voy a por él.`, `Este circuito me gusta. Y a ${a} no tanto, creo.`] : [`Vengo a hacer mi carrera. Lo que haga ${a} me da igual.`, `No voy a hablar de él. Hablaré en la pista.`]) }]);
+      const pick = st.ptsA === st.ptsB ? g.pick([A, B]) : null;
+      fps.push({ outlet: "rebufo", focus: B, headline: vr.f("pv-reb", ["{B}, A POR TODAS EN {P}", "¡{B} QUIERE REVANCHA!", "{P}: LA HORA DE {B}"], { B: UP(b), P: UP(P) }), es: "", deck: `Previa de la ronda ${round.r}. ${b} llega con ${fmt(st.ptsB)} puntos.`, body: dsec.body });
+      fps.push({ outlet: "parrilla", focus: pick || (st.ptsA >= st.ptsB ? A : B), headline: vr.f("pv-par", ["DUELO DE AMIGOS EN {P}", "{A} Y {B}, OTRA VEZ CARA A CARA", "{P} ESPERA A {A} Y {B}"], { A: UP(a), B: UP(b), P: UP(P) }), es: "", deck: `${st.ra}-${st.rb} en el cara a cara de la temporada.`, body: dsec.body });
+      social.push({ who: "driver", id: B, text: langFor(B) === "es" ? vr.f("pv-bs", ["{P}, allá vamos 🏁💚", "Semana de carrera. {a}, prepárate 😏", "Con muchas ganas de {P} ¡Vamos! 💪"], { P, a }) : vr.f("pv-bse", ["{P}, here we go 🏁", "Race week! {a}, get ready 😏"], { P, a }), likes: likesFor(core, B, 60000, 220000, g), reposts: g.int(3000, 14000), replies: g.int(800, 5000), duel: true, thread: duelThread(vr, g, camps, A, B, null, st) });
+      social.push({ who: "team", id: teamOf(core, B), text: `Rumbo a ${P}. ${c ? c.flag : "🏁"} #${tagMe}`, likes: g.int(30000, 110000), reposts: g.int(1500, 7000), replies: g.int(400, 2500) });
+      social.push({ who: "journalist", id: "rebufo", text: vr.f("pv-rt", ["Mi pronóstico para {P}: {b} delante de {a}. Y no es fe, es intuición 💚", "Esta semana {b} le gana a {a}. Apuntadlo 💚"], { P, a, b }), likes: g.int(2000, 14000), reposts: g.int(200, 1800), replies: g.int(400, 2500), duel: true });
+      social.push({ who: "journalist", id: "cronometro", text: vr.f("pv-ct", ["{a} delante de {b} en {P}. Ni lo dudéis 🔴", "Pronóstico: {a} gana el duelo y alguno se enfada 🔴"], { P, a, b }), likes: g.int(2000, 14000), reposts: g.int(200, 1800), replies: g.int(400, 2500), duel: true });
+      art.trending = (art.trending || []).concat([{ tag: "#DueloDeAmigos", posts: g.int(10000, 50000) }]).slice(0, 6);
+    } else if (res.length > 1) {
+      const H = rebufoHero(core);
+      if (H) fps.push({ outlet: "rebufo", focus: H, headline: vr.f("pv-reb-s", ["{H}, EL HOMBRE A SEGUIR EN {P}", "¿Y SI ESTA VEZ GANA {H}?"], { H: UP(LN(H)), P: UP(P) }), es: "", deck: `Previa de la ronda ${round.r}.`, body: `Rebufo apuesta por ${fullName(H)} en ${P}.` });
+    }
+    if (!has("gridtimes")) fps.push({ outlet: "gridtimes", focus: res[0] ? res[0].id : null, headline: vr.f("pv-gt", ["ALL EYES ON {P}", "{P}: THE STAGE IS SET"], { P: UP(P) }), es: vr.f("pv-gt-es", ["TODAS LAS MIRADAS, EN {P}", "{P}: TODO PREPARADO"], { P: UP(P) }), deck: `Round ${round.r}.`, body: `Previa de ${P}.` });
+    art.frontPages = fps.slice(0, 7);
+    art.social = social.slice(0, 16);
+    return art;
+  }
+  /* crónicas */
+  const res = kind === "quali" ? (round.quali && round.quali.res) || {} : null;
+  const ctx = kind === "quali" ? null : raceCtx(core, round, kind);
+  const winner = kind === "quali" ? Object.keys(res).find((d) => res[d] === 1) : ctx.winner;
+  if (winner && !has("parrilla")) {
+    const x = kind === "quali" ? null : ctx.res[winner];
+    fps.unshift({ outlet: "parrilla", focus: winner, headline: kind === "quali" ? vr.f("pq-par", ["POLE DE {W} EN {P}", "{W} MANDA EL SÁBADO EN {P}"], { W: UP(LN(winner)), P: UP(P) }) : vr.f("pr-par", ["{W} GANA EN {P}", "VICTORIA DE {W} EN {P}", "{W} SE IMPONE EN {P}"], { W: UP(LN(winner)), P: UP(P) }), es: "", deck: kind === "quali" ? `Pole position en ${P}.` : `${fullName(winner)} (${team(teamOf(core, winner)).name}) ganó el ${c ? c.gp : "Gran Premio"}.${x && x.pts ? ` Suma ${fmt(x.pts)} puntos.` : ""}`, body: `${fullName(winner)} ${kind === "quali" ? "firmó la pole" : "ganó"} en ${P}. La Parrilla lo cuenta con calma y sin colores.` });
+  }
+  if (dp) {
+    const A = dp.a, B = dp.b, a = LN(A), b = LN(B);
+    const dr = duelRound(core, round, A, B, kind);
+    const st = duelStats(core, A, B, round.r);
+    const rv = duelOf(core) || { heat: 35 };
+    const ph = phaseOf(rv.heat);
+    if (dr) {
+      const line = kind === "quali" ? `${fullName(dr.w)} saldrá ${dr.posW}.º, por delante de ${fullName(dr.l)} (${dr.posL}.º). En clasificación, la temporada va ${a} ${st.qa}, ${b} ${st.qb}.`
+        : `${finished(dr.xa) ? `${fullName(A)} terminó ${dr.xa.pos}.º` : `${fullName(A)} no terminó`} y ${finished(dr.xb) ? `${fullName(B)} ${dr.xb.pos}.º` : `${fullName(B)} no terminó`}. ${dr.w ? `El duelo es para ${LN(dr.w)}.` : "Duelo en blanco."} Temporada: ${st.ra}-${st.rb}. Mundial: ${a} ${fmt(st.ptsA)}, ${b} ${fmt(st.ptsB)}.${dr.between.length ? ` Entre ellos: ${listY(dr.between.map((x) => LN(x)))}.` : ""}`;
+      art.sections = (art.sections || []).concat([{ heading: `👥 El duelo de amigos ${ph.icon}`, body: line }]);
+      /* Rebufo: portada para su piloto */
+      const xb = kind === "quali" ? null : dr.xb;
+      fps.splice(2, 0, { outlet: "rebufo", focus: B, headline: kind === "quali" ? (dr.w === B ? vr.f("rq-w", ["¡{B} LE GANA EL SÁBADO A {A}!", "{B}, POR DELANTE DE {A}"], { A: UP(a), B: UP(b) }) : vr.f("rq-l", ["{B} SALDRÁ AL ATAQUE", "MAÑANA, LA REVANCHA DE {B}"], { B: UP(b) })) : partisanHead(vr, B, dr, A, B, UP(P)), es: "", deck: kind === "quali" ? `${b} saldrá ${qOf(round, B)}.º.` : finished(xb) ? `${b} terminó ${xb.pos}.º en ${P}.` : `${b} no terminó en ${P}.`, body: line });
+      const cro = fps.find((f) => f.outlet === "cronometro");
+      if (cro && kind !== "quali" && g.R() < 0.6) { cro.headline = partisanHead(vr, A, dr, A, B, UP(P)); }
+      if (kind !== "quali" && !has("gridtimes") && g.R() < 0.6) fps.push({ outlet: "gridtimes", focus: dr.w || A, headline: dr.w ? vr.f("gt-d", ["{W} WINS THE BATTLE OF THE FRIENDS", "ADVANTAGE {W}"], { W: UP(LN(dr.w)) }) : "A DAY TO FORGET FOR THE FRIENDS", es: dr.w ? vr.f("gt-de", ["{W} GANA LA BATALLA DE LOS AMIGOS", "VENTAJA PARA {W}"], { W: UP(LN(dr.w)) }) : "UN DÍA PARA OLVIDAR PARA LOS AMIGOS", deck: `Head-to-head: ${st.ra}-${st.rb}.`, body: line });
+      /* redes del jugador 2 como las del jugador 1 */
+      if (!social.some((p) => p.who === "driver" && p.id === B)) {
+        let text;
+        if (kind === "quali") { const q = qOf(round, B); text = langFor(B) === "es" ? (q === 1 ? `¡POLE en ${P}! ⏱️💚 Mañana, a por todas` : `P${q} en la parrilla. Mañana hay carrera 💪`) : (q === 1 ? `POLE in ${P}! ⏱️` : `P${q} on the grid. Race day tomorrow 💪`); }
+        else { const o = outcome(dr.xb); text = langFor(B) === "es" ? g.fill(g.pick((DRV_T.es[o] || DRV_T.es.points)), { P, PU: UP(P), N: finished(dr.xb) ? dr.xb.pos : "", T: tagMe }) : g.fill(g.pick((DRV_T.en[o] || DRV_T.en.points)), { P, PU: UP(P), N: finished(dr.xb) ? dr.xb.pos : "", T: tagMe }); if (dr.w === B && g.R() < 0.5) text += ` Y delante de ${a} 😏`; if (dr.w === A && g.R() < 0.4) text += " La próxima es mía."; }
+        social.splice(1, 0, { who: "driver", id: B, text, likes: likesFor(core, B, 80000, 380000, g), reposts: g.int(5000, 35000), replies: g.int(2000, 14000), duel: true, thread: duelThread(vr, g, camps, A, B, dr, st) });
+      }
+      const meP = social.find((p) => p.who === "driver" && p.id === A);
+      if (meP) { meP.thread = duelThread(vr, g, camps, A, B, dr, st); meP.duel = true; }
+      if (kind !== "quali") {
+        social.push({ who: "team", id: teamOf(core, B), text: `${finished(dr.xb) ? `P${dr.xb.pos}` : "DNF"} para ${DRIVERS[B].first} en ${P}. ${finished(dr.xb) && dr.xb.pos <= 3 ? "🏆" : "💪"} #${tagMe}`, likes: g.int(40000, 160000), reposts: g.int(3000, 12000), replies: g.int(900, 5000) });
+        camps.B.slice(0, 2).forEach((f, i) => social.push({ who: "fan", name: f.name, handle: f.handle, text: dr.w === B ? g.pick([`¡${UP(b)}! ¡${UP(b)}! 💚`, `Os lo dije: ${b} es el mejor de los dos 😌`, `Hoy ${a} ha visto el alerón de ${b} toda la carrera 😂`]) : g.pick([`${b} merecía más hoy 😤`, `Seguimos con ${b}, siempre 💚`, `Ya llegará lo nuestro. Arriba ${b}`]), likes: g.int(100, 9000), reposts: g.int(10, 900), replies: g.int(5, 400), duel: true }));
+        camps.A.slice(0, 1).forEach((f) => social.push({ who: "fan", name: f.name, handle: f.handle, text: dr.w === A ? g.pick([`${a} > ${b}. Lo siento por los de Rebufo 😂`, `Otra vez ${a} delante. Normal 🔴`]) : g.pick([`Hoy se lo dejamos a ${b}, que también tiene derecho 🙄`, `${a} volverá. Tranquilidad 🔴`]), likes: g.int(100, 9000), reposts: g.int(10, 900), replies: g.int(5, 400), duel: true }));
+      }
+      art.trending = (art.trending || []).concat([{ tag: "#" + tagOf(B), posts: g.int(20000, 90000) }, { tag: "#DueloDeAmigos", posts: g.int(10000, 60000) }]).sort((x, y) => y.posts - x.posts).slice(0, 6);
+      art.interviews = (art.interviews || []).slice();
+      if (!art.interviews.some((q) => q.speaker === fullName(B))) {
+        const q = kind === "quali" ? { speaker: fullName(B), team: teamOf(core, B), by: "rebufo", q: dr.w === B ? `Saldrás por delante de ${a}. ¿Cómo lo ves?` : `Mañana sales detrás de ${a}. ¿Plan?`, a: dr.w === B ? vr.pick("iq-bw", ["Mejor delante que detrás, ¿no? Mañana a confirmarlo.", `Que me mire por el retrovisor, que es lo que le toca.`]) : vr.pick("iq-bl", ["Mañana es otro día. La carrera es larga.", "Salir detrás no me preocupa. Adelantarle me motiva más."]) }
+          : Object.assign(driverQuote(g, B, Object.assign({}, ctx), core) || { speaker: fullName(B), team: teamOf(core, B), q: "¿Cómo ha ido?", a: "Seguimos trabajando." }, { by: "rebufo" });
+        art.interviews.push(q);
+      }
+    }
+  } else if (kind !== "quali") {
+    const H = rebufoHero(core);
+    const xh = H && ctx.res[H];
+    if (H && xh && !has("rebufo")) fps.splice(2, 0, { outlet: "rebufo", focus: H, headline: finished(xh) && xh.pos <= 3 ? vr.f("rb-s-g", ["¡{H}, SEÑOR DEL DOMINGO!", "{H} DA LA CARA EN {P}"], { H: UP(LN(H)), P: UP(P) }) : vr.f("rb-s-b", ["{H} MERECÍA MÁS", "TARDE GRIS PARA {H} EN {P}"], { H: UP(LN(H)), P: UP(P) }), es: "", deck: finished(xh) ? `${LN(H)} terminó ${xh.pos}.º.` : `${LN(H)} no terminó.`, body: `Rebufo sigue con ${fullName(H)}.` });
+  }
+  art.frontPages = fps.slice(0, 7);
+  art.social = social.slice(0, 18);
+  return art;
+}
+
+/* Piezas de opinión también en solitario: El Cronómetro contra Rebufo. */
+function soloTrenches(core, round, t0) {
+  if (duelPair(core)) return [];
+  const H = rebufoHero(core);
+  if (!H || !resOf(round, "arevalo") || !resOf(round, H)) return [];
+  const g = NG(core, round, "prensa-solo");
+  const vr = makeVary(core, g);
+  const c = circuit(round.gp);
+  const P = c ? c.name : `la ronda ${round.r}`;
+  const xa = resOf(round, "arevalo"), xh = resOf(round, H);
+  const cm = cmpRace(xa, xh);
+  const dr = { w: cm === 1 ? "arevalo" : cm === -1 ? H : null };
+  const st = { ra: 0, rb: 0, n: 0, ptsA: core.standings.arevalo || 0, ptsB: core.standings[H] || 0 };
+  core.rounds.filter((x) => x.r <= round.r).forEach((rd) => { const a = resOf(rd, "arevalo"), b = resOf(rd, H); if (a && b) { st.n++; const k = cmpRace(a, b); if (k === 1) st.ra++; else if (k === -1) st.rb++; } });
+  const ph = phaseOf((rivalsOf(core, "arevalo").find((r) => r.a === H || r.b === H) || { heat: 30 }).heat);
+  return [pressArticle(core, round, "trincheras", t0 - 3, {
+    kicker: "Opinión · Las dos trincheras", color: "#B91C1C", outlets: ["cronometro", "rebufo"],
+    title: vr.f("trs-t", ["{A} O {H}: LA PRENSA SE DIVIDE", "DOS PERIÓDICOS, DOS VERDADES", "EL CRONÓMETRO CONTRA REBUFO"], { A: UP(LN("arevalo")), H: UP(LN(H)) }),
+    subtitle: `El Cronómetro defiende a ${LN("arevalo")}; Rebufo, a ${LN(H)}.`,
+    sections: [
+      { heading: `🔴 El Cronómetro: «${partisanHead(vr, "arevalo", dr, "arevalo", H, UP(P))}»`, body: partisanColumn(vr, g, "cronometro", "arevalo", H, dr, st, P, ph) },
+      { heading: `💚 Rebufo: «${partisanHead(vr, H, dr, "arevalo", H, UP(P))}»`, body: partisanColumn(vr, g, "rebufo", H, "arevalo", dr, st, P, ph).replace(/ Y en el Mundial, .*?\)\./, "").replace(/ En el Mundial, .*?nada\./, "") }
+    ],
+    social: [{ who: "journalist", id: "rebufo", text: `${LN(H)} ${dr.w === H ? "ha vuelto a demostrarlo" : "merecía más"} en ${P}. 💚`, likes: g.int(1500, 12000), reposts: g.int(100, 1500), replies: g.int(200, 2500), thread: genericThread(g, null, LN(H)) }]
+  })];
+}
+
+/* ---------- pantallas: el duelo en la ficha de la rivalidad y la línea editorial ---------- */
+function duelExtras(core, rv) {
+  if (!isDuel(rv)) return "";
+  const A = rv.a, B = rv.b;
+  const st = duelStats(core, A, B);
+  const ph = phaseOf(rv.heat);
+  const press = S.news.filter((a) => a.duel).slice(0, 8);
+  const share = st.ptsA + st.ptsB ? Math.round((st.ptsA / (st.ptsA + st.ptsB)) * 100) : 50;
+  return `${sec(`${ph.icon} ${ph.name}`, `<div class="group" style="padding:12px 14px"><p style="margin:0">${esc(ph.line)}</p>${rv.phaseChange ? `<p class="note" style="margin:6px 0 0">Cambió de fase en la ronda ${rv.phaseChange.r} de la temporada ${rv.phaseChange.s}.</p>` : ""}</div>`)}
+${sec("⚖️ El reparto de puntos", `<div class="group"><div class="duelbar"><div class="side"><b>${esc(LN(A))}</b><small>${fmt(st.ptsA)} pts · ${st.winsA} ${st.winsA === 1 ? "victoria" : "victorias"}</small></div><span class="vs">VS</span><div class="side r"><b>${esc(LN(B))}</b><small>${fmt(st.ptsB)} pts · ${st.winsB} ${st.winsB === 1 ? "victoria" : "victorias"}</small></div></div><div class="duelmeter"><i style="width:${share}%;background:${tcolor(teamOf(core, A))}"></i><i style="width:${100 - share}%;background:${tcolor(teamOf(core, B))}"></i></div></div>`)}
+${st.f2 ? sec("🏎️ En la F2", `<div class="group" style="padding:12px 14px">Cara a cara en la F2: ${esc(LN(A))} ${st.f2.wa}, ${esc(LN(B))} ${st.f2.wb}.${st.f2.done && st.f2.posA && st.f2.posB ? ` En la general, ${esc(LN(A))} fue ${st.f2.posA}.º y ${esc(LN(B))} ${st.f2.posB}.º.` : ""}${st.f2.champ === A || st.f2.champ === B ? ` Campeón: ${esc(fullName(st.f2.champ))}.` : ""}</div>`) : ""}
+${press.length ? sec("📰 Lo que dice la prensa", `<div class="group">${press.map((a) => `<button class="list-btn" data-act="push" data-arg="article:${esc(a.id)}">📰<span class="t">${esc(a.title)}<small>${esc(a.kicker || "")}</small></span>${ICON.chev}</button>`).join("")}</div>`) : ""}`;
+}
 /* ============================================================
    ACCIONES Y ARRANQUE
    ============================================================ */
