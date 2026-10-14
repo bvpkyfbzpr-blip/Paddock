@@ -808,6 +808,11 @@ textarea.inp { min-height: 96px; resize: vertical; line-height: 1.45; }
 .offer-kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin-top: 8px; font-size: 14px; }
 .offer-kv span { color: var(--muted); }
 .offer-kv b { font-size: 14px; }
+.offer-card .lbl { display: block; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.deb-card.bigteam { box-shadow: inset 0 0 0 2px #F2C14E, var(--shadow); }
+.deb-card.bigteam .lbl { color: #B7791F; }
+.deb-card.off { opacity: .6; }
+.deb-card .field label { font-size: 13px; }
 .choices { display: grid; gap: 8px; }
 .money-hero { padding: 18px; border-radius: 20px; margin-bottom: 12px; color: #F4F4F8; background: linear-gradient(135deg, #0B2239, #111118); }
 .money-hero span { font-size: 13px; opacity: .75; text-transform: uppercase; letter-spacing: .06em; }
@@ -1042,7 +1047,7 @@ async function loadInitialData() {
     toast("Temporada cargada: bienvenido a tu universo");
   } catch (e) { toast("No se han podido cargar los datos iniciales."); }
 }
-const APP_VERSION = "16";
+const APP_VERSION = "17";
 const APP_DATE = "29 de septiembre de 2026";
 let swReg = null;
 if ("serviceWorker" in navigator) {
@@ -1547,7 +1552,7 @@ function closeSeason(core) {
   const next = blankCore(core.season + 1, { roster: clone(core.roster || {}), narrative: clone(core.narrative || {}), history });
   if (core.distance) next.distance = core.distance;
   /* Lo que pertenece a la partida y no a la temporada se conserva. */
-  ["coop", "grid", "identity", "f2", "friends", "settings"].forEach((k) => { if (core[k] != null) next[k] = clone(core[k]); });
+  ["coop", "grid", "identity", "f2", "debut", "names", "teamNames", "friends", "settings"].forEach((k) => { if (core[k] != null) next[k] = clone(core[k]); });
   return { seasonDoc, next, entry };
 }
 
@@ -4336,9 +4341,18 @@ function legacyProcessed(core) {
   });
   return p;
 }
+/* El contrato siempre es con el equipo en el que corres (por si te han movido desde la parrilla). */
+function contractTeamFix(core, c) {
+  const t = core ? teamOf(core, ME) : null;
+  if (!c || !c.contract || !t || !TEAMS[t] || c.contract.team === t) return null;
+  if (typeof seatPending === "function" && seatPending(core, ME)) return null;
+  return t;
+}
 function careerView(core) {
-  const c = (core && core[CK()]) || blankCareer(core);
+  let c = (core && core[CK()]) || blankCareer(core);
   const cap = core ? fameCap(core) : 100;
+  const fix = contractTeamFix(core, c);
+  if (fix) c = Object.assign({}, c, { contract: Object.assign({}, c.contract, { team: fix }) });
   return c.fame > cap ? Object.assign({}, c, { fame: cap }) : c;
 }
 function careerOf(core) {
@@ -4350,6 +4364,8 @@ function careerOf(core) {
   if (!c.residence) c.residence = "es";
   if (!c.investments) c.investments = {};
   if (!c.wealth) c.wealth = [];
+  const fixT = contractTeamFix(core, c);
+  if (fixT) c.contract = Object.assign({}, c.contract, { team: fixT });
   if (!c.legacyMarked) {
     /* Datos de la versión anterior: las carreras previas ya se cobraron al crear la carrera. */
     const init = c.ledger.some((l) => l.id === "init");
@@ -5215,6 +5231,14 @@ function render() {
   }
   document.body.classList.remove("in-menu");
   if (S.core && typeof applyPlayers === "function") applyPlayers(S.core);
+  if (S.core && S.canWrite && S.mode === "db" && typeof needsDebutMigration === "function" && !S.migratingDebut && needsDebutMigration(S.core)) {
+    S.migratingDebut = true;
+    setTimeout(() => mutateCore((k) => { migrateDebut(k); }).then(() => { render(); toast("Ahora vuestro equipo de F1 saldrá de las ofertas al acabar la F2"); }).catch(() => null), 0);
+  }
+  if (S.core && S.canWrite && S.mode !== "cache" && typeof debutSyncNeeded === "function" && !S.debutSyncing && debutSyncNeeded(S.core)) {
+    S.debutSyncing = true;
+    setTimeout(() => mutateCore((k) => { debutSync(k); }).catch(() => null).then(() => { S.debutSyncing = false; }), 0);
+  }
   if (S.core && typeof syncGrid === "function") syncGrid(S.core);
   if (typeof applyIdentity === "function") applyIdentity(S.core);
   const scr = currentScreen();
@@ -5474,9 +5498,10 @@ function rivalryList(core, onlyWith, feuds) {
 
 function homeScreen() {
   const core = S.core;
-  const out = [heroPoster(core)];
-  if (f2Active(core)) out.unshift(`<div class="sec"><button class="group weekcard" data-act="goto-f2"><span class="wf">🏎️</span><span class="t"><small>Prólogo: Fórmula 2</small><b>${f2NextRound(core) <= core.f2.n ? `Carrera ${f2NextRound(core)} de ${core.f2.n}` : "¡Última bandera! Cierra la F2"}</b><em>Tu camino hacia la Fórmula 1 empieza aquí.</em></span>${ICON.chev}</button></div>`);
-  if (isCoop() && otherPlayer()) { const o = otherPlayer(); const t = driverTable(core); const a = t.find((x) => x.id === ME), b = t.find((x) => x.id === o); if (a && b) out.push(`<div class="sec"><button class="group weekcard" data-act="push" data-arg="rivalry:${rvKey(ME, o)}"><span class="wf">👥</span><span class="t"><small>Cooperativo</small><b>Tú P${a.pos}, ${esc(LN(o))} P${b.pos}</b><em>${fmt(Math.abs(a.pts - b.pts))} puntos entre vosotros. ${S.coopOffline ? "Sin conexión." : "En directo."}</em></span>${ICON.chev}</button></div>`); }
+  const pendingSeat = typeof seatPending === "function" && seatPending(core);
+  const out = [pendingSeat ? debutPoster(core) : heroPoster(core)];
+  if (f2Active(core) && !pendingSeat) out.unshift(`<div class="sec"><button class="group weekcard" data-act="goto-f2"><span class="wf">🏎️</span><span class="t"><small>Prólogo: Fórmula 2</small><b>${f2NextRound(core) <= core.f2.n ? `Carrera ${f2NextRound(core)} de ${core.f2.n}` : "¡Última bandera! Cierra la F2"}</b><em>Tu camino hacia la Fórmula 1 empieza aquí.</em></span>${ICON.chev}</button></div>`);
+  if (isCoop() && otherPlayer() && !pendingSeat) { const o = otherPlayer(); const t = driverTable(core); const a = t.find((x) => x.id === ME), b = t.find((x) => x.id === o); if (a && b) out.push(`<div class="sec"><button class="group weekcard" data-act="push" data-arg="rivalry:${rvKey(ME, o)}"><span class="wf">👥</span><span class="t"><small>Cooperativo</small><b>Tú P${a.pos}, ${esc(LN(o))} P${b.pos}</b><em>${fmt(Math.abs(a.pts - b.pts))} puntos entre vosotros. ${S.coopOffline ? "Sin conexión." : "En directo."}</em></span>${ICON.chev}</button></div>`); }
   if (core.stale) out.push(`<div class="sec">${staleBanner(core)}</div>`);
   if (S.mode === "local" && S.canWrite && S.downloads) {
     const total = careerStats(core, S.seasons, ME).races;
@@ -5487,7 +5512,7 @@ function homeScreen() {
     const nx = nextRound(core);
     const nc = nx && circuit(nx.gp);
     const rec = recordsAtStake(core);
-    if (nx) out.push(`<div class="sec"><button class="group weekcard" data-act="push" data-arg="week:">${nc ? `<span class="wf">${nc.flag}</span>` : `<span class="wf">📅</span>`}<span class="t"><small>La semana</small><b>${esc(nc ? "Siguiente: " + nc.gp : "Elige el circuito de la ronda " + nx.r)}</b><em>${esc(rec[0] || "Pendientes, rivales, récords en juego y objetivos.")}</em></span>${ICON.chev}</button></div>`);
+    if (nx && !pendingSeat) out.push(`<div class="sec"><button class="group weekcard" data-act="push" data-arg="week:">${nc ? `<span class="wf">${nc.flag}</span>` : `<span class="wf">📅</span>`}<span class="t"><small>La semana</small><b>${esc(nc ? "Siguiente: " + nc.gp : "Elige el circuito de la ronda " + nx.r)}</b><em>${esc(rec[0] || "Pendientes, rivales, récords en juego y objetivos.")}</em></span>${ICON.chev}</button></div>`);
   }
   out.push(sec("Líder del Mundial", leaderCard(core)));
   {
@@ -5507,7 +5532,7 @@ function homeScreen() {
   const t = driverTable(core);
   out.push(sec("Mundial de pilotos", `<div class="group">${t.slice(0, 5).map((r) => standRow(core, r, t[0].pts)).join("")}</div>`,
     `<button class="link" data-act="tab" data-arg="standings">Completo</button>`));
-  const mate = teammatesOf(core, ME)[0];
+  const mate = pendingSeat ? null : teammatesOf(core, ME)[0];
   if (mate) out.push(sec(`Duelo en ${team(teamOf(core, ME)).short}`, duelCard(core, ME, mate)));
   const chips = streakChips(core);
   if (chips) out.push(sec("Rachas de Arévalo", `<div class="chips">${chips}</div>`));
@@ -6034,6 +6059,7 @@ const MATE = () => teammatesOf(S.core, ME)[0];
 function openUpload(arg) {
   const core = S.core;
   if (!core) return;
+  if (typeof debutGate === "function" && debutGate()) return;
   const nx = nextRound(core);
   let session = "quali", r = nx ? nx.r : core.rounds.length;
   if (arg) {
@@ -6473,7 +6499,7 @@ function settingsSheet() {
   const grp = (title, rows) => rows.filter(Boolean).length ? `<h4 class="eh set-h">${title}</h4><div class="group">${rows.filter(Boolean).join("")}</div>` : "";
   const g = core && core.grid || {};
   const gridSub = core ? `${TEAM_IDS.length} equipos y ${DRIVER_IDS.length} pilotos${(g.removedDrivers || []).length || Object.keys(core.names || {}).length || Object.keys(core.teamNames || {}).length ? ", con cambios" : ""}` : "";
-  const head = core ? `<div class="set-hero" style="--tc:${tcolor(teamOf(core, ME))}">${drvHelmet(ME, 54)}<div><b>${esc(fullName(ME))}</b><small>${esc(team(teamOf(core, ME)).name)}, temporada ${core.season}</small><span class="set-chip">${isCoop() ? `👥 Cooperativo${otherPlayer() ? " con " + esc(LN(otherPlayer())) : ""}` : "👤 Un jugador"}${core.f2 && !core.f2.done ? ", prólogo de F2" : ""}</span></div></div>` : "";
+  const head = core ? `<div class="set-hero" style="--tc:${tcolor(teamOf(core, ME))}">${drvHelmet(ME, 54)}<div><b>${esc(fullName(ME))}</b><small>${esc(seatPending(core, ME) ? seatLabel(core, ME) : team(teamOf(core, ME)).name)}, temporada ${core.season}</small><span class="set-chip">${isCoop() ? `👥 Cooperativo${otherPlayer() ? " con " + esc(LN(otherPlayer())) : ""}` : "👤 Un jugador"}${core.f2 && !core.f2.done ? ", prólogo de F2" : ""}</span></div></div>` : "";
   return {
     title: "Ajustes",
     body: `${head}
@@ -6777,6 +6803,7 @@ function momentsBlock(st, race) {
 <div class="chips mchips">${defs.map((d) => `<button class="chip${d.id in mom ? " on" : ""}" data-act="e-mom" data-arg="${d.id}">${d.icon} ${esc(d.label)}</button>`).join("")}</div>${picks}`;
 }
 function openEntry(o) {
+  if (typeof debutGate === "function" && debutGate()) return;
   const round = roundOf(S.core, o.r);
   const src = !round ? null : o.session === "quali" ? round.quali : o.session === "sprint" ? round.sprint : round.race;
   const base = entryFromRound(round, o.session);
@@ -7051,8 +7078,8 @@ function storyScreen() {
   const st = storyChapters(core);
   const cs = careerStats(core, S.seasons, ME);
   const out = [];
-  out.push(`<header class="story-hero"><span class="flag-bg">${DRIVERS[ME].flag}</span><div class="kick">La historia de</div><h1>Andrés<br>Arévalo</h1>
-<p>Piloto de Aurelia Racing. ${cs.titles} ${cs.titles === 1 ? "Mundial" : "Mundiales"}, ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.</p></header>`);
+  out.push(`<header class="story-hero"><span class="flag-bg">${DRIVERS[ME].flag}</span><div class="kick">La historia de</div><h1>${esc(DRIVERS[ME].first)}<br>${esc(DRIVERS[ME].last)}</h1>
+<p>${seatPending(core, ME) ? esc(seatLabel(core, ME)) : `Piloto de ${esc(team(teamOf(core, ME)).name)}`}. ${cs.titles} ${cs.titles === 1 ? "Mundial" : "Mundiales"}, ${cs.wins} ${cs.wins === 1 ? "victoria" : "victorias"}, ${cs.poles} poles y ${cs.podiums} podios en ${cs.races} carreras.</p></header>`);
   out.push(`<div class="prologue"><p>${(() => { const tm = team(teamOf(core, ME)); const mate = teammatesOf(core, ME)[0]; const nat = (NATIONS.find((n) => n[0] === DRIVERS[ME].nat) || NATIONS[0])[1]; if (teamOf(core, ME) === "aurelia" && mate === "senna") return `Nadie en el paddock sabía su nombre cuando Aurelia Racing, un equipo recién llegado a la Fórmula 1, anunció a su piloto. Un español desconocido, sentado en el mismo garaje que el tricampeón Ayrton Senna. Lo que vino después es esta historia.`; return `Nadie en el paddock sabía su nombre cuando ${esc(tm.name)} anunció su fichaje. Un ${nat} desconocido${mate ? `, en el mismo garaje que ${esc(fullName(mate))}` : ""}. Lo que vino después es esta historia.`; })()}</p>${core.f2 && core.f2.done ? `<p>Antes, en la Fórmula 2, ${core.f2.champion === ME ? "se proclamó campeón en su primer y único intento" : `terminó ${((core.f2.final || []).find((x) => x.id === ME) || {}).pos || "?"}.º en un breve pero intenso prólogo`}.</p>` : ""}</div>`);
   if (st.miles.length) out.push(sec("Hitos", `<ol class="miles">${st.miles.map((m) => `<li><span class="mi">${m.icon}</span><div><b>${esc(m.title)}</b><small>${esc(m.text)}</small></div></li>`).join("")}</ol>`));
   out.push(sec("Capítulos", st.chapters.map((c) => `<article class="chapter${c.current ? " now" : ""}"><span class="cn num">${c.season}</span><div><span class="ck">Temporada ${c.season}${c.current ? ", en curso" : ""}</span><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p></div></article>`).join("")));
@@ -7189,18 +7216,21 @@ function meScreen() {
   const pressKey = `${core.season}-${(doneRounds(core).slice(-1)[0] || {}).r}`;
   const pendingPress = c.press && c.press[pressKey] && !c.press[pressKey].done && doneRounds(core).length;
   const out = [];
-  out.push(`<header class="mehero" style="--tc:${t.color}"><div class="me-h">${drvHelmet(ME, 96)}</div>
-<div class="me-n"><span class="first">${esc(DRIVERS[ME].first)}</span><span class="last">${esc(DRIVERS[ME].last)}</span><small>${crest(d.team, 16)} ${esc(t.name)}${d.num != null ? " #" + d.num : ""}</small></div>
+  const limbo = seatPending(core, ME);
+  out.push(`<header class="mehero" style="--tc:${limbo ? "#0284C7" : t.color}"><div class="me-h">${drvHelmet(ME, 96)}</div>
+<div class="me-n"><span class="first">${esc(DRIVERS[ME].first)}</span><span class="last">${esc(DRIVERS[ME].last)}</span><small>${limbo ? `🏎️ ${esc(seatLabel(core, ME))}` : `${crest(d.team, 16)} ${esc(t.name)}`}${d.num != null ? " #" + d.num : ""}</small></div>
 ${fameBar(c.fame)}
 <div class="me-kpis"><div><b class="num">${cfmt(c.followers)}</b><span>seguidores</span></div><div><b class="num">${fmtMoney(marketValue(core))}</b><span>valor de mercado</span></div><div><b class="num">${c.trust}</b><span>confianza</span></div></div></header>`);
+  if (limbo) out.push(`<button class="group list-btn press-cta" data-act="${f2Active(core) ? "goto-f2" : "debut-open"}">✍️<span class="t">${f2Active(core) ? "Aún sin equipo de F1" : "Tienes ofertas de F1"}<small>${f2Active(core) ? "Las ofertas llegarán al terminar la F2" : "Elige con qué equipo debutas"}</small></span>${ICON.chev}</button>`);
   if (pendingPress) out.push(`<button class="group list-btn press-cta" data-act="press-open" data-arg="${(doneRounds(core).slice(-1)[0] || {}).r}">🎙️<span class="t">Rueda de prensa pendiente<small>Los periodistas te esperan tras la última carrera</small></span>${ICON.chev}</button>`);
   out.push(`<div class="mgrid">
 <button class="mtile" data-act="push" data-arg="inbox:">${un ? `<span class="dotbadge">${un}</span>` : ""}<span class="mi">✉️</span><b>Correo</b><small>${un ? `${un} sin leer` : "Al día"}</small></button>
 <button class="mtile" data-act="push" data-arg="finance:"><span class="mi">💶</span><b>${fmtMoney(c.money)}</b><small>Saldo</small></button>
 <button class="mtile" data-act="push" data-arg="contract:">${(() => { const n = c.inbox.filter((m) => (m.type === "offer" || m.type === "renewal") && m.status === "new").length; return n ? `<span class="dotbadge">${n}</span>` : ""; })()}<span class="mi">📝</span><b>${c.contract.until - core.season + 1} ${c.contract.until - core.season + 1 === 1 ? "año" : "años"}</b><small>${c.pending ? `Fichado por ${esc(team(c.pending.team).short)}` : (() => { const n = c.inbox.filter((m) => (m.type === "offer" || m.type === "renewal") && m.status === "new").length; return n ? `${n} ${n === 1 ? "oferta" : "ofertas"} abiertas` : "Contrato"; })()}</small></button>
 <button class="mtile" data-act="push" data-arg="shop:"><span class="mi">🛍️</span><b>Tienda</b><small>Patrimonio ${fmtMoney(netWorth(core))}</small></button></div>`);
-  const obj = c.objectives && c.objectives.season === core.season ? c.objectives : makeObjectives(core, c);
-  out.push(sec(`Objetivos de la temporada ${core.season}`, `<div class="group objs">${obj.list.map((o) => { const p = objectiveProgress(core, o); return `<div class="obj${p.ok ? " ok" : ""}"><div class="obj-t"><span>${p.ok ? "✅" : "🎯"} ${esc(o.text)}</span><b>${esc(p.value)}</b></div><div class="obj-bar"><i style="width:${p.pct}%"></i></div></div>`; }).join("")}</div><p class="note">Cada objetivo cumplido al cerrar la temporada da una prima de 300.000 € y más confianza del equipo.</p>`));
+  const obj = limbo ? null : c.objectives && c.objectives.season === core.season ? c.objectives : makeObjectives(core, c);
+  if (limbo) out.push(sec("Objetivos", `<div class="group" style="padding:14px 16px">Te los marcará tu equipo cuando firmes tu primer contrato de F1.</div>`));
+  else out.push(sec(`Objetivos de la temporada ${core.season}`, `<div class="group objs">${obj.list.map((o) => { const p = objectiveProgress(core, o); return `<div class="obj${p.ok ? " ok" : ""}"><div class="obj-t"><span>${p.ok ? "✅" : "🎯"} ${esc(o.text)}</span><b>${esc(p.value)}</b></div><div class="obj-bar"><i style="width:${p.pct}%"></i></div></div>`; }).join("")}</div><p class="note">Cada objetivo cumplido al cerrar la temporada da una prima de 300.000 € y más confianza del equipo.</p>`));
   const got = Object.keys(liveAchievements(core));
   if (S.canWrite && got.length > Object.keys(c.achievements || {}).length && !S.achSync) { S.achSync = true; setTimeout(() => mutateCore((k) => refreshAchievements(k)).catch(() => null), 0); }
   out.push(sec("Logros", `<button class="group badges-row" data-act="push" data-arg="achievements:">${ACHIEVEMENTS.slice(0, 8).map((a) => `<span class="bdg${got.includes(a.id) ? " on" : ""}" title="${esc(a.name)}">${a.icon}</span>`).join("")}<span class="bdg-more">${got.length}/${ACHIEVEMENTS.length} ${ICON.chev}</span></button>`));
@@ -7240,7 +7270,7 @@ function mailScreen(id) {
   const c = careerView(core);
   const m = c.inbox.find((x) => x.id === id);
   if (!m) return notFound("Correo");
-  if (m.status === "new" && ["team", "achievement", "info", "press"].includes(m.type) && S.canWrite) setTimeout(() => markRead(id), 0);
+  if (m.status === "new" && ["team", "achievement", "info", "press", "debut"].includes(m.type) && S.canWrite) setTimeout(() => markRead(id), 0);
   const actions = [];
   const open = m.status === "new" && S.canWrite;
   if (m.type === "offer" || m.type === "renewal") {
@@ -7254,6 +7284,8 @@ function mailScreen(id) {
       if (m.type === "offer") actions.push(`<p class="note">Si firmas, el fichaje será efectivo al cerrar la temporada. En F1 25 tendrás que empezar la siguiente con tu nuevo equipo.</p>`);
       else actions.push(`<p class="note">Si firmas la renovación, el nuevo sueldo empieza a contar desde ya.</p>`);
     }
+  } else if (m.type === "debut") {
+    actions.push(seatPending(core, ME) ? `<div class="row-btns"><button class="btn btn-red" data-act="debut-open">Ver las ofertas</button></div>` : `<div class="tip">✍️ Ya has firmado con ${esc(team(teamOf(core, ME)).name)}.</div>`);
   } else if (m.type === "sponsor" && open) {
     actions.push(`<div class="row-btns"><button class="btn btn-red" data-act="mail-accept" data-arg="${esc(id)}">Firmar el patrocinio</button><button class="btn btn-ghost" data-act="mail-reject" data-arg="${esc(id)}">Rechazar</button></div>`);
   } else if (m.type === "dilemma") {
@@ -7301,6 +7333,14 @@ function contractScreen() {
   const core = S.core;
   const c = careerView(core);
   const k = c.contract;
+  if (seatPending(core, ME)) {
+    const d = debutOf(core, ME) || {};
+    const offs = d.offers || [];
+    return { title: "Contrato", html: `<div class="offer-card big" style="--tc:#0284C7"><span style="font-size:44px">✍️</span><div><span class="lbl">Contrato actual</span><b style="font-size:22px">Sin contrato de F1</b><p class="note" style="margin:6px 0 0">${f2Active(core) ? `Corres la Fórmula 2${f2TeamOf(core, ME) ? " con " + esc(f2TeamOf(core, ME).name) : ""}. Al terminarla, los equipos de F1 te harán sus ofertas.` : "Los equipos de F1 te han hecho sus ofertas. Elige con cuál debutas."}</p></div></div>
+${offs.length && !f2Active(core) ? sec("Ofertas sobre la mesa", `<div class="group">${offs.map((o) => `<button class="list-btn" data-act="debut-open">${crest(o.team, 34)}<span class="t">${esc(team(o.team).name)}${o.big ? " ⭐" : ""}<small>${fmtMoney(o.salary)}/año, ${o.years} ${o.years === 1 ? "temporada" : "temporadas"}</small></span>${ICON.chev}</button>`).join("")}</div>`) : ""}
+${!f2Active(core) && S.canWrite ? `<div class="row-btns sec"><button class="btn btn-red" data-act="debut-open">Ver y firmar las ofertas</button></div>` : ""}
+${sec("Tu valor", tiles([{ k: "valor de mercado", v: fmtMoney(marketValue(core)), cls: "hl" }, { k: "fama", v: NF.format(c.fame) }]))}` };
+  }
   const out = [`<div class="offer-card big" style="--tc:${team(k.team).color}">${crest(k.team, 64)}<div><span class="lbl">Contrato actual</span><b style="font-size:22px">${esc(team(k.team).name)}</b>
 <div class="offer-kv"><span>Sueldo</span><b>${fmtMoney(k.salary)}/año</b><span>Hasta</span><b>Temporada ${k.until}</b><span>Rol</span><b>${k.role === "primer" ? "Primer piloto" : "Igualdad de trato"}</b><span>Por victoria</span><b>${fmtMoney(k.bonus.win)}</b><span>Por podio</span><b>${fmtMoney(k.bonus.podium)}</b><span>Por título</span><b>${fmtMoney(k.bonus.title)}</b></div></div></div>`];
   if (c.pending) out.push(`<div class="banner" style="margin-top:12px">🔁<div>Has firmado con <b>${esc(team(c.pending.team).name)}</b> para la temporada ${c.pending.season}: ${fmtMoney(c.pending.salary)} al año durante ${c.pending.years} ${c.pending.years === 1 ? "temporada" : "temporadas"}. El cambio se hará al cerrar esta temporada.</div></div>`);
@@ -7784,9 +7824,11 @@ const ALL_TEAM_IDS = TEAM_IDS.slice();
 function syncGrid(core) {
   const g = (core && core.grid) || {};
   const rt = new Set(g.removedTeams || []), rd = new Set(g.removedDrivers || []);
-  const myTeam = core ? teamOf(core, ME) : null;
-  const keepT = ALL_TEAM_IDS.filter((t) => !rt.has(t) || t === myTeam);
-  const keepD = ALL_DRIVER_IDS.filter((d) => d === ME || (!rd.has(d) && keepT.includes(core ? teamOf(core, d) : DRIVERS[d].team)));
+  const pl = core && typeof playersIn === "function" ? playersIn(core) : [ME];
+  /* Sin equipo de F1 todavía (antes de firmar), tu equipo provisional no cuenta. */
+  const myTeams = pl.filter((p) => !(typeof seatPending === "function" && seatPending(core, p))).map((p) => (core ? teamOf(core, p) : DRIVERS[p].team));
+  const keepT = ALL_TEAM_IDS.filter((t) => !rt.has(t) || myTeams.includes(t));
+  const keepD = ALL_DRIVER_IDS.filter((d) => d === ME || pl.includes(d) || (!rd.has(d) && keepT.includes(core ? teamOf(core, d) : DRIVERS[d].team)));
   if (keepT.join() !== TEAM_IDS.join()) { TEAM_IDS.length = 0; keepT.forEach((t) => TEAM_IDS.push(t)); }
   if (keepD.join() !== DRIVER_IDS.join()) { DRIVER_IDS.length = 0; keepD.forEach((d) => DRIVER_IDS.push(d)); }
 }
@@ -7794,14 +7836,16 @@ function gridSheet(st) {
   const core = S.core;
   const g = core.grid || {};
   const rt = new Set(g.removedTeams || []), rd = new Set(g.removedDrivers || []);
-  const myTeam = teamOf(core, ME);
+  const limbo = typeof seatPending === "function" && seatPending(core, ME);
+  const myTeam = limbo ? null : teamOf(core, ME);
   const players = typeof playersIn === "function" ? playersIn(core) : [ME];
+  const hidden = players.filter((p) => typeof seatPending === "function" && seatPending(core, p));
   const wiz = st && st.wizard;
   const activeTeams = ALL_TEAM_IDS.filter((t) => !rt.has(t) || t === myTeam);
-  const nDrivers = DRIVER_IDS.length;
+  const nDrivers = DRIVER_IDS.filter((d) => !hidden.includes(d)).length;
   const changes = Object.keys(core.names || {}).length + Object.keys(core.teamNames || {}).length + (g.removedDrivers || []).length + (g.removedTeams || []).length + Object.keys(core.roster || {}).filter((d) => DRIVERS[d] && core.roster[d].team && core.roster[d].team !== DRIVERS[d].team).length;
   const card = (t) => {
-    const ds = ALL_DRIVER_IDS.filter((d) => teamOf(core, d) === t && !rd.has(d));
+    const ds = ALL_DRIVER_IDS.filter((d) => teamOf(core, d) === t && !rd.has(d) && !hidden.includes(d) && (DRIVERS[d].player !== true || players.includes(d)));
     const tm = team(t);
     const warn = ds.length !== 2 ? `<span class="gwarn">${ds.length === 1 ? "Solo 1 piloto" : ds.length === 0 ? "Sin pilotos" : ds.length + " pilotos"}</span>` : "";
     return `<div class="gcard" style="--tc:${tm.color}"><div class="gc-h">${crest(t, 34)}<span class="gc-n"><b>${escRaw(tm.name)}</b><small>${t === myTeam ? "Tu equipo" : core.teamNames && core.teamNames[t] ? "Nombre cambiado" : "&nbsp;"}</small></span>${warn}
@@ -7809,10 +7853,11 @@ ${t !== "aurelia" ? `<button class="gbtn" data-act="team-edit" data-arg="${t}" a
 ${ds.map((d) => `<div class="gd">${drvHelmet(d, 28)}<span class="gd-n"><b>${escRaw(fullName(d))}</b><small>${players.includes(d) ? (d === ME ? "Tú" : "Jugador") : core.names && core.names[d] ? "Nombre cambiado" : (DRIVERS[d].num != null ? "#" + DRIVERS[d].num : "")}</small></span>
 <button class="gbtn" data-act="grid-swap" data-arg="${d}" aria-label="Mover" title="Mover">⇄</button>${!players.includes(d) ? `<button class="gbtn" data-act="grid-rename" data-arg="${d}" aria-label="Cambiar nombre" title="Cambiar nombre">✎</button><button class="gbtn" data-act="grid-drv" data-arg="${d}" aria-label="Quitar" title="Quitar">✕</button>` : ""}</div>`).join("") || `<div class="gd"><span class="gd-n"><small>Sin pilotos. Usa ⇄ en un piloto para traerlo aquí.</small></span></div>`}</div>`;
   };
-  const outDrivers = ALL_DRIVER_IDS.filter((d) => rd.has(d) || (rt.has(teamOf(core, d)) && teamOf(core, d) !== myTeam));
+  const outDrivers = ALL_DRIVER_IDS.filter((d) => !hidden.includes(d) && (DRIVERS[d].player !== true || players.includes(d)) && (rd.has(d) || (rt.has(teamOf(core, d)) && teamOf(core, d) !== myTeam)));
   const outTeams = ALL_TEAM_IDS.filter((t) => rt.has(t) && t !== myTeam);
   return { title: wiz ? "3. Parrilla y equipos" : "Parrilla y equipos", body: `<p class="lede" style="margin:0 0 10px">${wiz ? "Déjala igual que en tu partida de F1 25. Puedes volver aquí cuando quieras desde Ajustes." : "Déjala igual que en tu partida de F1 25. Los resultados pasados se conservan."}</p>
 <div class="gsum"><span><b>${activeTeams.length}</b> equipos</span><span><b>${nDrivers}</b> pilotos</span><span><b>${changes}</b> ${changes === 1 ? "cambio" : "cambios"}</span></div>
+${hidden.length ? `<div class="banner" style="margin:0 0 10px">✍️<div>${hidden.includes(ME) ? "Aún no tienes equipo de F1" : `${esc(fullName(hidden[0]))} aún no tiene equipo de F1`}: ${f2Active(core) ? "las ofertas llegarán al terminar la F2" : "elige entre las ofertas"}. Deja aquí la parrilla igual que en F1 25 y, al firmar, ocuparás el asiento de quien sustituyas.</div></div>` : ""}
 <p class="note" style="margin:0 0 10px">⇄ mover de equipo, ✎ cambiar nombre, ✕ quitar.</p>
 ${activeTeams.map(card).join("")}
 ${outDrivers.length || outTeams.length ? `<h4 class="eh">Fuera de la parrilla</h4><div class="group">${outTeams.map((t) => `<div class="gd">${crest(t, 26)}<span class="gd-n"><b>${escRaw(team(t).name)}</b><small>Equipo completo</small></span><button class="btn btn-sm btn-ghost" data-act="grid-team" data-arg="${t}">Recuperar</button></div>`).join("")}${outDrivers.filter((d) => !outTeams.includes(teamOf(core, d)) || rd.has(d)).map((d) => `<div class="gd">${drvHelmet(d, 26)}<span class="gd-n"><b>${escRaw(fullName(d))}</b><small>${escRaw(team(teamOf(core, d)).name)}</small></span>${rd.has(d) ? `<button class="btn btn-sm btn-ghost" data-act="grid-drv" data-arg="${d}">Recuperar</button>` : ""}</div>`).join("")}</div>` : ""}
@@ -8312,22 +8357,25 @@ function applyNames(core) {
   });
 }
 function applyIdentity(core) {
-  const id = core && core.identity;
+  const id0 = core && core.identity;
   const mate = core ? teammatesOf(core, "arevalo")[0] : null;
-  const sig = JSON.stringify([id || null, mate || null, (core && core.names) || null, (core && core.teamNames) || null, core ? DRIVER_IDS.includes("senna") : true]);
+  /* El equipo de los textos es siempre el equipo real del jugador 1, aunque lo hayas movido desde la parrilla. */
+  const cur = core ? teamOf(core, "arevalo") : "aurelia";
+  const realTeam = cur && cur !== "aurelia" && TEAMS[cur] ? cur : null;
+  const sig = JSON.stringify([id0 || null, mate || null, realTeam, (core && core.names) || null, (core && core.teamNames) || null, core ? DRIVER_IDS.includes("senna") : true]);
   if (applyIdentity.sig === sig) return;
   applyIdentity.sig = sig;
   applyNames(core);
   const d = DRIVERS.arevalo;
-  if (!id) {
+  if (!id0 && !realTeam && (!mate || mate === "senna" || DRIVER_IDS.includes("senna"))) {
     Object.assign(d, { first: ORIG.first, last: ORIG.last, code: ORIG.code, flag: ORIG.flag, nat: ORIG.nat });
     Object.assign(TEAMS.aurelia, ORIG.team);
     IDENT = null;
     return;
   }
+  const id = id0 || { first: ORIG.first, last: ORIG.last, code: ORIG.code, flag: ORIG.flag, nat: ORIG.nat };
   Object.assign(d, { first: id.first, last: id.last, code: (id.code || id.last.slice(0, 3)).toUpperCase(), flag: id.flag, nat: id.nat });
   if (id.num != null && core.roster) core.roster.arevalo = Object.assign({}, core.roster.arevalo || {}, { num: id.num });
-  const realTeam = id.team && id.team !== "aurelia" ? id.team : null;
   if (realTeam) Object.assign(TEAMS.aurelia, ORIG.team);
   else {
     TEAMS.aurelia.name = id.teamName || ORIG.team.name;
@@ -8342,13 +8390,14 @@ function applyIdentity(core) {
   const pairs = [
     ["Andrés Arévalo", full], ["ANDRÉS ARÉVALO", UP(full)], ["Arévalo", id.last], ["ARÉVALO", UP(id.last)], ["Andrés", id.first], ["ANDRÉS", UP(id.first)],
     ["#AureliaRacing", "#" + tmName.replace(/\s+/g, "")], ["AURELIA RACING", UP(tmName)], ["Aurelia Racing", tmName], ["AURELIA", UP(tmShort)], ["Aurelia", tmShort],
+    ["Aurelia Ultras", `${tmShort} Ultras`], ["aurelia_ultras", tmShort.toLowerCase().replace(/[^a-z0-9]+/g, "") + "_ultras"],
     ["Marco Valenti, jefe de equipo", realTeam && !id.boss ? boss : `${boss}, jefe de equipo`], [`Marco Valenti (${ORIG.team.name})`, realTeam && !id.boss ? boss : `${boss} (${tmName})`], ["Marco Valenti", boss],
     ["Un español desconocido", `Un ${nat[1]} desconocido`], ["España vuelve a tener", `${nat[0]} vuelve a tener`], ["himno español", `himno ${nat[1] === "español" ? "español" : "nacional"}`], ["piloto español", `piloto ${nat[1]}`]
   ];
   /* Si Senna ya no corre, los textos que hablaban de él como compañero pasan al compañero real. */
   if (mate && mate !== "senna" && !DRIVER_IDS.includes("senna")) {
     const m = DRIVERS[mate];
-    pairs.push(["Ayrton Senna", `${m.first} ${m.last}`], ["AYRTON SENNA", UP(`${m.first} ${m.last}`)], ["Ayrton", m.first], ["Senna", m.last], ["SENNA", UP(m.last)], ["el tricampeón", "su compañero"], ["tricampeón", "compañero"]);
+    pairs.push(["Ayrton Senna", `${m.first} ${m.last}`], ["AYRTON SENNA", UP(`${m.first} ${m.last}`)], ["Ayrton", m.first], ["Senna", m.last], ["SENNA", UP(m.last)], ["el tricampeón", "su compañero"], ["El tricampeón", "Su compañero"], ["EL TRICAMPEÓN", "SU COMPAÑERO"], ["tricampeón", "compañero"]);
   }
   const used = pairs.filter(([a, b]) => a !== b);
   used.sort((a, b) => b[0].length - a[0].length);
@@ -8365,6 +8414,7 @@ function identitySheet(st) {
 <div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}"></div>
 <div class="field"><label>Jefe de tu equipo (opcional)</label><input class="inp" data-bind="f.boss" value="${esc(f.boss || "")}" placeholder="Nombre para los correos del equipo"></div>`, foot: `<button class="btn btn-red btn-block" data-act="id-save">Guardar</button>` };
   const real = st.fresh && f.teamMode === "real";
+  const offers = st.fresh && f.teamMode === "offers";
   const rt = f.team || ALL_TEAM_IDS.filter((t) => t !== "aurelia")[0];
   const seats = ALL_DRIVER_IDS.filter((d) => d !== "arevalo" && d !== "jugador2" && DRIVERS[d].team === rt);
   return { title: st.fresh ? "Nueva partida" : "Tu piloto",
@@ -8373,8 +8423,8 @@ ${st.fresh ? `<h4 class="eh">1. Tu piloto</h4>` : ""}
 ${inp("first", "Nombre", "Andrés")}${inp("last", "Apellido", "Arévalo")}
 <div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
 <div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}" placeholder="7"></div>
-${st.fresh ? `<h4 class="eh">2. Tu equipo</h4><div class="chips" style="margin-bottom:10px"><button class="chip${!real ? " on" : ""}" data-act="id-teammode" data-arg="aurelia">Escudería nueva (Aurelia)</button><button class="chip${real ? " on" : ""}" data-act="id-teammode" data-arg="real">Un equipo de la parrilla</button></div>` : ""}
-${real ? `<div class="field"><label>Equipo</label><select class="sel" data-bind="f.team" data-rerender="1">${ALL_TEAM_IDS.filter((t) => t !== "aurelia").map((t) => `<option value="${t}" ${rt === t ? "selected" : ""}>${esc(team(t).name)}</option>`).join("")}</select></div>
+${st.fresh ? `<h4 class="eh">2. Tu equipo</h4><div class="chips" style="margin-bottom:10px"><button class="chip${offers ? " on" : ""}" data-act="id-teammode" data-arg="offers">Como en la vida real: ofertas</button><button class="chip${real ? " on" : ""}" data-act="id-teammode" data-arg="real">Elegir un equipo de la parrilla</button><button class="chip${!real && !offers ? " on" : ""}" data-act="id-teammode" data-arg="aurelia">Escudería nueva (Aurelia)</button></div>` : ""}
+${offers ? `<p class="note">Empiezas sin equipo de F1. Corres la F2 (o no, si lo prefieres) y después te llegarán ofertas de varios equipos modestos y de uno grande, al azar. El que firmes será tu equipo y tu contrato. Aurelia Racing no estará en la parrilla.</p>` : real ? `<div class="field"><label>Equipo</label><select class="sel" data-bind="f.team" data-rerender="1">${ALL_TEAM_IDS.filter((t) => t !== "aurelia").map((t) => `<option value="${t}" ${rt === t ? "selected" : ""}>${esc(team(t).name)}</option>`).join("")}</select></div>
 <div class="field"><label>Piloto al que sustituyes</label><select class="sel" data-bind="f.replace">${seats.map((d) => `<option value="${d}" ${f.replace === d ? "selected" : ""}>${esc(fullName(d))}</option>`).join("")}</select><small>Tu compañero será el otro piloto del equipo. Aurelia Racing y Ayrton Senna no estarán en la parrilla.</small></div>
 ${inp("boss", "Jefe de equipo (opcional)", "Para los correos y declaraciones")}`
     : `${inp("teamName", "Nombre de tu escudería", "Aurelia Racing")}${inp("boss", "Jefe de equipo", "Marco Valenti")}
@@ -8485,7 +8535,7 @@ function applyPlayers(core) {
     if (DRIVERS[P2]) { const i = ALL_DRIVER_IDS.indexOf(P2); if (i >= 0) ALL_DRIVER_IDS.splice(i, 1); }
     return;
   }
-  DRIVERS[P2] = Object.assign(DRIVERS[P2] || {}, { id: P2, first: p.first, last: p.last, code: (p.code || p.last.slice(0, 3)).toUpperCase(), num: p.num != null ? Number(p.num) : null, nat: p.nat, flag: p.flag, team: p.team, player: true, real: null });
+  DRIVERS[P2] = Object.assign(DRIVERS[P2] || {}, { id: P2, first: p.first, last: p.last, code: (p.code || p.last.slice(0, 3)).toUpperCase(), num: p.num != null ? Number(p.num) : null, nat: p.nat, flag: p.flag, team: p.team || "aurelia", player: true, real: null });
   if (!ALL_DRIVER_IDS.includes(P2)) ALL_DRIVER_IDS.push(P2);
   if (!ROOKIES.includes(P2)) ROOKIES.push(P2);
   if (NATIONS.find((n) => n[0] === p.nat && n[1] === "español") && !ES_DRIVERS.includes(P2)) ES_DRIVERS.push(P2);
@@ -8695,17 +8745,18 @@ const TEAM_CHOICES = () => ALL_TEAM_IDS.filter((t) => t !== "aurelia");
 function coopSheet(st) {
   const tab = st.tab || (st.invite ? "join" : "create");
   const seg = `<div class="seg"><button data-act="coop-tab" data-arg="create" aria-pressed="${tab === "create"}">Crear partida</button><button data-act="coop-tab" data-arg="join" aria-pressed="${tab === "join"}">Unirme</button></div>`;
+  const f2Pick = (bind, val, except) => `<div class="field"><label>Tu equipo de F2</label><select class="sel" data-bind="${bind}">${F2_TEAMS.filter((t) => t.id !== except).map((t) => `<option value="${t.id}" ${val === t.id ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select></div>`;
   if (tab === "create") {
+    const n = st.f2 == null ? 2 : Number(st.f2);
     return { title: "Cooperativo", body: `${seg}
-<p class="lede" style="margin:0 0 10px">Tú serás el jugador 1 (Andrés Arévalo, en Aurelia Racing). Necesitas pegar la configuración de tu proyecto de Firebase una sola vez.</p>
+<p class="lede" style="margin:0 0 10px">Tú serás el jugador 1 (${esc(fullName("arevalo"))}). Como en la vida real, ninguno de los dos tiene equipo de F1 al empezar: primero la F2 y, al terminarla, a cada uno le llegarán sus propias ofertas (varios equipos modestos y uno grande, al azar).</p>
 <div class="field"><label>Configuración de Firebase</label><textarea class="inp code" rows="6" data-bind="fbText" placeholder='const firebaseConfig = { apiKey: "…", authDomain: "…", projectId: "…", appId: "…" };'>${esc(st.fbText || "")}</textarea><small>Firebase → Configuración del proyecto → Tus apps → Web → firebaseConfig.</small></div>
-<div class="field"><label>¿Empezáis en la Fórmula 2?</label><div class="chips">${[[0, "No, directos a la F1"], [2, "2 carreras de F2"], [3, "3 carreras de F2"]].map(([n, l]) => `<button class="chip${Number(st.f2 || 0) === n ? " on" : ""}" data-act="coop-f2" data-arg="${n}">${l}</button>`).join("")}</div></div>
+<div class="field"><label>Fórmula 2</label><div class="chips">${[[2, "2 carreras"], [3, "3 carreras"], [0, "Sin F2: ofertas ya"]].map(([k, l]) => `<button class="chip${n === k ? " on" : ""}" data-act="coop-f2" data-arg="${k}">${l}</button>`).join("")}</div></div>
+${n ? f2Pick("f2team", st.f2team || "campos") : ""}
 ${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
       foot: `<button class="btn btn-red btn-block" data-act="coop-create" ${st.working ? "disabled" : ""}>${st.working ? "Conectando…" : "Crear la partida"}</button>` };
   }
   const f = st.f;
-  const t = f.team || TEAM_CHOICES()[0];
-  const seats = ALL_DRIVER_IDS.filter((d) => d !== P2 && d !== "arevalo" && DRIVERS[d].team === t);
   return { title: "Cooperativo", body: `${seg}
 <div class="field"><label>Invitación</label><textarea class="inp code" rows="3" data-bind="inviteText" placeholder="Pega aquí el enlace que te ha pasado tu amigo">${esc(st.inviteText || "")}</textarea></div>
 <h4 class="eh">Tu piloto</h4>
@@ -8713,8 +8764,7 @@ ${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
 <div class="field"><label>Apellido</label><input class="inp" data-bind="f.last" value="${esc(f.last || "")}" placeholder="Apellido"></div>
 <div class="field"><label>Nacionalidad</label><select class="sel" data-bind="f.nat">${NATIONS.map((n) => `<option value="${esc(n[0])}" ${f.nat === n[0] ? "selected" : ""}>${n[2]} ${esc(n[0])}</option>`).join("")}</select></div>
 <div class="field"><label>Dorsal</label><input class="inp" type="number" min="1" max="99" data-bind="f.num" value="${esc(f.num || "")}"></div>
-<div class="field"><label>Tu escudería en F1 25</label><select class="sel" data-bind="f.team" data-rerender="1">${TEAM_CHOICES().map((x) => `<option value="${x}" ${t === x ? "selected" : ""}>${esc(team(x).name)}</option>`).join("")}</select></div>
-<div class="field"><label>Piloto al que sustituyes</label><select class="sel" data-bind="f.replace">${seats.map((d) => `<option value="${d}" ${f.replace === d ? "selected" : ""}>${esc(fullName(d))}</option>`).join("")}</select></div>
+${f2Pick("f.f2team", f.f2team || "prema")}<p class="note" style="margin-top:-4px">Si tu amigo ya está en ese equipo, la app te pondrá en otro. Tu equipo de F1 lo decidirás con las ofertas que te lleguen.</p>
 ${st.error ? `<div class="warn">${esc(st.error)}</div>` : ""}`,
     foot: `<button class="btn btn-red btn-block" data-act="coop-join" ${st.working ? "disabled" : ""}>${st.working ? "Conectando…" : "Unirme a la partida"}</button>` };
 }
@@ -8728,7 +8778,7 @@ function parseFbConfig(text) {
 function newGameId() { const a = new Uint8Array(12); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => { a[i] = Math.floor(Math.random() * 256); }); return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join(""); }
 function inviteSheet() {
   const link = Coop.inviteLink();
-  return { title: "Invita a tu amigo", body: `<p class="lede" style="margin:0 0 10px">Pásale este enlace. Al abrirlo podrá crear su piloto y unirse a vuestra partida.</p><textarea class="inp code" rows="4" readonly>${esc(link)}</textarea>
+  return { title: "Invita a tu amigo", body: `<p class="lede" style="margin:0 0 10px">Pásale este enlace. Al abrirlo podrá crear su piloto y unirse a vuestra partida. Correrá la F2 contigo y recibirá sus propias ofertas de F1.</p><textarea class="inp code" rows="4" readonly>${esc(link)}</textarea>
 <div class="row-btns" style="margin-top:10px"><button class="btn btn-red" data-act="coop-copy">Copiar</button>${navigator.share ? `<button class="btn btn-ghost" data-act="coop-share">Compartir</button>` : ""}</div>
 <p class="note">El enlace da acceso a vuestra partida: compártelo solo con él.</p>`, foot: `<button class="btn btn-ghost btn-block" data-act="close-sheet">Hecho</button>` };
 }
@@ -8878,17 +8928,19 @@ async function f2Close() {
     core.f2.final = st.map((x) => ({ id: x.id, pos: x.pos, pts: x.pts, wins: x.wins, name: f2Name(core, x.id) }));
     const c = careerOf(core);
     if (my && !c.f2bonus) { addFame(c, my.pos === 1 ? 8 : my.pos <= 3 ? 4 : 1.5); c.f2bonus = true; }
+    dealDebutOffers(core);
   }).catch(() => null);
   const g = NG(S.core, { r: 999 }, "f2close");
   const vr = makeVary({ narrative: {} }, g);
   const art = makeArticle(S.core, null, "flash", null, { id: `f2-final-${ME}-auto`, auto: true, color: "#F2C14E", stats: null, kicker: "Fórmula 2",
     title: champ === ME ? vr.pick("f2c-w", [`¡${UP(LN(ME))}, CAMPEÓN DE F2!`, `${UP(LN(ME))} CONQUISTA LA F2 Y SALTA A LA F1`]) : `${UP(LN(ME))} CIERRA LA F2 EN LA ${my ? my.pos : "?"}.ª POSICIÓN`,
     subtitle: champ === ME ? "El título de Fórmula 2 ya es suyo. Próxima parada: la Fórmula 1." : `El campeón es ${f2Name(S.core, champ)}. Ahora empieza lo de verdad: la Fórmula 1.`,
-    sections: [{ heading: "🏆 La clasificación final", body: st.slice(0, 8).map((x) => `${x.pos}. ${f2Name(S.core, x.id)}: ${x.pts} pts`).join("\n") }, { heading: "🚀 El salto", body: `${fullName(ME)} debutará en la Fórmula 1 con ${team(teamOf(S.core, ME)).name}.` }] });
+    sections: [{ heading: "🏆 La clasificación final", body: st.slice(0, 8).map((x) => `${x.pos}. ${f2Name(S.core, x.id)}: ${x.pts} pts`).join("\n") }, { heading: "🚀 El salto", body: seatPending(S.core, ME) ? `Ahora empieza el mercado: los equipos de Fórmula 1 ya han llamado a la puerta de ${fullName(ME)}. Le esperan varias ofertas de equipos modestos y una de un equipo grande.` : `${fullName(ME)} debutará en la Fórmula 1 con ${team(teamOf(S.core, ME)).name}.` }] });
   art.t = Date.now();
   await Store.saveArticle(art).catch(() => null);
   openArticle(art.id);
   if (champ === ME) setTimeout(() => confetti("big"), 300);
+  if (seatPending(S.core, ME)) setTimeout(() => openSheet({ type: "debut" }), champ === ME ? 1600 : 700);
 }
 
 /* ---------- pantalla ---------- */
@@ -8904,12 +8956,276 @@ function f2Body(core) {
   return out.join("");
 }
 function f2SetupSheet(st) {
-  return { title: "¿Empiezas en la Fórmula 2?", body: `<p class="lede" style="margin:0 0 12px">Antes de tu debut en la F1 puedes disputar un prólogo en la F2. Tú anotas tu resultado y la app simula al resto. El título se guarda en tu palmarés.</p>
-<div class="field"><label>Carreras</label><div class="chips">${[[0, "No, directo a la F1"], [2, "2 carreras"], [3, "3 carreras"]].map(([n, l]) => `<button class="chip${Number(st.n) === n ? " on" : ""}" data-act="f2-n" data-arg="${n}">${l}</button>`).join("")}</div></div>
+  const offers = !!(S.core && S.core.debut);
+  const opts = offers ? [[2, "2 carreras"], [3, "3 carreras"], [0, "Sin F2: ofertas ya"]] : [[0, "No, directo a la F1"], [2, "2 carreras"], [3, "3 carreras"]];
+  return { title: "¿Empiezas en la Fórmula 2?", body: `<p class="lede" style="margin:0 0 12px">${offers ? "Como en la vida real: primero la F2. Tú anotas tu resultado y la app simula al resto. Al terminar, te llegarán ofertas de varios equipos de F1 y elegirás con cuál debutas." : "Antes de tu debut en la F1 puedes disputar un prólogo en la F2. Tú anotas tu resultado y la app simula al resto. El título se guarda en tu palmarés."}</p>
+<div class="field"><label>Carreras</label><div class="chips">${opts.map(([n, l]) => `<button class="chip${Number(st.n) === n ? " on" : ""}" data-act="f2-n" data-arg="${n}">${l}</button>`).join("")}</div></div>
 ${Number(st.n) ? `<div class="field"><label>Tu equipo de F2</label><select class="sel" data-bind="team">${F2_TEAMS.map((t) => `<option value="${t.id}" ${st.team === t.id ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select></div>` : ""}`,
-    foot: `<button class="btn btn-red btn-block" data-act="f2-start">${Number(st.n) ? "Empezar en la F2" : "Ir directo a la F1"}</button>` };
+    foot: `<button class="btn btn-red btn-block" data-act="f2-start">${Number(st.n) ? "Empezar en la F2" : offers ? "Recibir las ofertas" : "Ir directo a la F1"}</button>` };
 }
 
+/* ============================================================
+   EL SALTO A LA F1: OFERTAS DE DEBUT
+   Como en la vida real: empiezas sin equipo de F1. Al terminar la F2
+   (o al empezar, si no hay F2) te llegan ofertas de varios equipos
+   pequeños y de un equipo grande, al azar y distintas para cada
+   jugador. Al firmar se fijan tu equipo, a quién sustituyes y tu
+   contrato. Hasta entonces no se pueden anotar carreras de F1.
+   ============================================================ */
+
+
+/* ¿Este jugador (o alguno, si no se indica) está todavía sin equipo de F1? */
+function seatPending(core, pid) {
+  const d = core && core.debut;
+  if (!d) return false;
+  if (pid) return !!(d[pid] && !d[pid].team);
+  return playersIn(core).some((p) => d[p] && !d[p].team);
+}
+function debutOf(core, pid) { return (core && core.debut && core.debut[pid]) || null; }
+function f2TeamOf(core, pid) { const d = core && core.f2 && (core.f2.grid || []).find((x) => x.id === pid); return d ? f2Team(d.team) : null; }
+/* Lo que se ve debajo del nombre mientras no tienes equipo de F1. */
+function seatLabel(core, pid) {
+  const ft = f2TeamOf(core, pid);
+  return ft ? `Fórmula 2 · ${ft.name}` : "Sin equipo de F1 todavía";
+}
+function otherSigned(core, pid) {
+  const o = playersIn(core).find((p) => p !== pid);
+  const d = o && debutOf(core, o);
+  return d && d.team ? { pid: o, team: d.team } : null;
+}
+function f2PosOf(core, pid) {
+  const f = core.f2 && core.f2.final;
+  const x = f && f.find((y) => y.id === pid);
+  return x ? x.pos : null;
+}
+
+/* Genera las ofertas de un jugador: 3 equipos pequeños y 1 grande, al azar. */
+function makeDebutOffers(core, pid) {
+  const g = newsRng(`debut-${pid}-${core.season}-${Date.now()}-${Math.random()}`);
+  const shuffle = (a) => a.map((x) => [g(), x]).sort((p, q) => p[0] - q[0]).map((p) => p[1]);
+  const taken = otherSigned(core, pid);
+  const other = playersIn(core).find((p) => p !== pid);
+  const otherOffers = (other && debutOf(core, other) && debutOf(core, other).offers) || [];
+  const avail = TEAM_IDS.filter((t) => t !== "aurelia" && TEAMS[t] && (!taken || taken.team !== t));
+  const wealth = (t) => TEAM_WEALTH[t] || 0.8;
+  let bigs = avail.filter((t) => BIG_TEAMS.includes(t));
+  if (!bigs.length) bigs = avail.slice().sort((a, b) => wealth(b) - wealth(a)).slice(0, 2);
+  const otherBig = (otherOffers.find((o) => o.big) || {}).team;
+  const bigPool = bigs.filter((t) => t !== otherBig);
+  const big = shuffle(bigPool.length ? bigPool : bigs)[0];
+  let small = shuffle(avail.filter((t) => t !== big && !BIG_TEAMS.includes(t)));
+  /* Que no coincidan del todo con las del otro jugador. */
+  const otherSmall = otherOffers.filter((o) => !o.big).map((o) => o.team);
+  if (otherSmall.length) small = small.filter((t) => !otherSmall.includes(t)).concat(small.filter((t) => otherSmall.includes(t)));
+  small = small.slice(0, 3);
+  if (small.length < 3) small = small.concat(shuffle(avail.filter((t) => t !== big && !small.includes(t))).slice(0, 3 - small.length));
+  const pos = f2PosOf(core, pid);
+  const perf = pos === 1 ? 1.3 : pos && pos <= 3 ? 1.12 : pos && pos <= 8 ? 1 : pos ? 0.9 : 1;
+  const round50 = (n) => Math.round(n / 50000) * 50000;
+  const round10 = (n) => Math.max(10000, Math.round(n / 10000) * 10000);
+  const seatFor = (t) => {
+    const ds = teamDrivers(core, t).filter((d) => !playersIn(core).includes(d));
+    return ds.length ? ds[Math.floor(g() * ds.length)] : null;
+  };
+  const make = (t, isBig) => {
+    const w = wealth(t);
+    const salary = round50((isBig ? 1400000 + g() * 1400000 : 500000 + g() * 900000) * w * perf);
+    const years = isBig ? (g() < 0.6 ? 1 : 2) : 2 + (g() < 0.4 ? 1 : 0);
+    const role = !isBig && pos === 1 && g() < 0.6 ? "primer" : "igualdad";
+    return {
+      team: t, big: isBig, salary, years, role, replace: seatFor(t),
+      bonus: { win: round10(120000 * w * (isBig ? 1.2 : 1)), podium: round10(45000 * w), title: round50(1600000 * w) },
+      signing: round50(salary * (isBig ? 0.08 : 0.15))
+    };
+  };
+  return [make(big, true)].concat(small.map((t) => make(t, false))).filter((o) => o.team);
+}
+
+/* Pone las ofertas de cada jugador en el universo compartido. */
+function dealDebutOffers(core) {
+  if (!core.debut) return;
+  playersIn(core).forEach((pid) => {
+    const d = core.debut[pid];
+    if (!d || d.team || (d.offers && d.offers.length)) return;
+    d.offers = makeDebutOffers(core, pid);
+  });
+  debutSync(core);
+}
+/* Lo de cada jugador lo apunta su propio dispositivo (en el cooperativo, cada uno guarda su carrera):
+   la fama de la F2 y el correo del representante con las ofertas. */
+function debutSyncNeeded(core) {
+  if (!core || !core.debut) return false;
+  const c = core[CK()];
+  if (!c) return false;
+  if (core.f2 && core.f2.done && !c.f2bonus && f2PosOf(core, ME)) return true;
+  const d = core.debut[ME];
+  return !!(d && !d.team && (d.offers || []).length && !c.inbox.some((m) => m.type === "debut"));
+}
+function debutSync(core) {
+  if (!debutSyncNeeded(core)) return;
+  const c = careerOf(core);
+  const pos = f2PosOf(core, ME);
+  if (core.f2 && core.f2.done && !c.f2bonus && pos) { addFame(c, pos === 1 ? 8 : pos <= 3 ? 4 : 1.5); c.f2bonus = true; }
+  const d = core.debut[ME];
+  if (d && !d.team && (d.offers || []).length && !c.inbox.some((m) => m.type === "debut")) {
+    c.inbox.unshift({ id: `debut-${core.season}-${Date.now().toString(36)}`, key: "debut", season: core.season, r: 0, type: "debut", status: "new", t: Date.now(),
+      from: "Tu representante", subject: `${d.offers.length} equipos de F1 quieren ficharte`,
+      body: `${DRIVERS[ME].first}, ya es oficial: varios equipos de Fórmula 1 te quieren para tu debut. Hay ${d.offers.length - 1} ofertas de equipos modestos y una de ${team(d.offers[0].team).name}. Míralas con calma: el contrato que firmes decidirá tu primera temporada.` });
+  }
+}
+
+/* Partidas creadas con la versión anterior: si aún estáis en la F2 y no se ha corrido ninguna carrera de F1, el equipo se decide con las ofertas. */
+function needsDebutMigration(core) {
+  return !!(core && !core.debut && core.coop && core.f2 && !core.f2.done && !doneRounds(core).length && !(core.history || []).length);
+}
+function migrateDebut(core) {
+  if (!needsDebutMigration(core)) return false;
+  core.debut = {};
+  playersIn(core).forEach((p) => {
+    core.debut[p] = { team: null };
+    if (core.roster && core.roster[p]) { core.roster[p] = Object.assign({}, core.roster[p]); delete core.roster[p].team; }
+  });
+  core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
+  if (!(core.grid.removedTeams || []).includes("aurelia")) core.grid.removedTeams = (core.grid.removedTeams || []).concat(["aurelia"]);
+  const p2 = core.coop.players.p2;
+  if (p2) {
+    if (p2.replaced) core.grid.removedDrivers = (core.grid.removedDrivers || []).filter((x) => x !== p2.replaced);
+    p2.team = null; p2.replaced = null;
+  }
+  return true;
+}
+
+/* ---------- pantalla de ofertas ---------- */
+function debutSheet(st) {
+  const core = S.core;
+  const d = debutOf(core, ME);
+  if (!d) return { title: "Ofertas", body: `<p class="lede">No tienes ofertas pendientes.</p>` };
+  if (d.team) {
+    return { title: "¡Contrato firmado!", body: `<div class="offer-card big" style="--tc:${team(d.team).color}">${crest(d.team, 64)}<div><span class="lbl">Tu equipo de F1</span><b style="font-size:22px">${esc(team(d.team).name)}</b></div></div>
+<p class="lede" style="margin-top:12px">${d.replaced ? `Ocupas el asiento de ${esc(fullName(d.replaced))}.` : ""} En F1 25, empieza tu carrera con <b>${esc(team(d.team).name)}</b>${d.replaced ? ` en lugar de ${esc(fullName(d.replaced))}` : ""}.</p>
+${seatPending(core) ? `<div class="banner">⏳<div>Falta que <b>${esc(fullName(otherPlayer()))}</b> firme con su equipo. Cuando lo haga, empezará la temporada.</div></div>` : ""}`,
+      foot: `<button class="btn btn-red btn-block" data-act="close-sheet">Hecho</button>` };
+  }
+  if (f2Active(core)) return { title: "Ofertas de F1", body: `<p class="lede">Las ofertas llegarán cuando termine la F2. Demuestra lo que vales en la pista.</p>`, foot: `<button class="btn btn-red btn-block" data-act="close-sheet">Entendido</button>` };
+  const offers = d.offers || [];
+  const taken = otherSigned(core, ME);
+  const pos = f2PosOf(core, ME);
+  const card = (o, i) => {
+    const tm = team(o.team);
+    const busy = taken && taken.team === o.team;
+    const ds = teamDrivers(core, o.team).filter((x) => !playersIn(core).includes(x));
+    const pick = (st.rep && st.rep[i]) || o.replace || ds[0] || "";
+    const repSel = ds.length ? `<div class="field" style="margin:10px 0 0"><label>Sustituyes a</label><select class="sel" data-bind="rep.${i}">${ds.map((x) => `<option value="${x}" ${pick === x ? "selected" : ""}>${esc(fullName(x))}</option>`).join("")}${ds.length < 2 ? `<option value="" ${!pick ? "selected" : ""}>Nadie: ocupo el asiento libre</option>` : ""}</select></div>` : `<p class="note" style="margin:8px 0 0">Ocupas un asiento libre.</p>`;
+    return `<div class="offer-card deb-card${o.big ? " bigteam" : ""}${busy ? " off" : ""}" style="--tc:${tm.color}">${crest(o.team, 48)}<div style="flex:1;min-width:0">
+<span class="lbl">${o.big ? "⭐ Equipo grande" : "Equipo de media parrilla"}</span><b>${esc(tm.name)}</b>
+<div class="offer-kv"><span>Sueldo</span><b>${fmtMoney(o.salary)}/año</b><span>Duración</span><b>${o.years} ${o.years === 1 ? "temporada" : "temporadas"}</b><span>Rol</span><b>${o.role === "primer" ? "Primer piloto" : o.big ? "Igualdad (llegas como novato)" : "Igualdad de trato"}</b><span>Prima de fichaje</span><b>${fmtMoney(o.signing)}</b><span>Por victoria</span><b>${fmtMoney(o.bonus.win)}</b></div>
+${busy ? `<div class="warn" style="margin-top:10px">${esc(fullName(taken.pid))} ya ha firmado con este equipo.</div>` : `${repSel}<button class="btn btn-red btn-block" style="margin-top:10px" data-act="debut-sign" data-arg="${i}">Firmar con ${esc(tm.short)}</button>`}</div></div>`;
+  };
+  return { title: "Tu salto a la Fórmula 1", body: `<p class="lede" style="margin:0 0 12px">${pos ? `Has terminado la F2 en la ${pos}.ª posición${pos === 1 ? " y como campeón" : ""}. ` : ""}Estos equipos quieren que debutes con ellos. Elige bien: en F1 25 tendrás que empezar con el mismo equipo y en el mismo asiento.</p>
+${offers.map(card).join("")}
+<p class="note">Las ofertas son al azar y distintas para cada jugador. Lo que firmes aquí será tu contrato: sueldo, duración, rol y primas.</p>`,
+    foot: `<button class="btn btn-ghost btn-block" data-act="close-sheet">Lo pienso</button>` };
+}
+
+async function debutSign(i) {
+  const st = S.sheet;
+  const core0 = S.core;
+  const d0 = debutOf(core0, ME);
+  const o = d0 && d0.offers && d0.offers[Number(i)];
+  if (!o) return;
+  const taken = otherSigned(core0, ME);
+  if (taken && taken.team === o.team) { toast("Ese equipo ya lo ha cogido tu compañero de partida"); renderSheet(); return; }
+  const ds = teamDrivers(core0, o.team).filter((x) => !playersIn(core0).includes(x));
+  let rep = st.rep && st.rep[i] !== undefined ? st.rep[i] : (o.replace || ds[0] || "");
+  if (rep && !ds.includes(rep)) rep = ds[0] || "";
+  if (!rep && ds.length >= 2) rep = ds[0];
+  closeSheet();
+  let ok = false;
+  await mutateCore((core) => {
+    const d = core.debut && core.debut[ME];
+    if (!d || d.team) return;
+    const t2 = otherSigned(core, ME);
+    if (t2 && t2.team === o.team) return;
+    core.roster = Object.assign({}, core.roster);
+    core.roster[ME] = Object.assign({}, core.roster[ME] || {}, { team: o.team });
+    core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
+    core.grid.removedTeams = (core.grid.removedTeams || []).filter((t) => t !== o.team);
+    if (rep) core.grid.removedDrivers = (core.grid.removedDrivers || []).filter((x) => x !== rep).concat([rep]);
+    if (!playersIn(core).some((p) => p !== ME && teamOf(core, p) === "aurelia") && !(core.grid.removedTeams || []).includes("aurelia")) core.grid.removedTeams = (core.grid.removedTeams || []).concat(["aurelia"]);
+    d.team = o.team; d.replaced = rep || null; d.signed = Date.now(); d.deal = o;
+    if (ME === "arevalo" && core.identity) { core.identity.team = o.team; core.identity.replaced = rep || null; }
+    if (ME === P2 && core.coop && core.coop.players.p2) { core.coop.players.p2.team = o.team; core.coop.players.p2.replaced = rep || null; }
+    const c = careerOf(core);
+    c.contract = { team: o.team, salary: o.salary, from: core.season, until: core.season + o.years - 1, role: o.role, bonus: o.bonus };
+    c.trust = o.big ? 55 : 65;
+    addLedger(c, "signing", core.season, 0, `Prima de fichaje: ${team(o.team).name}`, o.signing);
+    addFame(c, o.big ? 3 : 1.5);
+    c.inbox.forEach((m) => { if (m.type === "debut" && m.status === "new") m.status = "read"; });
+    addMail(c, { id: `debut-welcome-${core.season}`, key: "debut-welcome", season: core.season, r: 0, type: "team", from: `Dirección de ${team(o.team).short}`, subject: "Bienvenido al equipo",
+      body: `Es oficial: corres con ${team(o.team).name}. Contrato de ${o.years} ${o.years === 1 ? "temporada" : "temporadas"} y ${fmtMoney(o.salary)} al año. ${o.role === "primer" ? "Serás nuestro primer piloto." : "Los dos pilotos tendréis el mismo trato: la pista decidirá."} Te esperamos en la fábrica.` });
+    ok = true;
+  }).catch(() => null);
+  if (!ok) { toast("No se ha podido firmar. Inténtalo otra vez."); render(); return; }
+  syncGrid(S.core);
+  applyIdentity.sig = null;
+  render();
+  const tm = team(o.team);
+  const rivalOut = rep ? fullName(rep) : null;
+  const art = makeArticle(S.core, null, "flash", null, {
+    id: `debut-${ME}-${S.core.season}-auto`, auto: true, color: tm.color, stats: null, kicker: o.big ? "¡Bombazo!" : "Fichaje",
+    title: o.big ? `¡${UP(LN(ME))} DEBUTARÁ EN LA F1 CON ${UP(tm.name)}!` : `${UP(LN(ME))} FIRMA CON ${UP(tm.name)} PARA SU DEBUT EN LA F1`,
+    subtitle: `${o.years} ${o.years === 1 ? "temporada" : "temporadas"} y ${fmtMoney(o.salary)} al año${rivalOut ? `. ${rivalOut} deja su asiento` : ""}.`,
+    sections: [
+      { heading: "✍️ El contrato", body: `${fullName(ME)} será piloto de ${tm.name}${o.role === "primer" ? " como primer piloto" : ""}. ${o.big ? "Pocos novatos llegan a la F1 por la puerta grande, y él lo ha hecho." : "Un equipo que apuesta por el talento joven y le da sitio para crecer."}` },
+      rivalOut ? { heading: "🔁 El asiento", body: `Su llegada deja fuera a ${rivalOut}. ${o.big ? "En el paddock nadie esperaba un cambio así." : "El equipo ha preferido mirar al futuro."}` } : null,
+      core0.f2 && core0.f2.done ? { heading: "🏎️ De la F2 a la F1", body: f2PosOf(core0, ME) === 1 ? "Llega como campeón de Fórmula 2." : `Llega tras terminar la F2 en la ${f2PosOf(core0, ME)}.ª posición.` } : null
+    ].filter(Boolean),
+    social: [{ who: "team", id: o.team, text: `Welcome, ${DRIVERS[ME].first}! 🤝`, likes: o.big ? 700000 : 150000, reposts: o.big ? 90000 : 15000, replies: o.big ? 40000 : 6000 }, { who: "journalist", id: "confidencial", text: o.big ? "Nadie lo vio venir. 👀" : "Buen fichaje. Ojo con este chaval.", likes: 30000, reposts: 6000, replies: 2000 }]
+  });
+  art.t = Date.now();
+  await Store.saveArticle(art).catch(() => null);
+  if (o.big || f2PosOf(core0, ME) === 1) setTimeout(() => confetti(o.big ? "big" : "small"), 200);
+  openSheet({ type: "debut" });
+}
+
+/* Cartel de la portada mientras no tienes equipo de F1. */
+function debutPoster(core) {
+  const f2on = f2Active(core);
+  const mine = seatPending(core, ME);
+  const other = otherPlayer();
+  let title, sub, cta = "";
+  if (f2on) {
+    const nx = f2NextRound(core);
+    title = "Tu camino hacia la F1";
+    sub = nx <= core.f2.n ? `Carrera ${nx} de ${core.f2.n} de la Fórmula 2. Cuando termine, te llegarán ofertas de equipos de F1.` : "Última bandera de la F2. Ciérrala para recibir tus ofertas de F1.";
+    if (S.canWrite) cta = `<button class="btn btn-red" data-act="${nx <= core.f2.n ? "f2-open" : "f2-close"}" data-arg="${nx}">${nx <= core.f2.n ? `Anotar la carrera ${nx} de F2` : "Cerrar la F2"}</button>`;
+  } else if (mine) {
+    const n = ((debutOf(core, ME) || {}).offers || []).length;
+    title = "Tienes ofertas de F1";
+    sub = `${n} equipos quieren ficharte para tu debut. Elige con cuál firmas.`;
+    if (S.canWrite) cta = `<button class="btn btn-red" data-act="debut-open">Ver las ofertas</button>`;
+  } else {
+    title = `Esperando a ${other ? LN(other) : "tu compañero"}`;
+    sub = `Ya has firmado con ${team(teamOf(core, ME)).name}. La temporada empezará cuando ${other ? fullName(other) : "el otro jugador"} firme con su equipo.`;
+    cta = `<button class="btn btn-ghost" data-act="debut-open">Ver mi contrato</button>`;
+  }
+  return `<section class="poster" style="--tc:#0284C7"><span class="flag-bg">${f2on ? "🏎️" : "✍️"}</span>
+<div class="kick"><span class="dot"></span>${f2on ? "Fórmula 2" : "Mercado de pilotos"}</div>
+<h1 class="gp-name">${esc(title)}</h1><p class="gp-sub">${esc(sub)}</p>
+${cta ? `<div class="cta" style="margin-top:16px">${cta}</div>` : ""}</section>`;
+}
+
+/* Bloquea la F1 mientras falte alguien por firmar. Devuelve true si ha bloqueado. */
+function debutGate() {
+  const core = S.core;
+  if (!core || !seatPending(core)) return false;
+  if (f2Active(core)) { toast("Primero, la Fórmula 2. Al acabarla llegarán las ofertas de F1."); ACTIONS["goto-f2"](); return true; }
+  if (seatPending(core, ME)) { openSheet({ type: "debut" }); return true; }
+  toast(`Falta que ${fullName(otherPlayer())} firme con su equipo de F1`);
+  return true;
+}
+
+SHEETS.debut = debutSheet;
 /* ============================================================
    ACCIONES Y ARRANQUE
    ============================================================ */
@@ -9145,7 +9461,7 @@ const ACTIONS = {
   "open-restore": () => openSheet({ type: "restore", text: "", error: "" }),
   "restore-go": () => doRestore(),
   "reset-all": () => confirmReset(),
-  "start-blank": () => openSheet({ type: "identity", fresh: true, f: { first: "", last: "", nat: "España", num: "", teamName: "", boss: "", color: "#7DD3FC", teamMode: "aurelia", team: "ferrari", replace: "" } }),
+  "start-blank": () => openSheet({ type: "identity", fresh: true, f: { first: "", last: "", nat: "España", num: "", teamName: "", boss: "", color: "#7DD3FC", teamMode: "offers", team: "ferrari", replace: "" } }),
   "id-open": () => {
     if (isCoop() && ME === P2) { const p = S.core.coop.players.p2; openSheet({ type: "identity", p2: true, f: { first: p.first, last: p.last, nat: p.nat, num: p.num || "", boss: p.boss || "" } }); return; }
     const id = (S.core && S.core.identity) || {}; openSheet({ type: "identity", fresh: false, f: Object.assign({ first: DRIVERS[ME].first, last: DRIVERS[ME].last, nat: DRIVERS[ME].nat, num: drv(S.core, ME).num || "", teamName: TEAMS.aurelia.name, boss: "Marco Valenti", color: TEAMS.aurelia.color }, id) }); },
@@ -9166,6 +9482,7 @@ const ACTIONS = {
     if (!f.first || !f.last) { toast("Escribe nombre y apellido"); return; }
     const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
     const real = st.fresh && f.teamMode === "real";
+    const offersMode = st.fresh && f.teamMode === "offers";
     const rt = real ? (f.team || ALL_TEAM_IDS.filter((t) => t !== "aurelia")[0]) : "aurelia";
     const rep = real ? (f.replace || ALL_DRIVER_IDS.find((d) => d !== "arevalo" && d !== "jugador2" && DRIVERS[d].team === rt)) : null;
     const idn = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, teamName: real ? null : String(f.teamName || "").trim() || "Aurelia Racing", boss: String(f.boss || "").trim() || (real ? null : "Marco Valenti"), color: real ? null : f.color || "#7DD3FC", team: rt, replaced: rep };
@@ -9175,11 +9492,17 @@ const ACTIONS = {
       const core = blankCore(1);
       if (!isDefault) core.identity = idn;
       if (real) { core.roster = { arevalo: { team: rt } }; core.grid = { removedTeams: ["aurelia"], removedDrivers: [rep] }; }
+      if (offersMode) {
+        if (core.identity) { core.identity.team = null; core.identity.replaced = null; core.identity.teamName = null; core.identity.color = null; core.identity.boss = String(f.boss || "").trim() || null; }
+        core.grid = { removedTeams: ["aurelia"], removedDrivers: [] };
+        core.debut = { arevalo: { team: null } };
+      }
       S.core = normalizeCore(core); S.news = []; S.seasons = [];
+      syncGrid(S.core);
       applyIdentity.sig = null; applyIdentity(S.core);
       await Store.saveCore().catch(() => null);
       render();
-      openSheet({ type: "f2setup", n: 0, team: "campos", wizard: true });
+      openSheet({ type: "f2setup", n: offersMode ? 2 : 0, team: "campos", wizard: true });
       return;
     }
     if (S.core && S.core.identity && S.core.identity.team) idn.team = S.core.identity.team;
@@ -9220,7 +9543,7 @@ Object.assign(ACTIONS, {
     const cfg = Mode.coop();
     if (cfg && cfg.gid) { Menu.done(); if (Mode.get() === "coop") { render(); return; } Mode.set("coop"); location.reload(); return; }
     const inv = /coop=/.test(location.hash) ? location.hash.slice(1) : "";
-    openSheet({ type: "coop", tab: inv ? "join" : "create", inviteText: inv ? location.href : "", f2: 0, f: { first: "", last: "", nat: "España", num: "", team: TEAM_CHOICES()[0], replace: "" } });
+    openSheet({ type: "coop", tab: inv ? "join" : "create", inviteText: inv ? location.href : "", f2: 2, f2team: "campos", f: { first: "", last: "", nat: "España", num: "", f2team: "prema" } });
   },
   "coop-tab": (t) => { S.sheet.tab = t; S.sheet.error = ""; renderSheet(); },
   "coop-f2": (n) => { S.sheet.f2 = Number(n); renderSheet(); },
@@ -9235,9 +9558,15 @@ Object.assign(ACTIONS, {
     ME = "arevalo";
     const core = blankCore(1);
     core.coop = { players: { p1: { since: Date.now() } }, created: Date.now() };
-    if (st.f2) core.f2 = makeF2(core, st.f2, { arevalo: "campos" });
+    /* En el cooperativo no existe Aurelia Racing: cada uno llegará a un equipo real con sus ofertas. */
+    core.grid = { removedTeams: ["aurelia"], removedDrivers: [] };
+    core.debut = { arevalo: { team: null } };
+    const nF2 = st.f2 == null ? 2 : Number(st.f2);
+    if (nF2) core.f2 = makeF2(core, nF2, { arevalo: st.f2team || "campos" });
     S.core = normalizeCore(core); S.news = []; S.seasons = [];
+    syncGrid(S.core);
     careerOf(S.core);
+    if (!nF2) dealDebutOffers(S.core);
     Store.db = Coop.adapter(gid); S.mode = "db";
     try { await Store.saveCore(); } catch (e) { st.working = false; st.error = "Conectado, pero no se ha podido guardar. Revisa las reglas de Firestore."; renderSheet(); return; }
     Store.subscribe();
@@ -9252,8 +9581,6 @@ Object.assign(ACTIONS, {
     if (!inv) { st.error = "Ese enlace de invitación no es válido."; renderSheet(); return; }
     f.first = String(f.first || "").trim(); f.last = String(f.last || "").trim();
     if (!f.first || !f.last) { st.error = "Escribe tu nombre y apellido."; renderSheet(); return; }
-    const t = f.team || TEAM_CHOICES()[0];
-    const rep = f.replace || ALL_DRIVER_IDS.find((d) => d !== "arevalo" && d !== P2 && DRIVERS[d].team === t);
     st.working = true; st.error = ""; renderSheet();
     try { await Coop.connect(inv.fb); } catch (e) { st.working = false; st.error = "No se ha podido conectar con la partida. Revisa tu conexión."; renderSheet(); return; }
     const ad = Coop.adapter(inv.g);
@@ -9263,28 +9590,42 @@ Object.assign(ACTIONS, {
     const core = normalizeCore(snap.data());
     const nat = NATIONS.find((n) => n[0] === f.nat) || NATIONS[0];
     core.coop = core.coop || { players: {} };
-    core.coop.players.p2 = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, team: t, replaced: rep, since: Date.now() };
-    core.roster = Object.assign({}, core.roster, { [P2]: { team: t } });
+    const old = core.coop.players.p2;
+    core.coop.players.p2 = { first: f.first, last: f.last, nat: nat[0], flag: nat[2], num: f.num ? Number(f.num) : null, team: null, replaced: null, since: Date.now() };
+    core.roster = Object.assign({}, core.roster);
+    delete core.roster[P2];
     core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
-    core.grid.removedDrivers = (core.grid.removedDrivers || []).filter((x) => x !== rep).concat([rep]);
+    if (old && old.replaced) core.grid.removedDrivers = (core.grid.removedDrivers || []).filter((x) => x !== old.replaced);
+    /* Llega sin equipo de F1: lo decidirán sus ofertas. */
+    core.debut = core.debut || {};
+    core.debut[P2] = { team: null };
     core.narrative = core.narrative || {};
     core.narrative.rivalries = (core.narrative.rivalries || []).filter((r) => !(r.a === "arevalo" && r.b === P2)).concat([{ a: "arevalo", b: P2, heat: 35, note: "Amigos fuera de la pista, rivales dentro.", born: { s: core.season, r: doneRounds(core).length, gp: null, why: "Dos amigos llegan juntos a la Fórmula 1." }, log: [] }]);
     if (core.f2 && !core.f2.done && !core.f2.grid.some((d) => d.id === P2)) {
       const mine = (core.f2.grid.find((d) => d.id === "arevalo") || {}).team;
-      const seat = core.f2.grid.find((d) => !d.player && d.team !== mine);
-      if (seat) { seat.id = P2; seat.player = true; delete seat.first; delete seat.last; delete seat.flag; }
+      const want = f.f2team && f.f2team !== mine ? f.f2team : null;
+      const seat = (want && core.f2.grid.find((d) => !d.player && d.team === want)) || core.f2.grid.find((d) => !d.player && d.team !== mine);
+      if (seat) {
+        /* El rival ficticio que deja su asiento desaparece también de las carreras ya simuladas. */
+        const gone = seat.id;
+        (core.f2.races || []).forEach((rc) => { delete rc.res[gone]; if (rc.pole === gone) rc.pole = null; if (rc.fl === gone) rc.fl = null; });
+        seat.id = P2; seat.player = true; delete seat.first; delete seat.last; delete seat.flag;
+      }
     }
     Mode.setCoop({ fb: inv.fb, gid: inv.g, slot: "p2" }); Mode.set("coop");
     ME = P2;
     Store.db = ad; S.mode = "db";
     S.core = core; applyPlayers(core);
+    syncGrid(S.core);
     careerOf(S.core);
+    if (!f2Active(S.core)) dealDebutOffers(S.core);
     try { await Store.saveCore(); } catch (e) { st.working = false; st.error = "No se ha podido guardar tu piloto en la partida."; renderSheet(); return; }
     Store.subscribe();
     try { history.replaceState(null, "", location.pathname); } catch (e) { /* sin historial */ }
     Menu.done();
     closeSheet(); render();
     toast(`¡Bienvenido a la partida, ${f.first}!`);
+    if (seatPending(S.core, P2) && !f2Active(S.core)) setTimeout(() => openSheet({ type: "debut" }), 600);
   },
   "coop-invite": () => openSheet({ type: "invite" }),
   "coop-forget": () => { Mode.setCoop(null); try { localStorage.removeItem("paddock.coop.v1"); } catch (e) { /* sin almacenamiento */ } render(); toast("Partida olvidada en este dispositivo"); },
@@ -9300,11 +9641,24 @@ Object.assign(ACTIONS, {
     const st = S.sheet;
     closeSheet();
     if (Number(st.n)) { await mutateCore((core) => { core.f2 = makeF2(core, Number(st.n), { [ME]: st.team || "campos" }); }).catch(() => null); S.ui.racesSeg = "f2"; switchTab("races"); }
+    else if (S.core.debut) await mutateCore((core) => { dealDebutOffers(core); }).catch(() => null);
     if (st.wizard) openSheet({ type: "grid", wizard: true });
-    else toast(Number(st.n) ? "¡Bienvenido a la Fórmula 2!" : "Directo a la Fórmula 1");
+    else toast(Number(st.n) ? "¡Bienvenido a la Fórmula 2!" : S.core.debut ? "Tus ofertas de F1 te esperan" : "Directo a la Fórmula 1");
   },
   "id-teammode": (m) => { S.sheet.f.teamMode = m; renderSheet(); },
-  "grid-done": () => { const w = S.sheet && S.sheet.wizard; closeSheet(); if (w) { toast(S.core.f2 ? "¡Todo listo! Empieza por la F2" : "¡Todo listo! A por la temporada 1"); render(); } },
+  "grid-done": () => {
+    const w = S.sheet && S.sheet.wizard; closeSheet();
+    if (!w) return;
+    render();
+    if (seatPending(S.core, ME) && !f2Active(S.core)) { openSheet({ type: "debut" }); return; }
+    toast(f2Active(S.core) ? "¡Todo listo! Empieza por la F2" : "¡Todo listo! A por la temporada 1");
+  },
+  "debut-open": async () => {
+    const core = S.core;
+    if (seatPending(core, ME) && !f2Active(core) && !((debutOf(core, ME) || {}).offers || []).length && S.canWrite) await mutateCore((k) => { dealDebutOffers(k); }).catch(() => null);
+    openSheet({ type: "debut" });
+  },
+  "debut-sign": (i) => debutSign(i),
   "grid-swap": (d) => openSheet({ type: "gridmove", d, back: S.sheet && S.sheet.wizard }),
   "grid-rename": (d) => { const n = (S.core.names || {})[d] || {}; openSheet({ type: "gridname", d, back: S.sheet && S.sheet.wizard, f: { first: n.first || DRIVERS[d].first, last: n.last || DRIVERS[d].last } }); },
   "grid-do-swap": async (b) => {
@@ -9314,7 +9668,7 @@ Object.assign(ACTIONS, {
       const ta = teamOf(core, a), tb = teamOf(core, b);
       core.roster[a] = Object.assign({}, core.roster[a] || {}, { team: tb });
       core.roster[b] = Object.assign({}, core.roster[b] || {}, { team: ta });
-      [a, b].forEach((x) => { if (x === "arevalo" && core.identity) core.identity.team = teamOf(core, x); });
+      [a, b].forEach((x) => { if (x === "arevalo" && core.identity) core.identity.team = teamOf(core, x); if (x === P2 && core.coop && core.coop.players.p2) core.coop.players.p2.team = teamOf(core, x); });
     }).catch(() => null);
     toast(`${LN(a)} y ${LN(b)} intercambian asiento`);
     openSheet({ type: "grid", wizard: back });
@@ -9325,6 +9679,7 @@ Object.assign(ACTIONS, {
       core.roster = Object.assign({}, core.roster);
       core.roster[a] = Object.assign({}, core.roster[a] || {}, { team: t });
       if (a === "arevalo" && core.identity) core.identity.team = t;
+      if (a === P2 && core.coop && core.coop.players.p2) core.coop.players.p2.team = t;
       core.grid = core.grid || { removedTeams: [], removedDrivers: [] };
       core.grid.removedTeams = (core.grid.removedTeams || []).filter((x) => x !== t);
     }).catch(() => null);
